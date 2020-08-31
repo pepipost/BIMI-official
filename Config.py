@@ -10,8 +10,8 @@ class Config():
     """
     Static Files Configuration
     """
-    STATIC_FOLDER="./templates/jinjaTemplate/assets" #Folder for static files
-    TEMPLATE_FOLDER="./templates/jinjaTemplate" #Folder For html files
+    STATIC_FOLDER="./templates/jinjaTemplate/assets" #Folder for static assets files sucha as images and css
+    TEMPLATE_FOLDER="./templates/jinjaTemplate" #Folder For index.html file
     HOME_PAGE="pages/main.html" #Landing Page
 
     """
