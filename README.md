@@ -44,7 +44,7 @@ This should create a folder named env inside your bimi setup folder. This might 
 $ source ./env/bin/activate
 
 # For windows
-.\restful\Scripts\activate
+.\env\Scripts\activate
 ```
 
 ### Install dependencies
