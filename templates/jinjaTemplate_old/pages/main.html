@@ -1,0 +1,179 @@
+{% extends "index.html" %}
+{% block body %}
+<body>
+    <div id="app">
+        <section class="section">
+            <div class="container">
+                <h1>BIMI Generator</h1>
+                <div class="hero-body">
+                    <form action="" method="post">
+                        <div class="field">
+                            <div class="control has-icons-left has-icons-right">
+                                <input class="input" type="text" placeholder="example.com" value="">
+                                <span class="icon is-small is-left">
+                                <i class="fas fa-user"></i>
+                                </span>
+                                <span class="icon is-small is-right">
+                                <i class="fas fa-check"></i>
+                                </span>
+                            </div>
+                            <p class="help">Domain Name</p>
+                        </div>
+
+                        <div class="field">
+                            <div class="control has-icons-left has-icons-right">
+                                <input class="input" type="text" placeholder="https://" value="">
+                                <span class="icon is-small is-left">
+                                <i class="fas fa-user"></i>
+                                </span>
+                                <span class="icon is-small is-right">
+                                <i class="fas fa-check"></i>
+                                </span>
+                            </div>
+                            <p class="help">Logo (URL to the site SVG logo)</p>
+                        </div>
+
+                        <div class="field">
+                            <div class="control has-icons-left has-icons-right">
+                                <input class="input" type="text" placeholder="https://" value="">
+                                <span class="icon is-small is-left">
+                                <i class="fas fa-user"></i>
+                                </span>
+                                <span class="icon is-small is-right">
+                                <i class="fas fa-check"></i>
+                                </span>
+                            </div>
+                            <p class="help">VMC Certificate (URL)</p>
+                        </div>
+                        
+                        <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-link">Get BIMI Record</button>
+                        </div>
+                        </div>
+                    </form>
+                </div>        
+            </div>
+        </section>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+    <!-- Full bundle -->
+    <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+    <!-- SVGO -->
+    <script>
+        'use strict';
+
+    var FS = require('fs'),
+    PATH = require('path'),
+    SVGO = require('../../../node_modules/svgo/lib/svgo'),
+    filepath = PATH.resolve(__dirname, 'test.svg'),
+    svgo = new SVGO({
+        plugins: [{
+          cleanupAttrs: true,
+        }, {
+          removeDoctype: true,
+        },{
+          removeXMLProcInst: true,
+        },{
+          removeComments: true,
+        },{
+          removeMetadata: true,
+        },{
+          removeTitle: true,
+        },{
+          removeDesc: true,
+        },{
+          removeUselessDefs: true,
+        },{
+          removeEditorsNSData: true,
+        },{
+          removeEmptyAttrs: true,
+        },{
+          removeHiddenElems: true,
+        },{
+          removeEmptyText: true,
+        },{
+          removeEmptyContainers: true,
+        },{
+          removeViewBox: false,
+        },{
+          cleanupEnableBackground: true,
+        },{
+          convertStyleToAttrs: true,
+        },{
+          convertColors: true,
+        },{
+          convertPathData: true,
+        },{
+          convertTransform: true,
+        },{
+          removeUnknownsAndDefaults: true,
+        },{
+          removeNonInheritableGroupAttrs: true,
+        },{
+          removeUselessStrokeAndFill: true,
+        },{
+          removeUnusedNS: true,
+        },{
+          cleanupIDs: true,
+        },{
+          cleanupNumericValues: true,
+        },{
+          moveElemsAttrsToGroup: true,
+        },{
+          moveGroupAttrsToElems: true,
+        },{
+          collapseGroups: true,
+        },{
+          removeRasterImages: false,
+        },{
+          mergePaths: true,
+        },{
+          convertShapeToPath: true,
+        },{
+          sortAttrs: true,
+        },{
+          removeDimensions: true,
+        },{
+          removeAttrs: {attrs: '(stroke|fill)'},
+        }]
+      });
+
+FS.readFile(filepath, 'utf8', function(err, data) {
+
+    if (err) {
+        throw err;
+    }
+
+    svgo.optimize(data, {path: filepath}).then(function(result) {
+
+        console.log(result);
+
+        // {
+        //     // optimized SVG data string
+        //     data: '<svg width="10" height="20">test</svg>'
+        //     // additional info such as width/height
+        //     info: {
+        //         width: '10',
+        //         height: '20'
+        //     }
+        // }
+
+    });
+
+});
+    </script>
+    <script>
+        new Vue({
+            el: '#app',
+            delimiters: ["[","]"],
+            data() {
+                return {
+                    loading: true,
+                    data: '',
+                }
+            },
+        })
+    </script>
+</body>
+{% endblock %}
