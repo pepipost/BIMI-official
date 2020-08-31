@@ -1,0 +1,349 @@
+/**
+ * @constructor
+ */
+function CSecretQuestion()
+{
+	var AppData = window.pSevenAppData || {};
+	this.sEmail = ko.observable('');
+	this.sQuestionsSel = ko.observable('');
+	this.sQuestionsAll = ko.observableArray('');
+	this.currentQuestion = ko.observable(''); 
+        this.sEmail(AppData.Accounts.getCurrent().email());
+	this.chosenQuestion = ko.observableArray();
+	this.sAnswer = ko.observable('');	
+
+
+var data=	$.ajax({
+        	type : 'POST',
+        	url : '/cgi-bin/secret_question.pl',
+        	data : {request:'getparameter',username:this.sEmail()},
+		global:false,
+		async:false,
+        	success : function(msg) {
+        },
+        error: function(d){
+                App.Api.showError("Error while connecting to database" );
+            }
+}).responseText;
+
+
+	var match = data.match(/"question":"(.*?)","questionno":"(.*?)"/);
+	if(match == null || match[1] == 'null')
+	{
+		this.currentQuestion("You have not selected a secret question");
+		var temp_arr = [];
+		temp_arr.push('');
+		this.chosenQuestion = temp_arr;
+	}
+	
+	else
+	{
+		this.currentQuestion(match[1]);
+		var temp_arr = [];
+		temp_arr.push(match[2]);
+		this.chosenQuestion = temp_arr;
+	}
+	
+	var result = [];
+	var arr = [];
+	var reg = new RegExp("value='([0-9]+)'.*?>(.+?)<\/option","gi");
+	arr.push({ name: 'Please Select a secret question',id:''});
+	
+	while((result = reg.exec(data))!==null){
+   	 	arr.push({ name: result[2],id:result[1]});
+  }
+	
+	this.sQuestionsAll = arr;
+ 
+}
+CSecretQuestion.prototype.onSaveClick = function ()
+{
+	var err_msg = '';
+	if(this.chosenQuestion[0] == '')
+	{
+		err_msg+='Please Select a secret question.';
+	}
+	if(this.sAnswer() == '')
+	{
+		err_msg+='Please enter an answer.';
+	}
+	if(err_msg != '')
+	{
+		App.Api.showError(err_msg);
+	}
+	else
+	{
+        	var data = null;
+	var re= $.ajax({
+        		type : 'POST',
+        		url : '/cgi-bin/secret_question.pl',
+			global:false,
+        		async:false,
+        		data : {'username': this.sEmail(),'qid': this.chosenQuestion[0],'ans': this.sAnswer()},
+        		success : function(obj) {
+				if(obj.error =='1' )
+				{
+					App.Api.showReport("Secret Question Changed Successfully");	
+				}
+				else
+				{
+					App.Api.showError(obj.message);
+				}
+        		},
+        		error: function(d){
+                		App.Api.showError("Error while connecting to database" );
+          		}
+		}).responseText;
+	var re1 = re.match(/.*"error":.*([0-9]).*$/);
+	if(re1[1] == 1)
+	{
+		var push = this.sQuestionsAll[this.chosenQuestion[0]].name;
+		this.currentQuestion(this.sQuestionsAll[this.chosenQuestion[0]].name);
+		this.sAnswer('');
+	}
+	else
+	{
+		this.chosenQuestion('');
+	}
+	
+	}	
+}
+CSecretQuestion.prototype.TemplateName = 'Plugin_SecretQuestion';
+ 
+CSecretQuestion.prototype.TabName = 'secret_question';
+ 
+CSecretQuestion.prototype.TabTitle = 'Secret Question';
+
+
+AfterLogicApi.addSettingsTab(CSecretQuestion);
+
+(function () {
+	
+	function ShowOnStart(oViewModel)
+	{
+		var
+			oSettings = AfterLogicApi.getPluginSettings('GregwarCaptcha'),
+			bShowOnStart = true
+		;
+
+		if ('CLoginViewModel' === oViewModel.__name)
+		{
+			bShowOnStart = oSettings ? oSettings.ShowOnStart : false;
+		}
+
+		if (bShowOnStart)
+		{
+			oViewModel.showGregwarCaptcha();
+		}
+	};
+	
+	AfterLogicApi.addPluginHook('view-model-defined', function (sViewModelName, oViewModel) {
+		if (oViewModel && ('CLoginViewModel' === sViewModelName || 
+				'CRegisterViewModel' === sViewModelName || 'CForgotViewModel' === sViewModelName))
+		{
+			var sType = 'Login';
+			if ('CRegisterViewModel' === sViewModelName)
+			{
+				sType = 'Register';
+			}
+			else if ('CForgotViewModel' === sViewModelName)
+			{
+				sType = 'Forgot';
+			}
+			
+			oViewModel.gregwarCaptcha = ko.observable('');
+			oViewModel.gregwarShow = ko.observable(false);
+			oViewModel.gregwarSrcHash = ko.observable(Math.random().toString().substring(3));
+			oViewModel.gregwarSrc = ko.computed(function () {
+				return '?/gregwar-captcha/' + sType + '/' + oViewModel.gregwarSrcHash() + '/';
+			});
+			oViewModel.reloadGregwarCaptcha = function () {
+				oViewModel.gregwarSrcHash(Math.random().toString().substring(3));
+			};
+			oViewModel.showGregwarCaptcha = function () {
+				oViewModel.gregwarShow(true);
+			};
+			
+			AfterLogicApi.addPluginHook('ajax-default-request', function (sAction, oParameters) {
+				
+				var
+					bLogin = ('CLoginViewModel' === sViewModelName && 'SystemLogin' === sAction),
+					bRegister = ('CRegisterViewModel' === sViewModelName && 'RegisterAccount' === sAction),
+					bForgot = ('CForgotViewModel' === sViewModelName && 'GetForgotAccountQuestion' === sAction)
+				;
+				
+				if ((bLogin || bRegister || bForgot) && oParameters && oViewModel.gregwarShow())
+				{
+					oParameters['CustomRequestData'] = oParameters['CustomRequestData'] || {};
+					oParameters['CustomRequestData']['GregwarCaptchaData'] = oViewModel.gregwarCaptcha();
+				}
+			});
+
+			AfterLogicApi.addPluginHook('ajax-default-response', function (sAction, oData) {
+				if (
+					('CLoginViewModel' === sViewModelName && 'SystemLogin' === sAction) ||
+					('CRegisterViewModel' === sViewModelName && 'RegisterAccount' === sAction) ||
+					('CForgotViewModel' === sViewModelName && 'GetForgotAccountQuestion' === sAction)
+				)
+				{
+					if (!oData || !oData['Result'])
+					{
+						if (oViewModel.gregwarShow())
+						{
+							oViewModel.reloadGregwarCaptcha();
+						}
+						else if (oData && oData['Captcha'])
+						{
+							oViewModel.showGregwarCaptcha();
+						}
+					}
+				}
+			});
+			
+			ShowOnStart(oViewModel);
+		}
+	});
+	
+}());
+/**
+ * @constructor
+ */
+function CChangePassword()
+{
+
+	this.currentPassword = ko.observable('');
+	this.newPassword = ko.observable('');
+	this.confirmPassword = ko.observable('');
+	this.errormsg = ko.observable(false);
+}
+
+CChangePassword.prototype.showMessage= function (){
+	data='<div id="position" style="height: 80%;">';
+	for(i=0;i<Password.length;i++)
+		data += Password[i]+" &nbsp;&nbsp;&nbsp;";
+	data = "<p><center><b><div style='background: none rgb(24, 174, 189); color: rgb(255, 255, 255);'><div id='headertxt' style='padding-top: 15px;padding-bottom:15px;'>Following passwords are blocked due to security reasons :</div></b></center><hr></p>"+data+"</div></div><br><br>";
+	myWindow = window.open("data:text/html," + encodeURIComponent(data));
+	myWindow.focus();
+}
+
+CChangePassword.prototype.onOKClick = function ()
+{
+	var msg = '';
+	if(this.currentPassword() == '')
+	{
+		msg="Please enter Current Password.\n";
+		App.Api.showError(msg,false);
+		return false;
+	}
+
+	if(this.newPassword() == '')
+	{
+		msg="Please enter New Password.\n";
+		App.Api.showError(msg);
+		return false;
+	}
+	if(this.confirmPassword() == '')
+	{
+		msg="Please enter Confirm Password";
+		App.Api.showError(msg);
+		return false;
+	}
+	if(this.newPassword() != this.confirmPassword())
+	{
+		msg="New Password and Confirm Password do not match";
+		App.Api.showError(msg);
+		return false;
+	}
+	if(this.currentPassword() == this.newPassword())
+	{
+		msg="New Password cannot be same as old password";
+		App.Api.showError(msg);
+		return false;
+	}
+	if (this.newPassword().length < 8 || this.newPassword().length > 20){
+		msg="Password should be 8 to 20 characters long";
+		App.Api.showError(msg);
+		return false;
+	}
+	if (this.newPassword().match(/\s+/)) {
+		msg="Passwords cannot include a space.";
+		App.Api.showError(msg);
+		return false;
+	}
+	if(!this.newPassword().match(/\W+/)) 
+		msg += 'Password should have atleast 1 special character.<br>';
+
+	if(!this.newPassword().match(/[0-9]/))
+		msg += 'Password should have atleast 1 numeric .<br>';
+
+	if(!this.newPassword().match(/[A-Z]/)) 
+		msg += 'Password should have atleast 1 uppercase .<br>';
+
+	if(!this.newPassword().match(/[a-z]/))
+		msg += 'Password should have atleast 1 lowercase.<br>';
+
+	for (i = 0; i < Password.length; i++) {
+		if (Password[i] === this.newPassword()) {
+			this.errormsg(true);
+			//msg += "Mail administrator has blocked some password combinations due to security reasons <span data-bind='click:showMessage'><font color='blue'>click to see</font></span><br>";
+			return false;
+			break;
+		}
+	}
+	var AppData = window.pSevenAppData || {};
+	var oAccount = AppData.Accounts.getCurrent();
+	var sEmail = oAccount.email();
+	var domain = sEmail.replace(/.+\@|\..+/ig, '');
+	var user_name=sEmail.replace(/@.+/ig, '');
+
+	if (user_name.length > 1){
+		if (this.newPassword().match(user_name))
+			msg += "Password should not contain username.<br>";
+		if (this.newPassword().match(domain))
+			msg += "Password should not contain domain name.<br>";
+	}
+	if(msg!="")
+	{
+		App.Api.showError(msg,true);
+		return false;
+	}
+	var data = null;
+	var check = 0;
+	var url = 'customScripts/change_password_api.php';
+	data = {
+		'username': sEmail,
+		'oldpass': this.currentPassword(),
+		'newpass': this.newPassword(),
+		'confpass': this.confirmPassword(),
+		'cloud_flag': 1
+	};
+	$.ajax({
+		type : 'POST',
+		url : url,
+		data : data,
+		success : function(d) {
+			var obj = JSON.parse(d);
+			if(obj.error == 1){
+				check = 0;
+				App.Api.showError(obj.message);
+			} else {
+				check = 1;
+				alert(obj.message+', redirecting to login page');
+				App.logout();
+			}
+		},
+		error: function(d){
+			App.Api.showError("Error while connecting to database" );
+		}
+	});
+};
+
+CChangePassword.prototype.TemplateName = 'Plugin_ChangePassword';
+
+CChangePassword.prototype.TabName = 'change_password';
+
+CChangePassword.prototype.TabTitle = 'Change Password';
+
+AfterLogicApi.addSettingsTab(CChangePassword);
+
+var Password = ["P@ssw0rd","1qaz@WSX","@WSX2wsx","!QAZ2wsx","!QAZ1qaz","Test@1"];

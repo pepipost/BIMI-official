@@ -1,0 +1,334 @@
+body,html{
+    height: 100%;
+    width: 100%;
+    color: #3D4145;
+}
+#logo{
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+    margin-bottom: 0;
+    max-height: 50px;
+    display: inline-block;
+    float: none;
+    vertical-align: middle;
+    -webkit-transform: translateZ(0);
+}
+.image-bordered-grey{
+    padding: 2px;
+    border: 1px solid grey;
+    border-radius: 5px;
+}
+pre code {
+    white-space: break-spaces;
+    color: #6c757d;
+}
+
+pre {
+    margin-bottom: 0;
+}
+
+.jumbotron {
+    margin-bottom: unset;
+}
+
+.jumbotron-border-gray{
+    border: 1px solid darkgray;
+}
+
+.section{
+    margin-top: 25px;
+    padding: 15px 15px;
+    background-color: #f2f2f2;
+    border: 1px solid darkgray;
+}
+
+.tcolor{
+    color: #563d7c;
+}
+
+.btn.btn-purple {
+    background-color: #563d7c;
+    color: white;
+}
+
+.border-right {
+    border-right: 1px solid #e2e3e5;
+}
+
+hr {
+    color: darkgray;
+}
+
+.btn-outline-purple {
+    color: #563d7c;
+    border-color: #563d7c;
+}
+
+.btn-outline-purple:hover {
+    color: #fff;
+    background-color: #563d7c;
+    border-color: #563d7c;
+}
+
+.checked{
+    color: #447c3d;
+}
+
+.crossed{
+    color: #d9534f;
+}
+
+.logo-box {
+    border: 1px solid darkgray;
+    padding: 0 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    background-color: #e2e3e5;
+}
+
+.logo-box .square {
+    background: #fff;
+    margin: 1.5rem;
+}
+
+.logo-box .circle {
+    background: #fff;
+    margin: 1.5rem;
+    border-radius: 50%;
+}
+
+.logo-box .squircle {
+    background: #fff;
+    margin: 1.5rem;
+    border-radius: 1.5rem;
+}
+
+.issues ul {
+    list-style-type: none;
+}
+
+.issues ul li::before {
+    content: "-";
+    color: #d9534f;
+    font-weight: bold;
+    display: inline-block; 
+    width: 1em;
+    margin-left: -1em;
+}
+
+.generator-form {
+    background-color: #fff;
+    padding: 25px;
+    border: 1px solid gray;
+    border-radius: 5px;
+}
+
+.modify-section {
+    margin-top: 25px;
+}
+
+.generated .code {
+    background-color: #f2f2f2;
+    max-width: 650px;
+    margin: 0 auto;
+    text-align: left;
+    padding: 15px;
+}
+
+.generated {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.smartphone .content .mobi-strip {
+    display: block;
+}
+/*Mobile section*/
+/* The device with borders */
+.smartphone {
+position: relative;
+width: 250px;
+height: 500px;
+margin: auto;
+border: 16px black solid;
+border-top-width: 60px;
+border-bottom-width: 60px;
+border-radius: 36px;
+}
+
+/* The horizontal line on the top of the device */
+.smartphone:before {
+content: '';
+display: block;
+width: 60px;
+height: 5px;
+position: absolute;
+top: -30px;
+left: 50%;
+transform: translate(-50%, -50%);
+background: #333;
+border-radius: 10px;
+}
+
+/* The circle on the bottom of the device */
+.smartphone:after {
+content: '';
+display: block;
+width: 35px;
+height: 35px;
+position: absolute;
+left: 50%;
+bottom: -65px;
+transform: translate(-50%, -50%);
+background: #333;
+border-radius: 50%;
+}
+
+/* The screen (or content) of the device */
+.smartphone .content {
+/*width: 360px;*/
+height: 100%;
+background: #f4f5f9;
+overflow-y: hidden;
+overflow-x: hidden;
+}
+
+.smartphone .content img.fill_image{
+width: 100%;
+}
+
+/*For test list if bimi found*/
+.check_list.col.card .card-body.list-group .list-group-item {
+border: none;
+}
+
+.smartphone .content .grid .chars {
+/* background-color: red; */
+color: white;
+/* text-align: center; */
+vertical-align: middle;
+font-size: 1.3rem;
+}
+
+.logo_image_wrapper_circle {
+border-radius: 50%;
+height: 35px;
+width: 35px;
+margin: 5px 10px;
+background: white;
+text-align: center;
+}
+
+.logo_image_wrapper_squircle {
+border-radius: 50%;
+height: 35px;
+width: 35px;
+margin: 5px 10px;
+text-align: center;
+background: white;
+}
+
+.grid {
+padding: 5px 0px;
+margin: 4px 2px;
+overflow-x: hidden;
+background-color: #fff;
+border-bottom: 2px solid #e2e3e5;
+border-radius: 5px;
+}
+
+.esp-brand-strip {
+text-align: center;
+margin: 5px 0 5px 0;
+}
+
+.esp-brand-strip .burger div {
+width: 25px;
+height: 3px;
+background-color: #3D4145;
+margin: 4px 0;
+}
+
+.smartphone .content .grid .text-section .brand_message .star {
+color: #8d8d8d;
+float: right;
+margin-right: 10px;
+}
+
+.smartphone .content .grid .text-section-bar .brand_message .star {
+color: #8d8d8d;
+position: absolute;
+top: 22px;
+right: 20px;
+}
+
+.smartphone .content .grid .text-section-bar .brand_message .star svg {
+height: 10px;
+}
+
+.esp-brand-strip .Label {
+/* font-size: 16px; */
+font-weight: bold;
+}
+
+.esp-brand-strip .search svg {
+color: #000;
+}
+
+.grid .text-section .brandname {
+/*  top: 60px;
+z-index: 1;
+position: absolute;
+left: 43px;
+background-color: white;*/
+/*font-weight: 601;*/
+color: #1f1f1f;
+font-size: .875rem;
+font-size: 12px;
+text-align: left;
+line-height: 1.3;
+}
+
+.grid .text-section .brand_subject {
+/*  top: 75px;
+z-index: 1;
+position: absolute;
+left: 43px;*/
+font-size: 10.3px;
+/*font-weight: 700;*/
+font-family: unset;
+color: #1f1f1f;
+text-align: left;
+line-height: 1.3;
+}
+
+.grid .text-section .brand_message{
+/*  top: 84px;
+z-index: 1;
+position: absolute;
+left: 43px;*/
+font-size: 10px;
+line-height: 1.3;
+color: #8d8d8d;
+text-align: left;
+font-weight: 600;
+}
+
+.grid .text-section-bar .brandname hr {
+border-top: 10px solid;
+width: 45%;
+margin: 5px 0;
+}
+
+.grid .text-section-bar .brand_subject hr {
+border-top: 10px solid;
+width: 85%;
+margin: 5px 0;
+}
+
+.grid .text-section-bar .brand_message hr{
+border-top: 10px solid;
+width: 85%;
+margin: 5px 0;
+}
+/*Mobile ends*/
