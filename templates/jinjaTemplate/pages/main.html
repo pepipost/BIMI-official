@@ -18,9 +18,13 @@
                       <h4 class="my-0 font-weight-normal">BIMI Checker</h4>
                     </div> -->
                     <div class="input-group lg-8 md-8">
-                      <input type="text" class="form-control" placeholder="Domain Name" aria-label="Domain Name" aria-describedby="basic-addon2">
+                      <input type="text" v-on:keyup.enter="checkBimi" class="form-control" placeholder="Domain Name" aria-label="Domain Name" aria-describedby="basic-addon2" v-model="domain">
                       <div class="input-group-append">
-                        <button class="btn btn-purple" @click="flip" type="button">Check BIMI</button>
+                        <button class="btn btn-purple" @click="checkBimi" type="button">
+                          <div v-if="bimi_check_button_loader" class="spinner-grow" role="status">
+                            <span class="sr-only">Loading...</span>
+                          </div>
+                          Check BIMI</button>
                       </div>
                     </div>
                   </div>
@@ -28,27 +32,43 @@
               </div>
             </div>
           </section>
-          <section class="section shadow-sm">
-            <div class="seach-result" v-if="test!=''">
+          <section class="section shadow-sm" v-if="bimi_check_details">
+            <div class="seach-result">
               <div class="record-found">
-                <h2 class="tcolor">BIMI Checker Report</h2>
+                <h2 class="tcolor">BIMI Checker Report For [[processed_domain]]</h2>
                 <hr>
                 <div class="row">
                   <div class="col-md-8">
-                    <div class="bimi-record">
-                      <h5>BIMI Record Found For <span class="tcolor">[[domain]]</span>
-                        <span class="checked">
+                    <div class="bimi-record" v-for="(result, index) in bimi_check_details" v-bind:key="index">
+                      <h5><span class="record_name">[[index]]</span> Record <span v-if="result.status">Found</span><span v-else>Has Some Issues</span>
+                        <span span v-if="result.status" class="checked">
                           <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                           </svg>
                         </span>
+                        <span v-else class="crossed">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
+                          </svg>
+                        </span>
                       </h5>
-                      <div class="alert alert-secondary mt-4 mr-5" role="alert">
-                        <pre><code>default._bimi.cnn.com TXT v=BIMI1; l=https://amplify.valimail.com/bimi/time-warner/LysAFUdG-Hw-cnn_vmc.svg; a=https://amplify.valimail.com/bimi/time-warner/LysAFUdG-Hw-cnn_vmc.pem</code></pre>
+                      <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="result.records && result.records.length > 0 && result.records[0] != ''">
+                        <pre><div v-for="(mx, mx_index) in result.records" v-bind:key="mx_index"><code>[[mx]]</code></div></pre>
+                      </div>
+                      <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="result.record"><pre><code>[[result.record]]</code></pre></div>
+                      <div class="issues" v-if="result.status==false">
+                        <h6><span class="record_name">[[index]]</span> Issues You Need To Fix</h6>
+                        <ul class="warnings" >
+                          <li v-for="(warning, warn_index) in result.warnings" v-bind:key="warn_index">Warning: [[warning]]</li>
+                        </ul>
+                        <ul class="errors">
+                          <li v-for="(error, error_index) in result.errors" v-bind:key="error_index">Error: [[error]]</li>
+                        </ul>
+                        <!-- <button class="btn btn-sm btn-outline-purple">Fix SVG Issues</button> -->
                       </div>
                     </div>
-                    <div class="mx-record">
-                      <h5>MX Record Found For <span class="tcolor">[[domain]]</span>
+                    <!-- <div class="mx-record">
+                      <h5>MX Record Found
                         <span class="checked">
                           <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
@@ -58,29 +78,28 @@
                       <div class="alert alert-secondary mt-4 mr-5" role="alert">
                         <pre><code>mxa-00241e02.gslb.pphosted.com</code></pre>
                       </div>
-                    </div>
-                    <div class="dmarc-record">
-                      <h5>DMARC Record Found For <span class="tcolor">[[domain]]</span>
-                        <span class="checked">
+                    </div> -->
+                    <div class="SVG Image">
+                      <h5>
+                        <span v-if="bimi_check_details.bimi.svg!='' && bimi_check_details.bimi.status == true">
+                          Found BIMI SVG Image
+                        </span>
+                        <span v-else>
+                          Bimi SVG Image not found
+                        </span>
+                        <span class="crossed"  v-if="bimi_check_details.bimi.svg==''">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
+                          </svg>
+                        </span>
+                        <span class="checked" v-else>
                           <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                           </svg>
                         </span>
                       </h5>
-                      <div class="alert alert-secondary mt-4 mr-5" role="alert">
-                        <pre><code>_dmarc.cnn.com TXT v=DMARC1; p=reject; rua=mailto:dmarc_agg@vali.email,mailto:tw@rua.agari.com; ruf=mailto:tw@ruf.agari.com</code></pre>
-                      </div>
-                    </div>
-                    <div class="SVG Image">
-                      <h5>SVG Image was found with some issues
-                        <span class="crossed">
-                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
-                          </svg>
-                        </span>
-                      </h5>
-                      <div class="alert alert-secondary mt-4 mr-5" role="alert">
-                        <em>[[img_logo]]</em>
+                      <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="bimi_check_details.bimi.svg">
+                        <em>[[bimi_check_details.bimi.svg]]</em>
                       </div>
                       <div class="row">
                         <div class="logo-box ml-md-4 col-md-3">
@@ -99,7 +118,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="issues">
+                      <!-- <div class="issues">
                         <h5>SVG Issues You Need To Fix</h5>
                         <ul>
                           <li>SVG Image is in an invalid Format</li>
@@ -107,37 +126,11 @@
                           <li>SVG Image has invalid tags</li>
                         </ul>
                         <button class="btn btn-sm btn-outline-purple">Fix SVG Issues</button>
-    
-                      </div>
+                      </div> -->
                     </div>
-                    <!-- <div class="bimi-logos">
-                      <div class="row">
-                        <div class="col-md-4">
-                          <p>Circle</p>
-                          <div class="logo-box logo-circle">
-                            <img :src="img_logo">
-                          </div>
-                        </div>
-                        <div class="col-md-4">
-                          <p>Round Rectangle</p>
-                          <div class="logo-box logo-round-rectangle">
-                            <img :src="img_logo">
-                          </div>
-                        </div>
-                        <div class="col-md-4">
-                          <p>Squircle</p>
-                          <div class="logo-box logo-squircle">
-                            <img :src="img_logo">
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-    -->								<!-- <p class="note">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    </p>
-     -->							</div>
+                  </div>
                   <div class="col-md-4">
-                    <h5>How You Logo Will Appear: <span class="tcolor">[[domain]]</span></h5>
+                    <h5>Your Logo Might Appear Like This</h5>
                     <!-- Mobile box -->
                     <div class="smartphone mt-4">
                       <!-- <div class="content">
@@ -170,7 +163,7 @@
                           <div class="row">
                             <div class="col-3">
                               <div class="logo_image_wrapper_circle">
-                                <img v-if="img_logo" :src="img_logo" alt="" class="logo_image">
+                                <img :src="img_logo" alt="" class="logo_image">
                               </div>
                             </div>
                             <div class="col-9">
@@ -192,7 +185,7 @@
                           <div class="row">
                             <div class="col-3">
                               <div class="logo_image_wrapper_squircle">
-                                <img v-if="img_logo" :src="img_logo" alt="" class="logo_image">
+                                <img :src="img_logo" alt="" class="logo_image">
                               </div>
                             </div>
                             <div class="col-9">
@@ -311,11 +304,11 @@
                   </div>	
                 </div>
                 <div class="text-center" v-if="!modifyBimi" @click="modifyBimi=!modifyBimi">
-                  <button class="btn btn-outline-purple">Modify BIMI Record</button>
+                  <button class="btn btn-outline-purple">[[bimi_generate_text]]</button>
                 </div>
               </div>
             </div>
-            <div class="seach-result" v-else>
+            <!-- <div class="seach-result">
               <div class="record-notfound">
                 <h2 class="tcolor">BIMI Checker Report</h2>
                 <hr>
@@ -358,7 +351,7 @@
                   <button class="btn btn-purple" @click="modifyBimi=!modifyBimi">Generate BIMI Record?</button>
                 </div>
               </div>
-            </div>
+            </div> -->
     
             <div class="modify-section" v-if="modifyBimi">
               <h2 class="tcolor">BIMI Generator</h2>
@@ -482,46 +475,79 @@
           </footer>
         </div>
     </div>
-	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
-	<script src="//unpkg.com/bootstrap-vue@2.16.0/dist/bootstrap-vue.min.js"></script>
-    <script>
-        new Vue({
-            el: '#app',
-            delimiters: ["[[","]]"],
-            data() {
-              return {
-                  loading: true,
-                  data: '',
-                  authstatus: false,
-                  apiurls: {
-                    authget: "http://localhost:9000/auth",
-                    authpost: "http://localhost:9000/auth",
-                    postget: "http://localhost:9000/posts",
-					},
-					searchStatus: false,
-					domain: "cnn.com",
-					img_logo: "https://amplify.valimail.com/bimi/time-warner/LysAFUdG-Hw-cnn_vmc.svg",
-					modifyBimi: false,
-					test: true,
-					generate: false
-        }
-			},
-			methods: {
-				setAuthStatus(val) {
-					console.log("Setting authstatus through event to: ", val);
-					this.authstatus = val;
-					console.log("New value: ", app.authstatus);
-				},
-				flip(){
-					this.test = !this.test;
-					this.modifyBimi = false;
-				},
-				generateRecord(){
-					this.generate = true;
-				}
-			},
-        })
-    </script>
+  {% if config['DEBUG'] %}
+    <script src=https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.js"></script>
+  {% else %} 
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js"></script>
+  {% endif %}
+	<!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script> -->
+  <script src="//unpkg.com/bootstrap-vue@2.16.0/dist/bootstrap-vue.min.js"></script>
+  
+  <script>
+    // let title = process.env.VUE_APP_TITLE;
+    // axios.defaults.baseURL = "{{instance}}"
+      new Vue({
+          el: '#app',
+          delimiters: ["[[","]]"],
+          data() {
+            return {
+              loading: true,
+              bimi_check_details: null,
+              bimi_check_button_loader: false,
+              apiurls: {
+                checkBimiRecord: "/check-bimi",
+                authpost: "http://localhost:9000/auth",
+                postget: "http://localhost:9000/posts",
+              },
+              processed_domain: "",
+              searchStatus: false,
+              domain: null,
+              img_logo: "",
+              modifyBimi: false,
+              test: true,
+              generate: false,
+              bimi_generate_text: "Generate BIMI Record?"
+            }
+          },
+          methods: {
+            checkBimi(){
+              this.bimi_check_button_loader = true
+              this.modifyBimi = false
+              axios.post(this.apiurls.checkBimiRecord, {
+                domain: this.domain        
+              })
+              .then((response) => {
+                console.log(response.data);
+                this.bimi_check_details = response.data
+                this.bimi_check_button_loader = false
+                this.processed_domain = this.domain
+                this.img_logo = response.data.bimi.svg ? response.data.bimi.svg : "assets/images/error.svg"
+                if(this.bimi_check_details.bimi.status == false){
+                  this.bimi_generate_text = "Generate BIMI Record?"
+                } else {
+                  this.bimi_generate_text = "Modify BIMI Record?"
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+                this.bimi_check_button_loader = false
+              });
+            },
+            flip(){
+              this.test = !this.test;
+              this.modifyBimi = false;
+            },
+            generateRecord(){
+              this.generate = true;
+            },
+            validate_domain(){
+              
+            }
+          },
+       })
+  </script>
 </body>
 <style>
 	

@@ -35,6 +35,12 @@ pre {
     border: 1px solid darkgray;
 }
 
+.jumbotron .input-group-append .btn.btn-purple .spinner-grow {
+    width: 1.2rem;
+    height: 1.2rem;
+    vertical-align: sub;
+}
+
 .section{
     margin-top: 25px;
     padding: 15px 15px;
@@ -89,18 +95,21 @@ hr {
 .logo-box .square {
     background: #fff;
     margin: 1.5rem;
+    padding: 1rem;
 }
 
 .logo-box .circle {
     background: #fff;
     margin: 1.5rem;
     border-radius: 50%;
+    padding: 1rem;
 }
 
 .logo-box .squircle {
     background: #fff;
     margin: 1.5rem;
     border-radius: 1.5rem;
+    padding: 1rem;
 }
 
 .issues ul {
@@ -330,5 +339,9 @@ margin: 5px 0;
 border-top: 10px solid;
 width: 85%;
 margin: 5px 0;
+}
+
+.record_name{
+    text-transform: uppercase;
 }
 /*Mobile ends*/

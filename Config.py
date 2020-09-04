@@ -5,7 +5,7 @@ class Config():
     APP_HOST="" #Defaults to 127.0.0.1
     APP_PORT="" #Defaults to 5000
     BASE_URL_API="" #Beta
-    DEBUG=True #Set False for production
+    DEBUG=True #Set False for production. Enables debug mode for python and vue
 
     """
     Static Files Configuration

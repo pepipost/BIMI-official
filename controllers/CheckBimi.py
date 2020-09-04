@@ -1,7 +1,7 @@
 from flask_restful import Resource,request
 import json
 from models.CheckRecords import CheckRecords 
-class CheckBimi(Resource):
+class CheckBimiRecords(Resource):
     def post(self):
         content = request.json
         domain = content['domain']

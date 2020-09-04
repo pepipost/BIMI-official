@@ -8,6 +8,7 @@ import xml.etree.cElementTree as et
 # from io import StringIO
 # import dkim
 from certvalidator import CertificateValidator, errors
+
 class CheckRecords(Resource):
     RNG_SCHEMA_FILE = "svg_schema/relaxng.rng.xml"
     # CHECK SVG TAG
@@ -69,8 +70,8 @@ class CheckRecords(Resource):
 
     def validate_bimi(self, record):
         if 'v=BIMI1' not in record:
-            return {"valid": False, "response": "An invalid BIMI is set"}
-        return {"valid": True, "response": "A valid BIMI record is set"}
+            return {"valid": False, "response": {"errors": ["No BIMI record found"], "warnings": []}}
+        return {"valid": True, "response": {"errors": [], "warnings":[]}}
 
     def certificate_validator(self, certificate_vmc):
         # CERTIFICATE VALIDATOR
@@ -78,76 +79,104 @@ class CheckRecords(Resource):
             end_entity_cert = f.read()
         try:
             validator = CertificateValidator(end_entity_cert)
-            validator.validate_usage(set(['digital_signature']))
+            return validator.validate_usage(set(['digital_signature']))
         except (errors.PathValidationError):
             print("Cannot verify certificate. Issue: %s",errors.PathValidationError)
 
     def get_dns_details(self, domain):
         # BIMI CHECK
-        bimiRecord = {"status": "", "record": "","message":"","svg":""}
+        bimiRecord = {"status": "", "record": "","errors":[], "warnings":[] ,"svg":""}
         try:
             dkim_data = dns.resolver.query('default._bimi.'+domain, 'TXT')
             for i in dkim_data.response.answer:
-                print(i.to_text())
                 for j in i.items:
                     print(j.to_text())
                     bimiRecord['record'] = j.to_text()
 
             if bimiRecord['record'] in (None, ''):
                 bimiRecord['status'] = False
-                bimiRecord['message'] = "No dkim record found for bimi"
+                bimiRecord['errors'] = ["No dkim record found for bimi"]
             else:
                 bimi_validity = self.validate_bimi(bimiRecord['record'])
                 if bimi_validity['valid']:
                     bimiRecord['status'] = True
-                    bimiRecord['message'] = bimi_validity['response']
+                    bimiRecord['warnings'] = bimi_validity['response']['warnings']
                 else:
                     bimiRecord['status'] = False
-                    bimiRecord['message'] = bimi_validity['response']
-                bimiRecord['svg'] = bimiRecord['record'].split('l=')[1]
+                    bimiRecord['errors'] = bimi_validity['response']['errors']
+                bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
 
         except Exception as e:
-            print("error in executing DNS Resolver. Error: ", e)
-
-
+            print("Error in executing DNS Resolver. Error: ", e)
+            bimiRecord['status'] = False
+            bimiRecord['errors'] = ["No dkim record found for bimi"]
+       
         # Check sfp dmarc mx
         try:
             result = subprocess.run(['checkdmarc', domain], stdout=subprocess.PIPE)
             complied_dict = json.loads(result.stdout)
+            # return complied_dict
         except Exception as e:
-            print("error in executing checkdmarc")
-
+            print("error in executing checkdmarc. Error: ",e)
 
         # MX CHECK
-        mxRecord = {"status": "", "records": [],"message":""}
+        mxRecord = {"status": "", "records": [],"warnings":[], "errors":[]}
         if  len(complied_dict['mx']['hosts']) == 0:
             mxRecord['status'] = False
-            mxRecord['message'] = (complied_dict['mx']['warnings'] if 'warnings' in complied_dict['mx'] else "")
+            mxRecord['errors'] = [(complied_dict['mx']['error'] if 'error' in complied_dict['mx'] else None)]
+            mxRecord['warnings'] = (complied_dict['mx']['warnings'] if 'warnings' in complied_dict['mx'] else [])
         else:
             for host in complied_dict['mx']['hosts']: 
                 mxRecord['records'].append(host['hostname'])
                 mxRecord['status'] = True
-                mxRecord['message'] = complied_dict['mx']['warnings']
+                mxRecord['errors'] = [(complied_dict['mx']['error'] if 'error' in complied_dict['mx'] else None)]
+                if host['hostname']=="" or host['hostname']==None:
+                    mxRecord['status'] = False
+                    mxRecord['errors'] = ["No Mx Rerod Found"]
+                mxRecord['warnings'] = (complied_dict['mx']['warnings'] if 'warnings' in complied_dict['mx'] else [])
+                
 
         # SPF CHECK
-        spfRecord = {"status": "", "record": "","message":""}
+        spfRecord = {"status": "", "record": "","warnings":[], "errors":""}
         if  complied_dict['spf']['record'] in (None, ''):
             spfRecord['status'] = False
-            spfRecord['message'] = complied_dict['spf']['error']
+            spfRecord['errors'] = [(complied_dict['spf']['error'] if 'error' in complied_dict['spf'] else None)]
+            spfRecord['warnings'] = (complied_dict['spf']['warnings'] if 'warnings' in complied_dict['spf'] else [])
+            
         else:
             spfRecord['status'] = complied_dict['spf']['valid']
-            spfRecord['message'] = complied_dict['spf']['warnings'] if complied_dict['spf']['warnings'] else ""
+            spfRecord['errors'] = [(complied_dict['spf']['error'] if 'error' in complied_dict['spf'] else None)]
+            spfRecord['warnings'] = (complied_dict['spf']['warnings'] if 'warnings' in complied_dict['spf'] else [])
             spfRecord['record'] = complied_dict['spf']['record']
 
+        # # DKIM CHECK
+        # dkimrecord = {"status": "", "record": "","message":""}
+        # try:
+        #     dkim_data = dns.resolver.query('default._domainkey.'+domain, 'TXT')
+        #     for i in dkim_data.response.answer:
+        #         print(i.to_text())
+        #         for j in i.items:
+        #             # print(j.to_text())
+        #             dkimrecord['record'] = j.to_text()
+        # except Exception as e:
+        #     print("error in executing dns resolver for dmarc record. Error: ",e)
+
         # DMARC CHECK
-        dmarcRecord = {"status": "", "record": "","message":""}
+        dmarcRecord = {"status": "", "record": "","message":[],"errors":[]}
         if complied_dict['dmarc']['record'] in (None, ''):
             dmarcRecord['status'] = False
-            dmarcRecord['message'] = complied_dict['dmarc']['error']
+            dmarcRecord['errors'] = [(complied_dict['dmarc']['error'] if 'error' in complied_dict['dmarc'] else None)]
+            dmarcRecord['warnings'] = (complied_dict['dmarc']['warnings'] if 'warnings' in complied_dict['dmarc'] else [])
+        elif complied_dict['dmarc']['record'].find("p=none") != -1:
+            dmarcRecord['status'] = False
+            dmarcRecord['errors'] = ["dmarc policy should be set to p=quarantine or p=reject for BIMI to work"]
+            dmarcRecord['warnings'] = (complied_dict['dmarc']['warnings'] if 'warnings' in complied_dict['dmarc'] else [])
+            dmarcRecord['record'] = complied_dict['dmarc']['record']
         else:
             dmarcRecord['status'] = complied_dict['dmarc']['valid']
-            dmarcRecord['message'] = complied_dict['dmarc']['warnings'] if complied_dict['spf']['warnings'] else ""
-            dmarcRecord['record'] = complied_dict['dmarc']['record'] 
+            dmarcRecord['errors'] = [(complied_dict['dmarc']['error'] if 'error' in complied_dict['dmarc'] else None)]
+            dmarcRecord['warnings'] = (complied_dict['dmarc']['warnings'] if 'warnings' in complied_dict['dmarc'] else [])
+            dmarcRecord['record'] = complied_dict['dmarc']['record']
 
         response = {"mx":mxRecord, "spf":spfRecord, "dmarc":dmarcRecord, "bimi": bimiRecord}
         return response
