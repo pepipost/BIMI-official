@@ -95,21 +95,21 @@ hr {
 .logo-box .square {
     background: #fff;
     margin: 1.5rem;
-    padding: 1rem;
+    padding: 1.2rem;
 }
 
 .logo-box .circle {
     background: #fff;
     margin: 1.5rem;
     border-radius: 50%;
-    padding: 1rem;
+    padding: 1.2rem;
 }
 
 .logo-box .squircle {
     background: #fff;
     margin: 1.5rem;
     border-radius: 1.5rem;
-    padding: 1rem;
+    padding: 1.2rem;
 }
 
 .issues ul {
