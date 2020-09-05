@@ -88,7 +88,7 @@
                         <span v-else>
                           Bimi SVG Image not found
                         </span>
-                        <span class="crossed"  v-if="bimi_check_details.bimi.svg==''">
+                        <span class="crossed"  v-if="bimi_check_details.svg_validation">
                           <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
                           </svg>
@@ -105,29 +105,27 @@
                       <div class="row">
                         <div class="logo-box ml-md-4 col-md-3">
                           <div class="square">
-                            <img :src="img_logo">
+                            <img class="img-fluid" :src="img_logo">
                           </div>
                         </div>
                         <div class="logo-box ml-md-4 mr-md-4 col-md-3">
                           <div class="circle">
-                            <img :src="img_logo">
+                            <img class="img-fluid" :src="img_logo">
                           </div>
                         </div>
                         <div class="logo-box squircle col-md-3">
                           <div class="squircle">
-                            <img :src="img_logo">
+                            <img class="img-fluid" :src="img_logo">
                           </div>
                         </div>
                       </div>
-                      <!-- <div class="issues">
+                      <div class="issues" v-if="bimi_check_details.svg_validation.errors.length > 0">
                         <h5>SVG Issues You Need To Fix</h5>
-                        <ul>
-                          <li>SVG Image is in an invalid Format</li>
-                          <li>SVG has wrong headers set</li>
-                          <li>SVG Image has invalid tags</li>
+                        <ul v-for="(bimi_error, bimi_error_index) in bimi_check_details.svg_validation.errors">
+                          <li>[[bimi_error]]</li>
                         </ul>
-                        <button class="btn btn-sm btn-outline-purple">Fix SVG Issues</button>
-                      </div> -->
+                        <!-- <button class="btn btn-sm btn-outline-purple">Fix SVG Issues</button> -->
+                      </div>
                     </div>
                   </div>
                   <div class="col-md-4">
@@ -164,7 +162,7 @@
                           <div class="row">
                             <div class="col-3">
                               <div class="logo_image_wrapper_circle">
-                                <img :src="img_logo" alt="" class="logo_image">
+                                <img :src="img_logo" alt="" class="logo_image img-fluid">
                               </div>
                             </div>
                             <div class="col-9">
@@ -186,7 +184,7 @@
                           <div class="row">
                             <div class="col-3">
                               <div class="logo_image_wrapper_squircle">
-                                <img :src="img_logo" alt="" class="logo_image">
+                                <img :src="img_logo" alt="" class="logo_image img-fluid">
                               </div>
                             </div>
                             <div class="col-9">
@@ -304,8 +302,8 @@
                     </div>
                   </div>	
                 </div>
-                <div class="text-center" v-if="!modifyBimi" @click="modifyBimi=!modifyBimi">
-                  <button class="btn btn-outline-purple">[[bimi_generate_text]]</button>
+                <div class="text-center" v-if="!modifyBimi">
+                  <!-- <button class="btn btn-outline-purple" @click="modifyBimi=!modifyBimi">[[bimi_generate_text]]</button> -->
                 </div>
               </div>
             </div>
@@ -354,7 +352,7 @@
               </div>
             </div> -->
     
-            <div class="modify-section" v-if="modifyBimi">
+            <div class="modify-section" v-if="modifyBimi" style="display: none;">
               <h2 class="tcolor">BIMI Generator</h2>
               <hr>
               <h5>Generate a new BIMI record</h5>

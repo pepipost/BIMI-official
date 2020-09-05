@@ -2,11 +2,13 @@ from flask_restful import Resource,request
 import json
 import subprocess
 import dns.resolver
+from utils.Utils import Utils
 # from pprint import pprint
 
 class CheckRecords(Resource):
     def __init__(self,domain):
         self.domain = domain
+        self.Utils = Utils()
 
     def getDnsTXT(self):
          # Check SPF DMARC MX from TXT record
@@ -52,9 +54,6 @@ class CheckRecords(Resource):
         if dmarc['record'] in (None, ''):
             dmarcRecord['status'] = False
         else:
-            # dmarc_list = dmarc['record'].split(";")
-            # for dmarc_string in dmarc_list:
-            #     subrecord = dmarc_string.split("=")
             if dmarc['record'].find("p=none") != -1:
                 dmarcRecord['status'] = False
                 dmarcRecord['errors'] = ["dmarc policy should be set to p=quarantine or p=reject for BIMI to work"]
@@ -89,27 +88,38 @@ class CheckRecords(Resource):
                 for j in i.items:
                     print(j.to_text())
                     bimiRecord['record'] = j.to_text()
-            if bimiRecord['record'] in (None, ''):
+            if bimiRecord['record'] != '' and bimiRecord['record']!= None:
                 bimiRecord['status'] = False
                 bimiRecord['errors'] = ["No dkim record found for bimi"]
             else:
-                bimi_validity = self.validate_bimi(bimiRecord['record'])
-                if bimi_validity['valid']:
-                    bimiRecord['status'] = True
-                    bimiRecord['warnings'] = bimi_validity['response']['warnings']
-                else:
+                if not 'v=BIMI1'.find(bimiRecord['record']):
+                    bimiRecord['errors'].append("Not a valid BIMI Record")
                     bimiRecord['status'] = False
-                    bimiRecord['errors'] = bimi_validity['response']['errors']
+                else:
+                     bimiRecord['status'] = True
                 bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
         except Exception as e:
             print("Error in executing DNS Resolver for BIMI DKIM Check. Error: ", e)
             bimiRecord['status'] = False
-            bimiRecord['errors'] = ["No dkim record found for bimi"]
+            error_string = str(e)
+            # if error_string.find('and'):
+            #     error_responses = error_string.split('and')
+            #     for error_response in error_responses:
+            #         if error_response.find("Error:"):
+            #             err = error_response.split("Error:")
+            #             print(err[0])
+            #             clear_error_string = self.Utils.clear_response_single_string(err[1])
+            #             bimiRecord['errors'].append(clear_error_string)
+            bimiRecord['errors'].append("DNS Error: "+error_string)
         return bimiRecord
 
+    # NOT WORKING FOR NOW EXCLUDED
     def validate_bimi(self, record):
+        # dmarc_list = dmarc['record'].split(";")
+            # for dmarc_string in dmarc_list:
+            # subrecord = dmarc_string.split("=")
         if 'v=BIMI1' not in record:
-            return {"valid": False, "response": {"errors": ["No BIMI record found"], "warnings": []}}
+            return {"valid": False, "response": {"errors": ["Invalid BIMI Record Found"], "warnings": []}}
         return {"valid": True, "response": {"errors": [], "warnings":[]}}
 
     def get_dns_details(self):

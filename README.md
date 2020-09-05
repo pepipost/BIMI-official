@@ -7,6 +7,7 @@ Current Setup is for development purposes.
   - python >= 3
   - pip dependency manager
   - virtualenv - To create a python virtual environment
+  - java - To parse xml file
 
 ## Installation
 ### Check Python installation
