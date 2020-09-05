@@ -15,7 +15,6 @@ class CheckSvg:
         self.svg_file = svg_file
         self.Utils = Utils()
         self.svg_response = {"status": False, "errors":[]}
-
     # Donwnload SVG
     def download_svg_path(self, url):
         print('Beginning file download with urllib2')
@@ -65,7 +64,9 @@ class CheckSvg:
                 self.svg_response['errors'].append("Invalid SVG")
         else:
             self.svg_response['errors'].append("No SVG Image Found")
+
         return self.svg_response
+    
 
     def chec_svg_schema(self):
         try:
@@ -73,14 +74,18 @@ class CheckSvg:
             result = subprocess.run(['pyjing',"-c", self.RNG_SCHEMA_FILE,self.svg_file], stdout=subprocess.PIPE)
             # print(result.stdout)
             error_string = result.stdout.decode()
-            if error_string.find('and'):
-                error_responses = error_string.split('and')
-                for error_response in error_responses:
-                    if error_response.find("error:"):
-                        err = error_response.split("error:")
-                        clear_error_string = self.Utils.clear_response_single_string(err[1])
-                        self.errors.append(clear_error_string)
-            return self.errors
+            
+            # if error_string.find('and'):
+            #     error_responses = error_string.split('and')
+            # for error_response in error_string:
+            if error_string:
+                if error_string.find("error:"):
+                    err = error_string.split("error:")
+                    clear_error_string = self.Utils.clear_response_single_string(err[1])
+                    self.svg_response['errors'].append(clear_error_string)
+                    self.svg_response['status'] = False
+            else:
+                self.svg_response['status'] = True
         except Exception as e:
             print("error in executing pyjing schema check. Error: ",e)
 
@@ -92,7 +97,6 @@ class CheckSvg:
         with open(file_svg) as valid:
             doc = etree.parse(valid)
         return relaxng.validate(doc)
-
         """with open(self.RNG_SCHEMA_FILE) as f:
             relaxng_doc = etree.parse(f)
         
