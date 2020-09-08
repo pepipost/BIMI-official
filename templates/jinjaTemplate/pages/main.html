@@ -5,6 +5,9 @@
         {% include 'includes/navheader.html' %}
         <div class="container">
           <section>
+            {% if config['DEBUG'] %}
+            <p class="text-center">Warning: Running in debug mode. Disable debug mode in config file for Production deployment.</p>
+            {% endif %}
             <div class="jumbotron jumbotron-border-gray">
               <div class="pricing-header px-3 py-3 mx-auto text-center">
                 <h1 class="display-4">Look Up And Generate <strong class="tcolor">BIMI</strong></h1>
@@ -305,56 +308,11 @@
                   </div>	
                 </div>
                 <div class="text-center" v-if="!modifyBimi">
-                  <!-- <button class="btn btn-outline-purple" @click="modifyBimi=!modifyBimi">[[bimi_generate_text]]</button> -->
+                  <button class="btn btn-outline-purple" @click="modifyBimi=!modifyBimi">[[bimi_generate_text]]</button>
                 </div>
               </div>
             </div>
-            <!-- <div class="seach-result">
-              <div class="record-notfound">
-                <h2 class="tcolor">BIMI Checker Report</h2>
-                <hr>
-                <h5 class="text-left">
-                  <p>
-                    <span class="crossed">
-                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
-                      </svg>
-                    </span>
-                    No BIMI record found
-                  </p>
-                  <p>
-                    <span class="checked">
-                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                      </svg>
-                    </span>
-                    MX record is Set <pre><code>mx1.pepipost.com</code></pre>
-                  </p>
-                  <p>
-                    <span class="crossed">
-                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
-                      </svg>
-                    </span>
-                    DKIM is not set properly
-                  </p>
-                  <p>
-                    <span class="crossed">
-                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
-                      </svg>
-                    </span>
-                    Insufficient DMARC policy set for BIMI. Please set the DMARC policy to 'reject/quarantine' for best BIMI coverage. Here is the TXT record to add:
-                    <pre><code>_dmarc.pepipost.com TXT v=DMARC1;p=reject;rua=support@pepipost.com;</code></pre>
-                  </p>
-                </h5>
-                <div class="text-center">
-                  <button class="btn btn-purple" @click="modifyBimi=!modifyBimi">Generate BIMI Record?</button>
-                </div>
-              </div>
-            </div> -->
-    
-            <div class="modify-section" v-if="modifyBimi" style="display: none;">
+            <div class="modify-section" v-if="modifyBimi">
               <h2 class="tcolor">BIMI Generator</h2>
               <hr>
               <h5>Generate a new BIMI record</h5>

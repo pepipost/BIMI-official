@@ -31,3 +31,9 @@ class Config():
     LOGGING_LEVEL=""
     #LOGGING_TYPE = FILE/DB/ALL
     LOGGING_TYPE=""
+
+    """
+    SVG Configuration
+    """
+    RNG_SCHEMA_FILE = "svg_schema/svg_12_ps.rnc"
+    STORAGE_SVG_DIR = "storage/svgs/"

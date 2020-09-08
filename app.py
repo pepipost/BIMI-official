@@ -19,7 +19,7 @@ api.add_resource(GetList, '/all-list')
 api.add_resource(CheckBimiController, '/check-bimi')
 
 if __name__ == '__main__':
-    app.debug = True
+    app.debug = DEBUG=Config.DEBUG
     host=Config.APP_HOST if Config.APP_HOST else '127.0.0.1'
     port=Config.APP_PORT if Config.APP_PORT and Number.isInteger else 5000
     app.config['TEMPLATES_AUTO_RELOAD'] = True

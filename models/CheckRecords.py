@@ -98,7 +98,7 @@ class CheckRecords(Resource):
                 else:
                     bimiRecord['status'] = False
                     bimiRecord['svg'] = ""
-                    bimiRecord['errors'].append("BIMI has an invalid format: Correct format : v=BIMI1; l=https://amplify.valimail.com/bimi/time-warner/LysAFUdG-Hw-cnn_vmc.svg; a=https://amplify.valimail.com/bimi/time-warner/LysAFUdG-Hw-cnn_vmc.pem")
+                    bimiRecord['errors'].append("BIMI has an invalid format: Correct format : v=BIMI1; l=https://"+self.domain+"/svg-file-path/logo-image.svg; a=https://"+self.domain+"/pem-certificate-path/file.pem. \n Pem certificate being optional currently")
         except Exception as e:
             print("Error in executing DNS Resolver for BIMI DKIM Check. Error: ", e)
             bimiRecord['status'] = False
@@ -106,14 +106,6 @@ class CheckRecords(Resource):
             bimiRecord['errors'].append("Error with bimi dns check."+str(e))
 
         return bimiRecord
-
-    def validate_bimi(self, record):
-        # dmarc_list = dmarc['record'].split(";")
-            # for dmarc_string in dmarc_list:
-            # subrecord = dmarc_string.split("=")
-        if 'v=BIMI1' not in record:
-            return {"valid": False, "response": {"errors": ["Invalid BIMI Record Found"], "warnings": []}}
-        return {"valid": True, "response": {"errors": [], "warnings":[]}}
 
     def get_dns_details(self):
         dnsRecords = self.getDnsTXT()
@@ -124,3 +116,5 @@ class CheckRecords(Resource):
         bimiRecord = self.get_bimi()
         response = {"mx":mxRecord, "spf":spfRecord, "dmarc":dmarcRecord, "bimi": bimiRecord}
         return response
+
+

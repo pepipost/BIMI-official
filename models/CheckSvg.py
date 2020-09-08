@@ -5,16 +5,18 @@ from utils.Utils import Utils
 import urllib.request
 import os
 import uuid
+from Config import Config
 # from pprint import pprint
 # from io import StringIO1
 class CheckSvg:
     def __init__(self, svg_file):
-        self.RNG_SCHEMA_FILE = "svg_schema/svg_12_ps.rnc"
-        self.STORAGE_SVG_DIR = "storage/svgs/"
+        self.RNG_SCHEMA_FILE = Config.RNG_SCHEMA_FILE
+        self.STORAGE_SVG_DIR = Config.STORAGE_SVG_DIR
         self.errors = []
         self.svg_file = svg_file
         self.Utils = Utils()
         self.svg_response = {"status": False, "errors":[]}
+
     # Donwnload SVG
     def download_svg_path(self, url):
         print('Beginning file download with urllib2')
@@ -70,7 +72,6 @@ class CheckSvg:
 
     def chec_svg_schema(self):
         try:
-            command = "pyjing -c "+self.RNG_SCHEMA_FILE+" "+self.svg_file
             result = subprocess.run(['pyjing',"-c", self.RNG_SCHEMA_FILE,self.svg_file], stdout=subprocess.PIPE)
             # print(result.stdout)
             error_string = result.stdout.decode()
@@ -81,8 +82,12 @@ class CheckSvg:
             if error_string:
                 if error_string.find("error:"):
                     err = error_string.split("error:")
-                    clear_error_string = self.Utils.clear_response_single_string(err[1])
-                    self.svg_response['errors'].append(clear_error_string)
+                    # print(error_string)
+                    for i in range(1, len(err)-1):
+                        # if i%2 == 0:
+                        clear_error_string = self.Utils.clear_response_single_string(err[i])
+                        error_str = self.Utils.replace_abs_path(self.STORAGE_SVG_DIR,clear_error_string,"")
+                        self.svg_response['errors'].append(error_str)
                     self.svg_response['status'] = False
             else:
                 self.svg_response['status'] = True

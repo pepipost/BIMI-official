@@ -78,10 +78,12 @@ hr {
 
 .checked{
     color: #447c3d;
+    vertical-align: bottom;
 }
 
 .crossed{
     color: #d9534f;
+    vertical-align: bottom;
 }
 
 .logo-box {
