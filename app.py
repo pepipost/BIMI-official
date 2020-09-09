@@ -15,7 +15,6 @@ api = Api(app)
 def index():
     return render_template(Config.HOME_PAGE, **{"title":"BIMI Generator"})
 
-api.add_resource(GetList, '/all-list')
 api.add_resource(CheckBimiController, '/check-bimi')
 
 if __name__ == '__main__':

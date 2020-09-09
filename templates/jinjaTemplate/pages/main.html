@@ -127,7 +127,11 @@
                       <div class="issues" v-if="bimi_check_details.svg_validation.errors.length > 0">
                         <h5>SVG Issues You Need To Fix</h5>
                         <ul v-for="(bimi_error, bimi_error_index) in bimi_check_details.svg_validation.errors">
-                          <li>[[bimi_error]]</li>
+                          <li>
+                            <span class="short_error">[[bimi_error.short_error]]</span>
+                            <div class="expand_error_button">More Detials <span class="text-danger" v-b-toggle.collapse-bimi_error_index @click="expand_error($event)">[+]</span></div>
+                            <p :class="'error_details '+class_name" :id="'collapse-'+bimi_error_index">[[bimi_error.error_details]]</p>
+                          </li>
                         </ul>
                         <!-- <button class="btn btn-sm btn-outline-purple">Fix SVG Issues</button> -->
                       </div>
@@ -471,7 +475,8 @@
                 domain: "",
                 svg: "",
                 vmc: ""
-              }
+              },
+              class_name: "inactive_element"
             }
           },
           methods: {
@@ -505,22 +510,11 @@
                 }
               }
             },
-            flip(){
-              this.test = !this.test
-              this.modifyBimi = false
-            },
             setSvg(){
               this.generate_bimi.svg = this.$refs.svgFile.files
             },
             setVmc(){
               this.generate_bimi.vmc = this.$refs.vmcFile.files
-            },
-            generateRecord(){
-              if(this.validate_domain()){
-                
-              } else {
-
-              }
             },
             validate_domain(){
               const REGEXT_DOMAIN = /(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/gm
@@ -530,6 +524,23 @@
               } else {
                 this.domain_validation_error = "Invalid domain name"
                 return false
+              }
+            },
+            toggle_sign(element){
+              let span_text = element
+              console.log(span_text)
+              if(span_text.innerHTML === "[+]") 
+                span_text.innerHTML = "[-]" 
+              else 
+                span_text.innerHTML = "[+]"
+            },
+            expand_error(e){
+              let span_element = e.target
+              this.toggle_sign(span_element)
+              if(span_element.parentElement.nextElementSibling.classList.contains(this.class_name)){
+                span_element.parentElement.nextElementSibling.classList.remove(this.class_name);
+              } else {
+                span_element.parentElement.nextElementSibling.classList.add(this.class_name);
               }
             }
           },

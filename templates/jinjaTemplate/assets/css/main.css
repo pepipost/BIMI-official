@@ -151,6 +151,16 @@ hr {
     text-align: center;
 }
 
+.inactive_element{
+    display: none;
+}
+
+.error_details {
+    border: 1px solid #d5d6d7;
+    padding: 10px;
+    margin: 10px;
+}
+
 .smartphone .content .mobi-strip {
     display: block;
 }

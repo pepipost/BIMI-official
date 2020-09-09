@@ -10,8 +10,15 @@ class Utils:
         return Path(directory).parent.absolute()
 
     def replace_abs_path(self,directory,error_str,replace_string):
-        path = self.get_abs_path(directory)
-        # regex = r"^"+str(path)+"*.svg$"
-        # replaced = re.sub(regex,replace_string,error_str)
-        # replaced = error_str.replace(str(path),replace_string)
-        return error_str
+        try:
+            path = self.get_abs_path(directory)
+            REGEX_ATTRIBUTES = r"(; expected attribute.*?\.svg:)"
+            REGEX_ELEMENTS = r"(; expected the element.*?\.svg:|; expected element.*?\.svg:)"
+            replaced = error_str
+            replaced = re.sub(REGEX_ATTRIBUTES,replace_string,replaced)
+            replaced = re.sub(REGEX_ELEMENTS,replace_string,replaced)
+
+            return replaced
+
+        except Exception as e:
+            print("Exception in path replace for SVG error in - ",self.__class__.__name__,". \n Error: ",e)

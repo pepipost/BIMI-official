@@ -6,8 +6,6 @@ import urllib.request
 import os
 import uuid
 from Config import Config
-# from pprint import pprint
-# from io import StringIO1
 class CheckSvg:
     def __init__(self, svg_file):
         self.RNG_SCHEMA_FILE = Config.RNG_SCHEMA_FILE
@@ -27,6 +25,7 @@ class CheckSvg:
             out_file.write(data)
         return self.STORAGE_SVG_DIR+file_name_hash+".svg"
 
+    # Check if storage directory exist
     def check_dir_folder(self):
         try:
             if not os.path.exists(self.STORAGE_SVG_DIR):
@@ -42,6 +41,7 @@ class CheckSvg:
         else:
             return False
 
+    # Check if xml file has an SVG tag
     def is_svg_xml(self):
         tag = None
         with open(self.svg_file, "r") as f:
@@ -53,6 +53,7 @@ class CheckSvg:
                 pass
         return tag == '{http://www.w3.org/2000/svg}svg'
 
+    # SVG check function
     def check_svg(self):
         if self.svg_file != "":
             self.svg_file = self.download_svg_path(self.svg_file)
@@ -63,66 +64,28 @@ class CheckSvg:
                 else:
                     self.svg_response['status'] = True
             else:
-                self.svg_response['errors'].append("Invalid SVG")
+                self.svg_response['errors'].append({"short_error":"Invalid SVG","error_details":"The SVG image in your BIMI record has no SVG tag"})
         else:
-            self.svg_response['errors'].append("No SVG Image Found")
+            self.svg_response['errors'].append({"short_error":"No SVG Image Found","error_details":"We have found a blank/empty SVG file Or no SVG link in you BIMI record. Please check your BIMI record for this."})
 
         return self.svg_response
     
-
+    # SVG check according to SVG Relax Ng, rng file schema 
     def chec_svg_schema(self):
         try:
             result = subprocess.run(['pyjing',"-c", self.RNG_SCHEMA_FILE,self.svg_file], stdout=subprocess.PIPE)
             # print(result.stdout)
             error_string = result.stdout.decode()
-            
-            # if error_string.find('and'):
-            #     error_responses = error_string.split('and')
-            # for error_response in error_string:
             if error_string:
                 if error_string.find("error:"):
                     err = error_string.split("error:")
                     # print(error_string)
                     for i in range(1, len(err)-1):
-                        # if i%2 == 0:
                         clear_error_string = self.Utils.clear_response_single_string(err[i])
-                        error_str = self.Utils.replace_abs_path(self.STORAGE_SVG_DIR,clear_error_string,"")
-                        self.svg_response['errors'].append(error_str)
+                        error_str = self.Utils.replace_abs_path(self.STORAGE_SVG_DIR,clear_error_string,", at Line ")
+                        self.svg_response['errors'].append({"short_error":error_str,"error_details":clear_error_string})
                     self.svg_response['status'] = False
             else:
                 self.svg_response['status'] = True
         except Exception as e:
             print("error in executing pyjing schema check. Error: ",e)
-
-    def chec_svg_schema_min(self, file_svg):
-        with open(self.RNG_SCHEMA_FILE) as f:
-            relaxng_doc = etree.parse(f)
-        relaxng = etree.RelaxNG(relaxng_doc)
-
-        with open(file_svg) as valid:
-            doc = etree.parse(valid)
-        return relaxng.validate(doc)
-        """with open(self.RNG_SCHEMA_FILE) as f:
-            relaxng_doc = etree.parse(f)
-        
-        relaxng = etree.RelaxNG(relaxng_doc)
-
-        with open(file_svg) as valid:
-            doc = etree.parse(valid)
-        return relaxng.validate(doc)"""
-
-        """f = StringIO('''\
-                        <element name="a" xmlns="http://relaxng.org/ns/structure/1.0">
-                        <zeroOrMore>
-                            <element name="b">
-                            <text />
-                            </element>
-                        </zeroOrMore>
-                        </element>
-                    ''')
-        relaxng_doc = etree.parse(f)
-        relaxng = etree.RelaxNG(relaxng_doc)
-
-        with open(file_svg) as svg:
-            doc = etree.parse(svg)
-        relaxng.validate(doc)"""
