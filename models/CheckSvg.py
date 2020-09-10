@@ -3,7 +3,7 @@ import xml.etree.cElementTree as et
 import subprocess
 from utils.Utils import Utils
 import urllib.request
-import os
+import sys,os
 import uuid
 from Config import Config
 class CheckSvg:
@@ -21,7 +21,7 @@ class CheckSvg:
         self.check_dir_folder()
         file_name_hash = str(uuid.uuid4())
         with urllib.request.urlopen(url) as response, open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb') as out_file:
-            data = response.read() # a `bytes` object
+            data = response.read()
             out_file.write(data)
         return self.STORAGE_SVG_DIR+file_name_hash+".svg"
 
@@ -70,7 +70,7 @@ class CheckSvg:
 
         return self.svg_response
     
-    # SVG check according to SVG Relax Ng, rng file schema 
+    # SVG check according to Relax Ng, rng file schema 
     def chec_svg_schema(self):
         try:
             result = subprocess.run(['pyjing',"-c", self.RNG_SCHEMA_FILE,self.svg_file], stdout=subprocess.PIPE)
@@ -82,10 +82,12 @@ class CheckSvg:
                     # print(error_string)
                     for i in range(1, len(err)-1):
                         clear_error_string = self.Utils.clear_response_single_string(err[i])
-                        error_str = self.Utils.replace_abs_path(self.STORAGE_SVG_DIR,clear_error_string,", at Line ")
+                        error_str = self.Utils.strip_svg_plugin_errors(self.STORAGE_SVG_DIR,clear_error_string,", Check Line ")
                         self.svg_response['errors'].append({"short_error":error_str,"error_details":clear_error_string})
                     self.svg_response['status'] = False
             else:
                 self.svg_response['status'] = True
         except Exception as e:
-            print("error in executing pyjing schema check. Error: ",e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)

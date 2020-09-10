@@ -1,5 +1,6 @@
 from pathlib import Path
 import re
+import Constants
 class Utils:
     def clear_response_single_string(self, response_str):
         response_str = response_str.replace("\r", "")
@@ -7,18 +8,23 @@ class Utils:
         return response_str
 
     def get_abs_path(self, directory):
-        return Path(directory).parent.absolute()
+        return str(Path(directory).parent.absolute())
 
-    def replace_abs_path(self,directory,error_str,replace_string):
+    def replace_abs_path(self,path,input_string,replace_string):
+        try:
+            path = self.get_abs_path(path).replace("\\", "\\\\")
+            PATH_REGEX = "("+path+".*?\.svg:)"
+            output_string = re.sub(PATH_REGEX,input_string,replace_string)
+            return output_string
+        except Exception as e:
+            print("Exception in replace_abs_path for SVG. Error in - ",self.__class__.__name__,". \n Error: ",e)
+        
+    def strip_svg_plugin_errors(self,directory,error_str,replace_string):
         try:
             path = self.get_abs_path(directory)
-            REGEX_ATTRIBUTES = r"(; expected attribute.*?\.svg:)"
-            REGEX_ELEMENTS = r"(; expected the element.*?\.svg:|; expected element.*?\.svg:)"
             replaced = error_str
-            replaced = re.sub(REGEX_ATTRIBUTES,replace_string,replaced)
-            replaced = re.sub(REGEX_ELEMENTS,replace_string,replaced)
-
+            for key,value in Constants.svg_regex.items():
+                replaced = re.sub(value,replace_string,replaced)
             return replaced
-
         except Exception as e:
-            print("Exception in path replace for SVG error in - ",self.__class__.__name__,". \n Error: ",e)
+            print("Exception in strip_svg_plugin_errors for SVG. Error in - ",self.__class__.__name__,". \n Error: ",e)

@@ -161,6 +161,10 @@ hr {
     margin: 10px;
 }
 
+.short_error {
+    text-transform: capitalize;
+}
+
 .smartphone .content .mobi-strip {
     display: block;
 }
