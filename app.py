@@ -2,6 +2,7 @@ from flask import Flask,redirect,url_for,request, render_template
 from flask_restful import Api,Resource
 from controllers.GetList import GetList
 from controllers.CheckBimiController import CheckBimiController
+from controllers.GenerateBimiController import GenerateBimiController
 from Config import Config
 from utils.Log import logger
 import json
@@ -16,6 +17,7 @@ def index():
     return render_template(Config.HOME_PAGE, **{"title":"BIMI Generator"})
 
 api.add_resource(CheckBimiController, '/check-bimi')
+api.add_resource(GenerateBimiController, '/generate-bimi')
 
 if __name__ == '__main__':
     app.debug = DEBUG=Config.DEBUG

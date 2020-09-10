@@ -36,7 +36,71 @@
               <p class="text-center text-danger pt-1" v-if="bimi_check_error">[[domain_validation_error]]</p>
             </div>
           </section>
-          <section class="section shadow-sm" v-if="bimi_check_details">
+          <section class="section shadow-sm" v-if="bimi_check_details"  id="search_section">
+            <div class="modify-section" id="modify-section" v-if="modifyBimi">
+              <h2 class="tcolor">BIMI Generator</h2>
+              <hr>
+              <h5>Generate a new BIMI record</h5>
+              <div class="generator-form mt-4">
+                <form @submit.prevent="generateRecord()">
+                  <div class="form-group">
+                    <label for="domain">Enter Domain*</label>
+                    <input required type="text" class="form-control col-md-9" id="domain" aria-describedby="domain" placeholder="Enter A Valid Domain Name" v-model="generate_bimi.domain">
+                  </div>
+                  <div class="form-group">
+                    <label for="svg">SVG Image</label>
+                    <div class="row ml-1">
+                      <input type="text" class="form-control col-md-9" id="svg" placeholder="https://link-to-SVG-image" v-model="generate_bimi.svg_link"> 
+                      <div class="col-md-3">
+                        <span> -OR- </span>
+                        <span>
+                          <label class="btn btn-purple">
+                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-folder2-open" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                              <path fill-rule="evenodd" d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14V3.5zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5V6zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7H1.633z"/>
+                            </svg>
+                            Browse <input type="file" ref="svgFile" @change="setSvg" accept=".svg" hidden></label><span v-if="generate_bimi.svg_file">[[generate_bimi.svg_file.value]]</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="vmc_cert">VMC Certificate file</label>
+                    <div class="row ml-1">
+                      <input type="text" class="form-control col-md-9" id="vmc_cert" placeholder="https://link-to-vmc-cert-file"  v-model="generate_bimi.vmc_link"> 
+                      <div class="col-md-3">
+                        <span> -OR- </span>
+                        <span>
+                          <label class="btn btn-purple">
+                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-folder2-open" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                              <path fill-rule="evenodd" d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14V3.5zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5V6zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7H1.633z"/>
+                            </svg>
+                            Browse <input type="file"ref="vmcFile" @change="setVmc" accept=".pem" hidden></label>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                  </div> -->
+                  <button type="submit" class="btn btn-purple btn">Generate BIMI Record</button>
+                </form>
+                <div class="generated" v-if="generate">
+                  <h5>BIMI Record Generated Successfully!!
+                    <span class="checked">
+                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                      </svg>
+                    </span>
+                  </h5>
+                  <div class="code">
+                    <code>
+                      default._bimi.cnn.com TXT v=BIMI1; l=https://amplify.valimail.com/bimi/time-warner/LysAFUdG-Hw-cnn_vmc.svg; a=https://amplify.valimail.com/bimi/time-warner/LysAFUdG-Hw-cnn_vmc.pem
+                    </code>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="seach-result">
               <div class="record-found">
                 <h2 class="tcolor">BIMI Checker Report For [[processed_domain]]</h2>
@@ -312,71 +376,7 @@
                   </div>	
                 </div>
                 <div class="text-center" v-if="!modifyBimi">
-                  <button class="btn btn-outline-purple" @click="modifyBimi=!modifyBimi">[[bimi_generate_text]]</button>
-                </div>
-              </div>
-            </div>
-            <div class="modify-section" v-if="modifyBimi">
-              <h2 class="tcolor">BIMI Generator</h2>
-              <hr>
-              <h5>Generate a new BIMI record</h5>
-              <div class="generator-form mt-4">
-                <form @submit.prevent="generateRecord">
-                  <div class="form-group">
-                    <label for="domain">Enter Domain*</label>
-                    <input required type="text" class="form-control col-md-9" id="domain" aria-describedby="domain" placeholder="Enter A Valid Domain Name" v-model="generate_bimi.domain">
-                  </div>
-                  <div class="form-group">
-                    <label for="svg">SVG Image</label>
-                    <div class="row ml-1">
-                      <input type="text" class="form-control col-md-9" id="svg" placeholder="https://link-to-SVG-image" v-model="generate_bimi.svg"> 
-                      <div class="col-md-3">
-                        <span> -OR- </span>
-                        <span>
-                          <label class="btn btn-purple">
-                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-folder2-open" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                              <path fill-rule="evenodd" d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14V3.5zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5V6zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7H1.633z"/>
-                            </svg>
-                            Browse <input type="file" ref="svgFile" @change="setSvg" hidden></label>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="vmc_cert">VMC Certificate file</label>
-                    <div class="row ml-1">
-                      <input type="text" class="form-control col-md-9" id="vmc_cert" placeholder="https://link-to-vmc-cert-file"  v-model="generate_bimi.vmc"> 
-                      <div class="col-md-3">
-                        <span> -OR- </span>
-                        <span>
-                          <label class="btn btn-purple">
-                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-folder2-open" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                              <path fill-rule="evenodd" d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14V3.5zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5V6zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7H1.633z"/>
-                            </svg>
-                            Browse <input type="file"ref="vmcFile" @change="setVmc" hidden></label>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                  </div> -->
-                  <button type="submit" class="btn btn-purple btn">Generate BIMI Record</button>
-                </form>
-                <div class="generated" v-if="generate">
-                  <h5>BIMI Record Generated Successfully!!
-                    <span class="checked">
-                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                      </svg>
-                    </span>
-                  </h5>
-                  <div class="code">
-                    <code>
-                      default._bimi.cnn.com TXT v=BIMI1; l=https://amplify.valimail.com/bimi/time-warner/LysAFUdG-Hw-cnn_vmc.svg; a=https://amplify.valimail.com/bimi/time-warner/LysAFUdG-Hw-cnn_vmc.pem
-                    </code>
-                  </div>
+                  <button class="btn btn-outline-purple" @click="modifyBimi_scroll()">[[bimi_generate_text]]</button>
                 </div>
               </div>
             </div>
@@ -460,6 +460,7 @@
                 checkBimiRecord: "/check-bimi",
                 // authpost: "http://localhost:9000/auth",
                 // postget: "http://localhost:9000/posts",
+                generateBimiRecord: "/generate-bimi"
               },
               processed_domain: "",
               searchStatus: false,
@@ -473,10 +474,12 @@
               bimi_generate_text: "Generate BIMI Record?",
               generate_bimi : {
                 domain: "",
-                svg: "",
-                vmc: ""
+                svg_link: "",
+                vmc_link: "",
+                svg_file: {},
+                vmc_file: {}
               },
-              class_name: "inactive_element"
+              class_name: "inactive_element",
             }
           },
           methods: {
@@ -511,14 +514,14 @@
               }
             },
             setSvg(){
-              this.generate_bimi.svg = this.$refs.svgFile.files
+              this.generate_bimi.svg_file = this.$refs.svgFile.files
             },
             setVmc(){
-              this.generate_bimi.vmc = this.$refs.vmcFile.files
+              this.generate_bimi.vmc_file = this.$refs.vmcFile.files
             },
-            validate_domain(){
+            validate_domain(domain = this.domain){
               const REGEXT_DOMAIN = /(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/gm
-              if (REGEXT_DOMAIN.exec(this.domain)){
+              if (REGEXT_DOMAIN.exec(domain)){
                 this.domain_validation_error = ""
                 return true
               } else {
@@ -528,7 +531,7 @@
             },
             toggle_sign(element){
               let span_text = element
-              console.log(span_text)
+              // console.log(span_text)
               if(span_text.innerHTML === "[+]") 
                 span_text.innerHTML = "[-]" 
               else 
@@ -538,10 +541,60 @@
               let span_element = e.target
               this.toggle_sign(span_element)
               if(span_element.parentElement.nextElementSibling.classList.contains(this.class_name)){
-                span_element.parentElement.nextElementSibling.classList.remove(this.class_name);
+                span_element.parentElement.nextElementSibling.classList.remove(this.class_name)
               } else {
-                span_element.parentElement.nextElementSibling.classList.add(this.class_name);
+                span_element.parentElement.nextElementSibling.classList.add(this.class_name)
               }
+            },
+            modifyBimi_scroll(){
+              this.modifyBimi = !this.modifyBimi
+              let top_element = document.getElementById("search_section");
+              top_element.scrollIntoView(true);
+            },
+            generateRecord(){
+              const svg_regex = /((https:)[\\|\/\/].*?\.svg$)/gm
+              const vmc_regex = /((https:)[\\|\/\/].*?\.pem$)/gm
+              let error = 0
+              let error_message = null
+              if(!this.validate_domain(this.generate_bimi.domain)){
+                error = 1
+                error_message = "Invalid domain"
+              }
+
+              if (this.generate_bimi.svg_link!="" && this.generate_bimi.svg_link!=undefined){
+                if (!svg_regex.exec(this.generate_bimi.svg_link)){
+                  error = 1
+                  error_message = "Invalid svg link provided"
+                }
+              } else {
+                if(Object.keys(this.generate_bimi.svg_file).length === 0 && this.generate_bimi.svg_file.constructor === Object){
+                  error = 1
+                  error_message = "Please enter an valid svg link or Upload SVG file"
+                }
+              }
+
+              if (this.generate_bimi.vmc_link!="" && this.generate_bimi.vmc_link!=undefined){
+                if(!vmc_regex.exec(this.generate_bimi.vmc)){
+                  error = 1
+                  error_message = "Invalid vmc link provided"
+                }
+              }
+
+              if(error == 1){
+                alert(error_message)
+              }
+              else {
+                axios.post(this.apiurls.generateBimiRecord, {
+                  domain: this.generate_bimi.domain, svg_link: this.generate_bimi.svg_link, vmc_link: this.generate_bimi.vmc_link, svg_file: this.generate_bimi.svg_file, vmc_file: this.generate_bimi.vmc_file
+                  })
+                  .then((response) => {
+                    console.log(response.data);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    this.bimi_check_button_loader = false
+                  });
+              } 
             }
           },
        })
