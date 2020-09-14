@@ -23,5 +23,5 @@ class GenerateBimiController(Resource):
             GB = GenerateBimi()
             data['bimi_generation'] = GB.generate_bimi(content['domain'], svg_link, vmc_link)
         else:
-            data['bimi_generation'] = {"status":False, "record":"", "errors":"Some errors was found in your bimi check","message":"Please fix the errors shown below to successfully generate BIMI record."}
+            data['bimi_generation'] = {"status":False, "record":"", "message":"Some errors was found in your bimi check","errors":["Please fix the errors shown below to successfully generate BIMI record."], "svg_link":svg_link}
         return data

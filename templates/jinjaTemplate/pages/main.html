@@ -5,6 +5,7 @@
         {% include 'includes/navheader.html' %}
         <div class="container">
           <section>
+            <p class="text-center">RELEASE: This tool is currently in BETA. Feedbacks are most welcomed. Feel free to write on dx@pepipost.com.</p>
             {% if config['DEBUG'] %}
             <p class="text-center">Warning: Running in debug mode. Disable debug mode in config file for Production deployment.</p>
             {% endif %}
@@ -83,20 +84,32 @@
                     <input type="checkbox" class="form-check-input" id="exampleCheck1">
                     <label class="form-check-label" for="exampleCheck1">Check me out</label>
                   </div> -->
-                  <button type="submit" class="btn btn-purple btn">Generate BIMI Record</button>
+                  <button type="submit" class="btn btn-purple btn">
+                    <div v-if="generate_bimi_loader" class="spinner-grow" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                      Generate BIMI Record</button>
                 </form>
-                <div class="generated" v-if="generate">
-                  <h5>BIMI Record Generated Successfully!!
-                    <span class="checked">
+                <div class="generated" v-if="generated">
+                  <h5>[[generated_bimi_response.message]]
+                    <span class="checked" v-if="generated_bimi_response.status">
                       <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                       </svg>
                     </span>
+                    <span v-else class="crossed" v-else>
+                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
+                      </svg>
+                    </span>
                   </h5>
-                  <div class="code">
+                  <div class="code" v-if="generated_bimi_response.status">
                     <code>
-                      default._bimi.cnn.com TXT v=BIMI1; l=https://amplify.valimail.com/bimi/time-warner/LysAFUdG-Hw-cnn_vmc.svg; a=https://amplify.valimail.com/bimi/time-warner/LysAFUdG-Hw-cnn_vmc.pem
+                      [[generated_bimi_response.record]]
                     </code>
+                  </div>
+                  <div class="text-danger"  v-for="(generate_error, generate_error_index) in generated_bimi_response.errors" v-bind:key="generate_error_index">
+                    <p>[[generate_error]]</p>
                   </div>
                 </div>
               </div>
@@ -151,7 +164,7 @@
                     </div> -->
                     <div class="SVG Image">
                       <h5>
-                        <span v-if="bimi_check_details.bimi.svg!='' && bimi_check_details.bimi.status == true">
+                        <span v-if="bimi_check_details.svg_validation.svg_link!=''">
                           Found BIMI SVG Image
                         </span>
                         <span v-else>
@@ -168,8 +181,8 @@
                           </svg>
                         </span>
                       </h5>
-                      <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="bimi_check_details.bimi.svg">
-                        <em>[[bimi_check_details.bimi.svg]]</em>
+                      <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="bimi_check_details.svg_validation.svg_link">
+                        <em>[[bimi_check_details.svg_validation.svg_link]]</em>
                       </div>
                       <div class="row">
                         <div class="logo-box ml-md-4 col-md-3">
@@ -194,7 +207,7 @@
                           <li>
                             <span class="short_error">[[bimi_error.short_error]]</span>
                             <div class="expand_error_button">More Detials <span class="text-danger" v-b-toggle.collapse-bimi_error_index @click="expand_error($event)">[+]</span></div>
-                            <p :class="'error_details '+class_name" :id="'collapse-'+bimi_error_index">[[bimi_error.error_details]]</p>
+                            <p :class="'error_details '+active_class_name" :id="'collapse-'+bimi_error_index">[[bimi_error.error_details]]</p>
                           </li>
                         </ul>
                         <!-- <button class="btn btn-sm btn-outline-purple">Fix SVG Issues</button> -->
@@ -469,7 +482,7 @@
               modifyBimi: false,
               bimi_check_error: false,
               test: true,
-              generate: false,
+              generated: false,
               domain_validation_error: "",
               bimi_generate_text: "Generate BIMI Record?",
               generate_bimi : {
@@ -479,12 +492,15 @@
                 svg_file: {},
                 vmc_file: {}
               },
-              class_name: "inactive_element",
+              active_class_name: "inactive_element",
+              generated_bimi_response: {},
+              generate_bimi_loader: false
             }
           },
           methods: {
             checkBimi(){
               if(this.bimi_check_button_loader!=true){
+                this.generated = false
                 if(this.validate_domain()){
                   this.bimi_check_button_loader = true
                   this.modifyBimi = false
@@ -496,7 +512,7 @@
                     this.bimi_check_details = response.data
                     this.bimi_check_button_loader = false
                     this.processed_domain = this.domain
-                    this.img_logo = response.data.bimi.svg ? response.data.bimi.svg : "assets/images/error.svg"
+                    this.img_logo = response.data.svg_validation.svg_link ? response.data.svg_validation.svg_link : "assets/images/error.svg"
                     this.generate_bimi.domain = this.domain
                     if(this.bimi_check_details.bimi.status == false){
                       this.bimi_generate_text = "Generate BIMI Record?"
@@ -540,18 +556,20 @@
             expand_error(e){
               let span_element = e.target
               this.toggle_sign(span_element)
-              if(span_element.parentElement.nextElementSibling.classList.contains(this.class_name)){
-                span_element.parentElement.nextElementSibling.classList.remove(this.class_name)
+              if(span_element.parentElement.nextElementSibling.classList.contains(this.active_class_name)){
+                span_element.parentElement.nextElementSibling.classList.remove(this.active_class_name)
               } else {
-                span_element.parentElement.nextElementSibling.classList.add(this.class_name)
+                span_element.parentElement.nextElementSibling.classList.add(this.active_class_name)
               }
             },
             modifyBimi_scroll(){
               this.modifyBimi = !this.modifyBimi
-              let top_element = document.getElementById("search_section");
-              top_element.scrollIntoView(true);
+              let top_element = document.getElementById("search_section")
+              top_element.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"})
+              // top_element.scrollTo(0, 0);
             },
             generateRecord(){
+              this.generate_bimi_loader = true
               const svg_regex = /((https:)[\\|\/\/].*?\.svg$)/gm
               const vmc_regex = /((https:)[\\|\/\/].*?\.pem$)/gm
               let error = 0
@@ -582,18 +600,23 @@
 
               if(error == 1){
                 alert(error_message)
+                this.generate_bimi_loader = false
               }
               else {
                 axios.post(this.apiurls.generateBimiRecord, {
                   domain: this.generate_bimi.domain, svg_link: this.generate_bimi.svg_link, vmc_link: this.generate_bimi.vmc_link, svg_file: this.generate_bimi.svg_file, vmc_file: this.generate_bimi.vmc_file
                   })
                   .then((response) => {
-                    console.log(response.data)
-                    alert("Success")
+                    this.generated_bimi_response = response.data.bimi_generation
+                    this.bimi_check_details = {bimi: response.data.bimi, dmarc: response.data.dmarc, mx: response.data.mx, spf: response.data.spf, svg_validation: response.data.svg_validation}
+                    this.img_logo = response.data.svg_validation.svg_link ? response.data.svg_validation.svg_link : "assets/images/error.svg"
+                    this.generated = true
+                    this.generate_bimi_loader = false
+                    // alert("Success")
                   })
                   .catch((error) => {
                     console.log(error);
-                    this.bimi_check_button_loader = false
+                    this.generate_bimi_loader = false
                   });
               } 
             }

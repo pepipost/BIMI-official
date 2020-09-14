@@ -12,6 +12,11 @@ body,html{
     float: none;
     vertical-align: middle;
     -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+
 }
 .image-bordered-grey{
     padding: 2px;
@@ -35,7 +40,7 @@ pre {
     border: 1px solid darkgray;
 }
 
-.jumbotron .input-group-append .btn.btn-purple .spinner-grow {
+.btn.btn-purple .spinner-grow {
     width: 1.2rem;
     height: 1.2rem;
     vertical-align: sub;

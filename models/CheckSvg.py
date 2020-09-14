@@ -13,7 +13,7 @@ class CheckSvg:
         self.errors = []
         self.svg_file = svg_file
         self.Utils = Utils()
-        self.svg_response = {"status": False, "errors":[]}
+        self.svg_response = {"status": False, "errors":[], "svg_link":svg_file}
 
     # Donwnload SVG
     def download_svg_path(self, url):
