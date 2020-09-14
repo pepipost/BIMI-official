@@ -46,13 +46,14 @@
                 <form @submit.prevent="generateRecord()">
                   <div class="form-group">
                     <label for="domain">Enter Domain*</label>
-                    <input required type="text" class="form-control col-md-9" id="domain" aria-describedby="domain" placeholder="Enter A Valid Domain Name" v-model="generate_bimi.domain">
+                    <!-- was col-md-9 insted of 10 -->
+                    <input required type="text" class="form-control col-md-10" id="domain" aria-describedby="domain" placeholder="Enter A Valid Domain Name" v-model="generate_bimi.domain">
                   </div>
                   <div class="form-group">
-                    <label for="svg">SVG Image</label>
+                    <label for="svg">SVG Image*</label>
                     <div class="row ml-1">
-                      <input type="text" class="form-control col-md-9" id="svg" placeholder="https://link-to-SVG-image" v-model="generate_bimi.svg_link"> 
-                      <div class="col-md-3">
+                      <input type="text" class="form-control col-md-10" id="svg" placeholder="https://link-to-SVG-image" v-model="generate_bimi.svg_link"> 
+                      <!-- <div class="col-md-3">
                         <span> -OR- </span>
                         <span>
                           <label class="btn btn-purple">
@@ -61,14 +62,14 @@
                             </svg>
                             Browse <input disabled type="file" ref="svgFile" @change="setSvg" accept=".svg" hidden></label><span v-if="generate_bimi.svg_file">[[generate_bimi.svg_file.value]]</span>
                         </span>
-                      </div>
+                      </div> -->
                     </div>
                   </div>
                   <div class="form-group">
                     <label for="vmc_cert">VMC Certificate file</label>
                     <div class="row ml-1">
-                      <input type="text" class="form-control col-md-9" id="vmc_cert" placeholder="https://link-to-vmc-cert-file"  v-model="generate_bimi.vmc_link"> 
-                      <div class="col-md-3">
+                      <input type="text" class="form-control col-md-10" id="vmc_cert" placeholder="https://link-to-vmc-cert-file"  v-model="generate_bimi.vmc_link"> 
+                      <!-- <div class="col-md-3">
                         <span> -OR- </span>
                         <span>
                           <label class="btn btn-purple">
@@ -77,7 +78,7 @@
                             </svg>
                             Browse <input type="file"ref="vmcFile" @change="setVmc" accept=".pem" hidden disabled></label>
                         </span>
-                      </div>
+                      </div> -->
                     </div>
                   </div>
                   <!-- <div class="form-check">
@@ -116,7 +117,7 @@
             </div>
             <div class="seach-result">
               <div class="record-found">
-                <h2 class="tcolor">BIMI Checker Report For [[processed_domain]]</h2>
+                <h2 class="tcolor">BIMI Checker Report For <strong>[[processed_domain]]</strong></h2>
                 <hr>
                 <div class="row">
                   <div class="col-md-8">
@@ -592,7 +593,7 @@
               }
 
               if (this.generate_bimi.vmc_link!="" && this.generate_bimi.vmc_link!=undefined){
-                if(!vmc_regex.exec(this.generate_bimi.vmc)){
+                if(!vmc_regex.exec(this.generate_bimi.vmc_link)){
                   error = 1
                   error_message = "Invalid vmc link provided. Please enter url in format https://domain.com/path/file.pem"
                 }
