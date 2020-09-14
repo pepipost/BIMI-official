@@ -90,3 +90,8 @@ Here are those parameters.
 ```sh
 $ python .\app.py
 ```
+
+### Helpful links
+[https://bimigroup.org/](https://bimigroup.org/)
+[https://pepipost.com/tutorials/bimi/](https://pepipost.com/tutorials/bimi/)
+
