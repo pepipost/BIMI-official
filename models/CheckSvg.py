@@ -7,32 +7,23 @@ import sys,os
 import uuid
 from Config import Config
 class CheckSvg:
-    def __init__(self, svg_file):
+    def __init__(self, svg_file, is_file=False):
         self.RNG_SCHEMA_FILE = Config.RNG_SCHEMA_FILE
         self.STORAGE_SVG_DIR = Config.STORAGE_SVG_DIR
-        self.errors = []
         self.svg_file = svg_file
         self.Utils = Utils()
         self.svg_response = {"status": False, "errors":[], "svg_link":svg_file}
+        self.is_file = is_file
 
     # Donwnload SVG
     def download_svg_path(self, url):
         print('Beginning file download with urllib2')
-        self.check_dir_folder()
+        self.Utils.check_dir_folder(self.STORAGE_SVG_DIR)
         file_name_hash = str(uuid.uuid4())
         with urllib.request.urlopen(url) as response, open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb') as out_file:
             data = response.read()
             out_file.write(data)
         return self.STORAGE_SVG_DIR+file_name_hash+".svg"
-
-    # Check if storage directory exist
-    def check_dir_folder(self):
-        try:
-            if not os.path.exists(self.STORAGE_SVG_DIR):
-                os.makedirs(self.STORAGE_SVG_DIR)
-        except OSError as e:
-            if e.errno != errno.EXIST:
-                raise
 
     # CHECK SVG TAG (EXCLUDED)
     def is_svg_extension(self):
@@ -56,9 +47,10 @@ class CheckSvg:
     # SVG check function
     def check_svg(self):
         if self.svg_file != "":
-            self.svg_file = self.download_svg_path(self.svg_file)
+            if not self.is_file:
+                self.svg_file = self.download_svg_path(self.svg_file)
             if self.is_svg_xml():
-                self.chec_svg_schema()
+                self.check_svg_schema()
                 if len(self.svg_response['errors']) > 0:
                     self.svg_response['status'] = False
                 else:
@@ -71,7 +63,7 @@ class CheckSvg:
         return self.svg_response
     
     # SVG check according to Relax Ng, rng file schema 
-    def chec_svg_schema(self):
+    def check_svg_schema(self):
         try:
             result = subprocess.run(['pyjing',"-c", self.RNG_SCHEMA_FILE,self.svg_file], stdout=subprocess.PIPE)
             # print(result.stdout)
@@ -91,3 +83,4 @@ class CheckSvg:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print(exc_type, fname, exc_tb.tb_lineno)
+            print(str(e))

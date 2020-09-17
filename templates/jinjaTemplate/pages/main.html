@@ -47,38 +47,38 @@
                   <div class="form-group">
                     <label for="domain">Enter Domain*</label>
                     <!-- was col-md-9 insted of 10 -->
-                    <input required type="text" class="form-control col-md-10" id="domain" aria-describedby="domain" placeholder="Enter A Valid Domain Name" v-model="generate_bimi.domain">
+                    <input required type="text" class="form-control col-md-9" id="domain" aria-describedby="domain" placeholder="Enter A Valid Domain Name" v-model="generate_bimi.domain">
                   </div>
                   <div class="form-group">
                     <label for="svg">SVG Image*</label>
                     <div class="row ml-1">
-                      <input type="text" class="form-control col-md-10" id="svg" placeholder="https://link-to-SVG-image" v-model="generate_bimi.svg_link"> 
-                      <!-- <div class="col-md-3">
+                      <input type="text" class="form-control col-md-9" @change="toggleEnableInput($event)" id="svg" placeholder="https://link-to-SVG-image" v-model="generate_bimi.svg_link"> 
+                      <div class="col-md-3">
                         <span> -OR- </span>
                         <span>
                           <label class="btn btn-purple">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-folder2-open" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                               <path fill-rule="evenodd" d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14V3.5zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5V6zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7H1.633z"/>
                             </svg>
-                            Browse <input disabled type="file" ref="svgFile" @change="setSvg" accept=".svg" hidden></label><span v-if="generate_bimi.svg_file">[[generate_bimi.svg_file.value]]</span>
+                            Browse <input type="file" ref="svgFile" @change="setSvg($event)" accept=".svg" hidden></label><span v-if="generate_bimi.svg_file">[[generate_bimi.svg_file.value]]</span>
                         </span>
-                      </div> -->
+                      </div>
                     </div>
                   </div>
                   <div class="form-group">
                     <label for="vmc_cert">VMC Certificate file</label>
                     <div class="row ml-1">
-                      <input type="text" class="form-control col-md-10" id="vmc_cert" placeholder="https://link-to-vmc-cert-file"  v-model="generate_bimi.vmc_link"> 
-                      <!-- <div class="col-md-3">
+                      <input type="text" class="form-control col-md-9" @change="toggleEnableInput($event)" id="vmc_cert" placeholder="https://link-to-vmc-cert-file"  v-model="generate_bimi.vmc_link"> 
+                      <div class="col-md-3">
                         <span> -OR- </span>
                         <span>
                           <label class="btn btn-purple">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-folder2-open" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                               <path fill-rule="evenodd" d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14V3.5zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5V6zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7H1.633z"/>
                             </svg>
-                            Browse <input type="file"ref="vmcFile" @change="setVmc" accept=".pem" hidden disabled></label>
+                            Browse <input type="file"ref="vmcFile" @change="setVmc($event)" accept=".pem" hidden></label>
                         </span>
-                      </div> -->
+                      </div>
                     </div>
                   </div>
                   <!-- <div class="form-check">
@@ -183,7 +183,10 @@
                         </span>
                       </h5>
                       <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="bimi_check_details.svg_validation.svg_link">
-                        <em>[[bimi_check_details.svg_validation.svg_link]]</em>
+                        <em><a class="format-anchor" target="_blank" :href="bimi_check_details.svg_validation.svg_link">[[svg_display_link]]</a></em>
+                        <p v-if="generated_note">
+                          <strong>Note:-</strong> [[generated_note]]
+                        </p>
                       </div>
                       <div class="row">
                         <div class="logo-box ml-md-4 col-md-3">
@@ -228,7 +231,7 @@
                         <div class="brand_message">Your email text messag...</div>
                       </div> -->
                       <div class="content">
-                        <img src="./assets/images/mobile-top.jpg" class="img-fluid mobi-strip">
+                        <img src="./static/assets/images/mobile-top.jpg" class="img-fluid mobi-strip">
                         <div class="esp-brand-strip row">
                           <div class="burger col-2">
                             <div></div>
@@ -254,7 +257,7 @@
                             </div>
                             <div class="col-9">
                               <div class="text-section">
-                                <div class="brandname">Brandname</div>
+                                <div class="brandname">[[processed_domain]]</div>
                                 <div class="brand_subject">Your Email Subject Line...</div>
                                 <div class="brand_message">Your email text messag... 
                                   <span class="star">
@@ -276,7 +279,7 @@
                             </div>
                             <div class="col-9">
                               <div class="text-section">
-                                <div class="brandname">Brandname</div>
+                                <div class="brandname">[[processed_domain]]</div>
                                 <div class="brand_subject">Your Email Subject Line...</div>
                                 <div class="brand_message">Your email text messag... 
                                   <span class="star">
@@ -472,8 +475,6 @@
               bimi_check_button_loader: false,
               apiurls: {
                 checkBimiRecord: "/check-bimi",
-                // authpost: "http://localhost:9000/auth",
-                // postget: "http://localhost:9000/posts",
                 generateBimiRecord: "/generate-bimi"
               },
               processed_domain: "",
@@ -482,10 +483,10 @@
               img_logo: "",
               modifyBimi: false,
               bimi_check_error: false,
-              test: true,
               generated: false,
               domain_validation_error: "",
               bimi_generate_text: "Generate BIMI Record?",
+              svg_display_link: "",
               generate_bimi : {
                 domain: "",
                 svg_link: "",
@@ -495,7 +496,8 @@
               },
               active_class_name: "inactive_element",
               generated_bimi_response: {},
-              generate_bimi_loader: false
+              generate_bimi_loader: false,
+              svg_not_found: "static/assets/images/error.svg",
             }
           },
           methods: {
@@ -505,6 +507,7 @@
                 if(this.validate_domain()){
                   this.bimi_check_button_loader = true
                   this.modifyBimi = false
+                  this.generated_note = null
                   axios.post(this.apiurls.checkBimiRecord, {
                     domain: this.domain        
                   })
@@ -513,8 +516,9 @@
                     this.bimi_check_details = response.data
                     this.bimi_check_button_loader = false
                     this.processed_domain = this.domain
-                    this.img_logo = response.data.svg_validation.svg_link ? response.data.svg_validation.svg_link : "assets/images/error.svg"
+                    this.img_logo = response.data.svg_validation.svg_link ? response.data.svg_validation.svg_link : this.svg_not_found
                     this.generate_bimi.domain = this.domain
+                    this.svg_display_link = response.data.svg_validation.svg_link
                     if(this.bimi_check_details.bimi.status == false){
                       this.bimi_generate_text = "Generate BIMI Record?"
                     } else {
@@ -530,11 +534,33 @@
                 }
               }
             },
-            setSvg(){
+            setSvg(e){
               this.generate_bimi.svg_file = this.$refs.svgFile.files
+              this.toggleEnableInput(e)
             },
-            setVmc(){
+            setVmc(e){
               this.generate_bimi.vmc_file = this.$refs.vmcFile.files
+              this.toggleEnableInput(e)
+            },
+            toggleEnableInput(e){
+              let element = e.target
+              if (element.getAttribute('type') == 'text'){
+                if(element.value !=""){
+                  element.parentElement.querySelector('input[type="file"]').setAttribute("disabled","true")
+                  element.parentElement.querySelector('.col-md-3 span .btn.btn-purple').classList.add("disabled")
+                } else {
+                  element.parentElement.querySelector('input[type="file"]').removeAttribute("disabled")
+                  element.parentElement.querySelector('.col-md-3 span .btn.btn-purple').classList.remove("disabled")
+                }
+              } else if(element.getAttribute('type') == 'file'){
+                if(element.value && element.files.length != 0){
+                  element.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="text"]').setAttribute("disabled","true")
+                  element.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="text"]').classList.add("disabled")
+                } else {
+                  element.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="text"]').removeAttribute("disabled")
+                  element.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="text"]').classList.remove("disabled")
+                }
+              }
             },
             validate_domain(domain = this.domain){
               const REGEXT_DOMAIN = /(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/gm
@@ -569,12 +595,21 @@
               top_element.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"})
               // top_element.scrollTo(0, 0);
             },
+            generateNote(checkstring){
+              if(checkstring.includes('public-path-to-')){
+                this.generated_note = "This is an example url for your uploaded SVG image of what your SVG url might look like.\n You can use the uploaded file to setup a link to the file and set-up your bimi record.\n Check the example in the genrated BIMI record. \n Click on the image path to check the SVG image."
+              } else {
+                this.generated_note = ""
+              }
+              return checkstring
+            },
             generateRecord(){
               this.generate_bimi_loader = true
               const svg_regex = /((https:)[\\|\/\/].*?\.svg$)/gm
               const vmc_regex = /((https:)[\\|\/\/].*?\.pem$)/gm
               let error = 0
               let error_message = null
+              this.generated_note = null
               if(!this.validate_domain(this.generate_bimi.domain)){
                 error = 1
                 error_message = "Invalid domain"
@@ -604,15 +639,26 @@
                 this.generate_bimi_loader = false
               }
               else {
-                axios.post(this.apiurls.generateBimiRecord, {
-                  domain: this.generate_bimi.domain, svg_link: this.generate_bimi.svg_link, vmc_link: this.generate_bimi.vmc_link, svg_file: this.generate_bimi.svg_file, vmc_file: this.generate_bimi.vmc_file
-                  })
+                let formData = new FormData();
+                formData.append("domain", this.generate_bimi.domain);
+                formData.append("svg_link", this.generate_bimi.svg_link);
+                formData.append("vmc_link", this.generate_bimi.vmc_link);
+                formData.append("svg_file", this.generate_bimi.svg_file[0]);
+                formData.append("vmc_file", this.generate_bimi.vmc_file[0]);
+                axios.post(this.apiurls.generateBimiRecord, formData, {
+                            headers: {
+                              'Content-Type': 'multipart/form-data'
+                            }
+                          })
                   .then((response) => {
+                    console.log(response)
                     this.generated_bimi_response = response.data.bimi_generation
                     this.bimi_check_details = {bimi: response.data.bimi, dmarc: response.data.dmarc, mx: response.data.mx, spf: response.data.spf, svg_validation: response.data.svg_validation}
-                    this.img_logo = response.data.svg_validation.svg_link ? response.data.svg_validation.svg_link : "assets/images/error.svg"
+                    this.img_logo = response.data.svg_validation.svg_link ? response.data.svg_validation.svg_link : this.svg_not_found
                     this.generated = true
                     this.generate_bimi_loader = false
+                    this.svg_display_link = response.data.bimi_generation.svg_link ? response.data.bimi_generation.svg_link : ""
+                    this.generateNote(this.svg_display_link)
                     // alert("Success")
                   })
                   .catch((error) => {

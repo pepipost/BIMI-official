@@ -170,6 +170,19 @@ hr {
     text-transform: capitalize;
 }
 
+.disabled{
+    cursor: no-drop;
+}
+
+a.format-anchor{
+    color: #3D4145;
+    border-bottom: 1px dotted #000;
+}
+
+a.format-anchor:hover{
+    text-decoration: none;
+}
+
 .smartphone .content .mobi-strip {
     display: block;
 }

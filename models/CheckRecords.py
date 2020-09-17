@@ -10,7 +10,7 @@ class CheckRecords(Resource):
         self.domain = domain
 
     def getDnsTXT(self):
-         # Check SPF DMARC MX from TXT record
+        # Check SPF DMARC MX from TXT record
         try:
             result = subprocess.run(['checkdmarc', self.domain], stdout=subprocess.PIPE)
             complied_dict = json.loads(result.stdout)
@@ -104,7 +104,6 @@ class CheckRecords(Resource):
             bimiRecord['status'] = False
             bimiRecord['svg'] = ""
             bimiRecord['errors'].append("Error with bimi dns check."+str(e))
-
         return bimiRecord
 
     def get_dns_details(self):

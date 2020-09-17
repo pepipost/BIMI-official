@@ -7,8 +7,6 @@ from Config import Config
 from utils.Log import logger
 import json
 
-#app = Flask(__name__,static_folder = "./templates/cli-build/static", template_folder = "./templates/cli-build")
-
 app = Flask(__name__, static_folder = Config.STATIC_FOLDER, template_folder = Config.TEMPLATE_FOLDER)
 api = Api(app)
 

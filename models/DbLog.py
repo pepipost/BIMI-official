@@ -46,3 +46,6 @@ class DbLog():
         cursor.close()
         conn.close()
         return response
+
+    def __del__(self):
+        self.close()

@@ -10,7 +10,7 @@ class Config():
     """
     Static Files Configuration
     """
-    STATIC_FOLDER="./templates/jinjaTemplate/assets" #Folder for static assets files sucha as images and css
+    STATIC_FOLDER="./static" #Folder for static assets files sucha as images , css and storage files
     TEMPLATE_FOLDER="./templates/jinjaTemplate" #Folder For index.html file
     HOME_PAGE="pages/main.html" #Landing Page
 
@@ -31,9 +31,16 @@ class Config():
     LOGGING_LEVEL=""
     #LOGGING_TYPE = FILE/DB/ALL
     LOGGING_TYPE=""
-
+    
     """
     SVG Configuration
     """
     RNG_SCHEMA_FILE = "svg_schema/svg_12_ps.rnc"
-    STORAGE_SVG_DIR = "storage/svgs/"
+    STORAGE_DIR = STATIC_FOLDER+"/storage/"
+
+    """
+    FILE UPLOAD SETTINGS
+    """
+    ALLOWED_EXTENSIONS = {'svg', 'pem'}
+    STORAGE_SVG_DIR = STORAGE_DIR+"svgs/"
+    STORAGE_CERT_DIR = STORAGE_DIR+"certificates/"
