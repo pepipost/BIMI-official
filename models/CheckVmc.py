@@ -1,11 +1,10 @@
 from Config import Config
 import urllib.request
-import subprocess
 import sys,os
 from asn1crypto import pem
-from certvalidator import CertificateValidator
+from certvalidator import CertificateValidator, errors
 from utils.Utils import Utils
-import base64
+import uuid
 class CheckVmc():
     def __init__(self, vmc_file, is_file=False):
         self.STORAGE_CERT_DIR = Config.STORAGE_CERT_DIR
@@ -14,33 +13,64 @@ class CheckVmc():
         self.vmc_response = {"status": False, "errors":[], "vmc_link":vmc_file}
         self.is_file = is_file
 
-    def check_vmc(self):
-        self.check_vmc_schema()
+    def download_pem_path(self, url):
+        print('Beginning file download certificate with urllib2')
+        self.Utils.check_dir_folder(self.STORAGE_CERT_DIR)
+        file_name_hash = str(uuid.uuid4())
+        with urllib.request.urlopen(url) as response, open(self.STORAGE_CERT_DIR+file_name_hash+".pem", 'wb') as out_file:
+            data = response.read()
+            out_file.write(data)
+        return self.STORAGE_CERT_DIR+file_name_hash+".pem"
 
-    def check_vmc_schema(self):
+    def validate_vmc(self):
         try:
             end_entity_cert = None
             intermediates = []
-            with open('static/storage/certificates/acvmc.pem', 'rb') as f:
+            with open(self.vmc_file, 'rb') as f:
                 for type_name, headers, der_bytes in pem.unarmor(f.read(), multiple=True):
                     if end_entity_cert is None:
                         end_entity_cert = der_bytes
                     else:
                         intermediates.append(der_bytes)
-
             validator = CertificateValidator(end_entity_cert, intermediates)
-            result = validator.validate_usage(set(['digital_signature']))
-            print(base64.b64decode(str(result)))
-            print(json.loads(result))
+            validated = validator.validate_usage(set(['digital_signature']))
+            # print(intermediates)
+        except errors.PathValidationError as PathValidationError:
+            self.vmc_response["errors"].append("Error: "+str(PathValidationError))
+            print(PathValidationError)
+        except errors.RevokedError as RevokedError:
+            self.vmc_response["errors"].append("Error: Certificate Revoked.\n"+str(RevokedError))
+            print(RevokedError)
+        except errors.InvalidCertificateError as InvalidCertificateError:
+            self.vmc_response["errors"].append("Error: Certificate Is Invalid.\n"+str(InvalidCertificateError))
+            print(InvalidCertificateError)
+        except errors.PathBuildingError as PathBuildingError:
+            # self.vmc_response["errors"].append("Error: Cannot Build Path.\n"+str(PathBuildingError))
+            print(PathBuildingError)
         except Exception as e:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            print(exc_type, fname, exc_tb.tb_lineno)
-            print(str(e))
+            self.vmc_response["errors"].append("Error: Validation Exception.\n"+str(e))
+            print(e)
 
     # Check VMC extension
     def is_vmc_extension(self):
         if self.vmc_file.endswith('.pem') or self.vmc_file.endswith('.PEM'):
             return True
         else:
+            self.vmc_response["errors"].append("Invalid file extension use. Only .pem files allowed")
             return False
+
+    # Check vmc certificate
+    def check_vmc(self):
+        if self.vmc_file != "":
+            if not self.is_file:
+                self.vmc_file = self.download_pem_path(self.vmc_file)
+            if self.is_vmc_extension():
+                self.validate_vmc()
+                if len(self.vmc_response['errors']) > 0:
+                    self.vmc_response['status'] = False
+                else:
+                    self.vmc_response['status'] = True
+        else:
+            # Currently vmc certificate is optional
+             self.vmc_response['status'] = "Option"
+        return self.vmc_response

@@ -73,4 +73,4 @@ class Utils:
         try:
             return vmc_path_string.replace(Config.STORAGE_CERT_DIR,"https://"+domain+"/public-path-to-pemfile/")
         except Exception as e:
-            print("Exception in vmc_replace_file_link for SVG. Error in - ",self.__class__.__name__,". \n Error: ",e)
+            print("Exception in vmc_replace_file_link for VMC. Error in - ",self.__class__.__name__,". \n Error: ",e)

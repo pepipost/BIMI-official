@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+	width="692px" height="212px" viewBox="-173 -53 346 106" version="1.1">
+<title>Simple squircles</title>
+<g style="stroke:black;stroke-width:1;fill:none">
+	<rect x="-50" y="-50" height="100" width="100" rx="20" />
+	<rect x="-170" y="-50" height="100" width="100" rx="40" />
+	<rect x="70" y="-50" height="100" width="100" rx="10" />
+</g>
+</svg>

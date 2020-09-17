@@ -122,7 +122,7 @@
                 <div class="row">
                   <div class="col-md-8">
                     <div class="bimi-record" v-for="(result, index) in bimi_check_details" v-bind:key="index">
-                      <div v-if="index !='svg_validation'">
+                      <div v-if="index !='svg_validation' && index !='vmc_validation'">
                         <h5><span class="record_name">[[index]]</span> Record <span v-if="result.status">Found</span><span v-else>Has Some Issues</span>
                           <span span v-if="result.status" class="checked">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -184,8 +184,8 @@
                       </h5>
                       <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="bimi_check_details.svg_validation.svg_link">
                         <em><a class="format-anchor" target="_blank" :href="bimi_check_details.svg_validation.svg_link">[[svg_display_link]]</a></em>
-                        <p v-if="generated_note">
-                          <strong>Note:-</strong> [[generated_note]]
+                        <p v-if="generated_note_svg">
+                          <strong>Note:-</strong> [[generated_note_svg]]
                         </p>
                       </div>
                       <div class="row">
@@ -212,6 +212,44 @@
                             <span class="short_error">[[bimi_error.short_error]]</span>
                             <div class="expand_error_button">More Detials <span class="text-danger" v-b-toggle.collapse-bimi_error_index @click="expand_error($event)">[+]</span></div>
                             <p :class="'error_details '+active_class_name" :id="'collapse-'+bimi_error_index">[[bimi_error.error_details]]</p>
+                          </li>
+                        </ul>
+                        <!-- <button class="btn btn-sm btn-outline-purple">Fix SVG Issues</button> -->
+                      </div>
+                    </div>
+                    <div class="vmc-certificate" v-if="bimi_check_details.vmc_validation.status!='Option'">
+                      <h5>
+                        <span v-if="bimi_check_details.vmc_validation.vmc_link!=''">
+                          Found VMC certificate File
+                        </span>
+                        <span v-else>
+                          VMC certificate File not found
+                        </span>
+                        <span class="crossed"  v-if="!bimi_check_details.vmc_validation.status">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
+                          </svg>
+                        </span>
+                        <span class="checked" v-else>
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                          </svg>
+                        </span>
+                      </h5>
+                      <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="bimi_check_details.vmc_validation.vmc_link">
+                        <em><a class="format-anchor" target="_blank" :href="bimi_check_details.vmc_validation.vmc_link">[[vmc_display_link]]</a></em>
+                        <p v-if="generated_note_vmc">
+                          <strong>Note:-</strong> [[generated_note_vmc]]
+                        </p>
+                      </div>
+                      <div class="issues" v-if="bimi_check_details.vmc_validation.errors.length > 0">
+                        <h5>VMC Certificate File Issues You Need To Fix</h5>
+                        <ul>
+                          <li v-for="(vmc_error, vmc_error_index) in bimi_check_details.vmc_validation.errors">
+                            [[vmc_error]]
+                            <!-- <span class="short_error">[[bimi_error.short_error]]</span>
+                            <div class="expand_error_button">More Detials <span class="text-danger" v-b-toggle.collapse-bimi_error_index @click="expand_error($event)">[+]</span></div>
+                            <p :class="'error_details '+active_class_name" :id="'collapse-'+bimi_error_index">[[bimi_error.error_details]]</p> -->
                           </li>
                         </ul>
                         <!-- <button class="btn btn-sm btn-outline-purple">Fix SVG Issues</button> -->
@@ -487,6 +525,7 @@
               domain_validation_error: "",
               bimi_generate_text: "Generate BIMI Record?",
               svg_display_link: "",
+              vmc_display_link: "",
               generate_bimi : {
                 domain: "",
                 svg_link: "",
@@ -498,6 +537,8 @@
               generated_bimi_response: {},
               generate_bimi_loader: false,
               svg_not_found: "static/assets/images/error.svg",
+              generated_note_svg: null,
+              generated_note_vmc: null
             }
           },
           methods: {
@@ -507,7 +548,7 @@
                 if(this.validate_domain()){
                   this.bimi_check_button_loader = true
                   this.modifyBimi = false
-                  this.generated_note = null
+                  this.generated_note_svg = null
                   axios.post(this.apiurls.checkBimiRecord, {
                     domain: this.domain        
                   })
@@ -519,6 +560,7 @@
                     this.img_logo = response.data.svg_validation.svg_link ? response.data.svg_validation.svg_link : this.svg_not_found
                     this.generate_bimi.domain = this.domain
                     this.svg_display_link = response.data.svg_validation.svg_link
+                    this.vmc_display_link = response.data.vmc_validation.vmc_link
                     if(this.bimi_check_details.bimi.status == false){
                       this.bimi_generate_text = "Generate BIMI Record?"
                     } else {
@@ -562,7 +604,7 @@
                 }
               }
             },
-            validate_domain(domain = this.domain){
+            validate_domain(domain = this.domain.trim()){
               const REGEXT_DOMAIN = /(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/gm
               if (REGEXT_DOMAIN.exec(domain)){
                 this.domain_validation_error = ""
@@ -595,11 +637,19 @@
               top_element.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"})
               // top_element.scrollTo(0, 0);
             },
-            generateNote(checkstring){
+            generateNoteSvg(checkstring){
               if(checkstring.includes('public-path-to-')){
-                this.generated_note = "This is an example url for your uploaded SVG image of what your SVG url might look like.\n You can use the uploaded file to setup a link to the file and set-up your bimi record.\n Check the example in the genrated BIMI record. \n Click on the image path to check the SVG image."
+                this.generated_note_svg = "This is an example url for your uploaded SVG Image url, as of what it might look like.\n You can use the uploaded file to setup a link to the file and set-up your bimi record.\n Check the example in the genrated BIMI record. \n Click on the image path to check the SVG Image."
               } else {
-                this.generated_note = ""
+                this.generated_note_svg = ""
+              }
+              return checkstring
+            },
+            generateNoteVmc(checkstring){
+              if(checkstring.includes('public-path-to-')){
+                this.generated_note_vmc = "This is an example url for your uploaded Vmc certificate file, as of what it might look like.\n You can use the uploaded file to setup a link to the file and set-up your bimi record.\n Check the example in the genrated BIMI record. \n Click on the certificate path to check the Certficate file."
+              } else {
+                this.generated_note_vmc = ""
               }
               return checkstring
             },
@@ -609,7 +659,7 @@
               const vmc_regex = /((https:)[\\|\/\/].*?\.pem$)/gm
               let error = 0
               let error_message = null
-              this.generated_note = null
+              this.generated_note_svg = null
               if(!this.validate_domain(this.generate_bimi.domain)){
                 error = 1
                 error_message = "Invalid domain"
@@ -653,12 +703,14 @@
                   .then((response) => {
                     console.log(response)
                     this.generated_bimi_response = response.data.bimi_generation
-                    this.bimi_check_details = {bimi: response.data.bimi, dmarc: response.data.dmarc, mx: response.data.mx, spf: response.data.spf, svg_validation: response.data.svg_validation}
+                    this.bimi_check_details = {bimi: response.data.bimi, dmarc: response.data.dmarc, mx: response.data.mx, spf: response.data.spf, svg_validation: response.data.svg_validation, vmc_validation: response.data.vmc_validation}
                     this.img_logo = response.data.svg_validation.svg_link ? response.data.svg_validation.svg_link : this.svg_not_found
                     this.generated = true
                     this.generate_bimi_loader = false
                     this.svg_display_link = response.data.bimi_generation.svg_link ? response.data.bimi_generation.svg_link : ""
-                    this.generateNote(this.svg_display_link)
+                    this.vmc_display_link = response.data.bimi_generation.vmc_link ? response.data.bimi_generation.vmc_link : ""
+                    this.generateNoteSvg(this.svg_display_link)
+                    this.generateNoteVmc(this.vmc_display_link)
                     // alert("Success")
                   })
                   .catch((error) => {

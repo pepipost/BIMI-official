@@ -91,18 +91,22 @@ class CheckRecords(Resource):
                 bimi_str = bimiRecord['record']
                 if re.search(regex_cert, bimi_str):
                     bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
+                    bimiRecord['vmc'] = (bimiRecord['record'].split('a=')[1]).split('.pem')[0]+'.pem'
                     bimiRecord['status'] = True
                 elif re.search(regex_without_cert, bimi_str):
                     bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
+                    bimiRecord['vmc'] = ""
                     bimiRecord['status'] = True
                 else:
                     bimiRecord['status'] = False
                     bimiRecord['svg'] = ""
+                    bimiRecord['vmc'] = ""
                     bimiRecord['errors'].append("BIMI has an invalid format: Correct format : v=BIMI1; l=https://"+self.domain+"/svg-file-path/logo-image.svg; a=https://"+self.domain+"/pem-certificate-path/file.pem. \n Pem certificate being optional currently")
         except Exception as e:
             print("Error in executing DNS Resolver for BIMI DKIM Check. Error: ", e)
             bimiRecord['status'] = False
             bimiRecord['svg'] = ""
+            bimiRecord['vmc'] = ""
             bimiRecord['errors'].append("Error with bimi dns check."+str(e))
         return bimiRecord
 
