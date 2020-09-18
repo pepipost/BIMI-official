@@ -2,7 +2,7 @@ from lxml import etree
 import xml.etree.cElementTree as et
 import subprocess
 from utils.Utils import Utils
-import urllib3.request
+import urllib.request
 import sys,os
 import uuid
 from Config import Config
@@ -20,17 +20,24 @@ class CheckSvg:
         print('Beginning file download with urllib2')
         self.Utils.check_dir_folder(self.STORAGE_SVG_DIR)
         file_name_hash = str(uuid.uuid4())
-        with urllib3.request.urlopen(url) as response, open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb') as out_file:
+        with urllib.request.urlopen(url) as response, open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb') as out_file:
             data = response.read()
             out_file.write(data)
         return self.STORAGE_SVG_DIR+file_name_hash+".svg"
 
-    # CHECK SVG TAG (EXCLUDED)
+    # CHECK SVG Extension
     def is_svg_extension(self):
-        if self.svg_file.endswith('.svg') or self.svg_file.endswith('.SVG'):
-            return True
+        if self.is_file:
+            if self.svg_file != None:
+                return True
+            else:
+                print(self.svg_file, "Upload SVG Image has an Invalid Extension")
+                return False
         else:
-            return False
+            if self.svg_file.endswith('.svg') or self.svg_file.endswith('.SVG'):
+                return True
+            else:
+                return False
 
     # Check if xml file has an SVG tag
     def is_svg_xml(self):
@@ -47,16 +54,19 @@ class CheckSvg:
     # SVG check function
     def check_svg(self):
         if self.svg_file != "":
-            if not self.is_file:
-                self.svg_file = self.download_svg_path(self.svg_file)
-            if self.is_svg_xml():
-                self.check_svg_schema()
-                if len(self.svg_response['errors']) > 0:
-                    self.svg_response['status'] = False
+            if self.is_svg_extension():
+                if not self.is_file:
+                    self.svg_file = self.download_svg_path(self.svg_file)
+                if self.is_svg_xml():
+                    self.check_svg_schema()
+                    if len(self.svg_response['errors']) > 0:
+                        self.svg_response['status'] = False
+                    else:
+                        self.svg_response['status'] = True
                 else:
-                    self.svg_response['status'] = True
+                    self.svg_response['errors'].append({"short_error":"Invalid SVG","error_details":"The SVG image in your BIMI record has no SVG tag"})
             else:
-                self.svg_response['errors'].append({"short_error":"Invalid SVG","error_details":"The SVG image in your BIMI record has no SVG tag"})
+                self.svg_response['errors'].append({"short_error":"Extension Error","error_details":"Invalid File extension"})
         else:
             self.svg_response['errors'].append({"short_error":"No SVG Image Found","error_details":"We have found a blank/empty SVG file Or no SVG link in you BIMI record. Please check your BIMI record for this."})
 

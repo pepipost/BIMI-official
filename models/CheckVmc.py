@@ -1,5 +1,5 @@
 from Config import Config
-import urllib3.request
+import urllib.request
 import sys,os
 from asn1crypto import pem
 from certvalidator import CertificateValidator, errors
@@ -14,10 +14,10 @@ class CheckVmc():
         self.is_file = is_file
 
     def download_pem_path(self, url):
-        print('Beginning file download certificate with urllib2')
+        print('Beginning file download certificate with urllib')
         self.Utils.check_dir_folder(self.STORAGE_CERT_DIR)
         file_name_hash = str(uuid.uuid4())
-        with urllib3.request.urlopen(url) as response, open(self.STORAGE_CERT_DIR+file_name_hash+".pem", 'wb') as out_file:
+        with urllib.request.urlopen(url) as response, open(self.STORAGE_CERT_DIR+file_name_hash+".pem", 'wb') as out_file:
             data = response.read()
             out_file.write(data)
         return self.STORAGE_CERT_DIR+file_name_hash+".pem"
@@ -51,13 +51,21 @@ class CheckVmc():
             self.vmc_response["errors"].append("Error: Validation Exception.\n"+str(e))
             print(e)
 
+
     # Check VMC extension
     def is_vmc_extension(self):
-        if self.vmc_file.endswith('.pem') or self.vmc_file.endswith('.PEM'):
-            return True
+        if self.is_file:
+            if self.vmc_file != None:
+                return True
+            else:
+                print(self.vmc_file, "Upload Vmc certificates has an Invalid Extension")
+                return False
         else:
-            self.vmc_response["errors"].append("Invalid file extension use. Only .pem files allowed")
-            return False
+            if self.vmc_file.endswith('.pem') or self.vmc_file.endswith('.PEM'):
+                return True
+            else:
+                self.vmc_response["errors"].append("Invalid file extension use. Only .pem files allowed")
+                return False
 
     # Check vmc certificate
     def check_vmc(self):

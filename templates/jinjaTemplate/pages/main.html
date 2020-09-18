@@ -61,7 +61,7 @@
                               <path fill-rule="evenodd" d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14V3.5zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5V6zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7H1.633z"/>
                             </svg>
                             Browse <input type="file" ref="svgFile" @change="setSvg($event)" accept=".svg" hidden></label><span v-if="generate_bimi.svg_file">[[generate_bimi.svg_file.value]]</span>
-                        </span>
+                        </span><span class="browse_file_name" v-if="svg_selected_filename">[[svg_selected_filename]]</span>
                       </div>
                     </div>
                   </div>
@@ -77,7 +77,7 @@
                               <path fill-rule="evenodd" d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14V3.5zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5V6zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7H1.633z"/>
                             </svg>
                             Browse <input type="file"ref="vmcFile" @change="setVmc($event)" accept=".pem" hidden></label>
-                        </span>
+                        </span><span class="browse_file_name" v-if="vmc_selected_filename">[[vmc_selected_filename]]</span>
                       </div>
                     </div>
                   </div>
@@ -165,7 +165,7 @@
                     </div> -->
                     <div class="SVG Image">
                       <h5>
-                        <span v-if="bimi_check_details.svg_validation.svg_link!=''">
+                        <span v-if="bimi_check_details.svg_validation.svg_link">
                           Found BIMI SVG Image
                         </span>
                         <span v-else>
@@ -189,17 +189,17 @@
                         </p>
                       </div>
                       <div class="row">
-                        <div class="logo-box ml-md-4 col-md-3">
+                        <div class="logo-box ml-md-4 col-md-3 square">
                           <div class="square">
                             <img class="img-fluid" :src="img_logo">
                           </div>
                         </div>
-                        <div class="logo-box ml-md-4 mr-md-4 col-md-3">
+                        <div class="logo-box ml-md-4 mr-md-4 col-md-3 square">
                           <div class="circle">
                             <img class="img-fluid" :src="img_logo">
                           </div>
                         </div>
-                        <div class="logo-box squircle col-md-3">
+                        <div class="logo-box squircle col-md-3 square">
                           <div class="squircle">
                             <img class="img-fluid" :src="img_logo">
                           </div>
@@ -538,7 +538,9 @@
               generate_bimi_loader: false,
               svg_not_found: "static/assets/images/error.svg",
               generated_note_svg: null,
-              generated_note_vmc: null
+              generated_note_vmc: null,
+              vmc_selected_filename: null,
+              svg_selected_filename: null
             }
           },
           methods: {
@@ -579,10 +581,21 @@
             setSvg(e){
               this.generate_bimi.svg_file = this.$refs.svgFile.files
               this.toggleEnableInput(e)
+              this.set_file_name(this.$refs.svgFile.files,"svg")
             },
             setVmc(e){
               this.generate_bimi.vmc_file = this.$refs.vmcFile.files
               this.toggleEnableInput(e)
+              this.set_file_name(this.$refs.vmcFile.files,"vmc")
+            },
+            set_file_name(file, set_to){
+              if(set_to == "svg"){
+                this.svg_selected_filename = file[0].name
+                console.log(file[0].name)
+              } else {
+                this.vmc_selected_filename = file[0].name
+                console.log(file[0].name)
+              }
             },
             toggleEnableInput(e){
               let element = e.target
@@ -671,7 +684,7 @@
                   error_message = "Invalid svg link provided. Please enter url in format https://domain.com/path/file.svg"
                 }
               } else {
-                if(Object.keys(this.generate_bimi.svg_file).length === 0 && this.generate_bimi.svg_file.constructor === Object){
+                if((Object.keys(this.generate_bimi.svg_file).length === 0 && this.generate_bimi.svg_file.constructor === Object) || !this.generate_bimi.svg_file[0].name.endsWith(".svg")){
                   error = 1
                   error_message = "Please enter an valid svg link or Upload SVG file"
                 }
@@ -680,7 +693,12 @@
               if (this.generate_bimi.vmc_link!="" && this.generate_bimi.vmc_link!=undefined){
                 if(!vmc_regex.exec(this.generate_bimi.vmc_link)){
                   error = 1
-                  error_message = "Invalid vmc link provided. Please enter url in format https://domain.com/path/file.pem"
+                  error_message = "Invalid pem link provided. Please enter url in format https://domain.com/path/file.pem"
+                }
+              } else {
+                if(Object.keys(this.generate_bimi.vmc_file).length !== 0 && !this.generate_bimi.vmc_file[0].name.endsWith(".pem")){
+                  error = 1
+                  error_message = "Please enter an valid vmc link or Upload a .pem file"
                 }
               }
 

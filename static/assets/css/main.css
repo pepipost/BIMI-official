@@ -183,6 +183,14 @@ a.format-anchor:hover{
     text-decoration: none;
 }
 
+.browse_file_name {
+    position: absolute;
+    top: 40px;
+    left: 55px;
+    word-break: break-all;
+    color: #563d7c;
+}
+
 .smartphone .content .mobi-strip {
     display: block;
 }

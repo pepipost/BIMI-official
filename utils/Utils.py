@@ -65,12 +65,18 @@ class Utils:
     
     def svg_replace_file_link(self, domain, svg_path_string):
         try:
-            return svg_path_string.replace(Config.STORAGE_SVG_DIR,"https://"+domain+"/public-path-to-svgfile/")
+            if svg_path_string != None and svg_path_string != "":
+                return svg_path_string.replace(Config.STORAGE_SVG_DIR,"https://"+domain+"/public-path-to-svgfile/")
+            else:
+                return ""
         except Exception as e:
             print("Exception in svg_replace_file_link for SVG. Error in - ",self.__class__.__name__,". \n Error: ",e)
     
     def vmc_replace_file_link(self, domain, vmc_path_string):
         try:
-            return vmc_path_string.replace(Config.STORAGE_CERT_DIR,"https://"+domain+"/public-path-to-pemfile/")
+            if vmc_path_string != None and vmc_path_string != "":
+                return vmc_path_string.replace(Config.STORAGE_CERT_DIR,"https://"+domain+"/public-path-to-pemfile/")
+            else:
+                return ""
         except Exception as e:
             print("Exception in vmc_replace_file_link for VMC. Error in - ",self.__class__.__name__,". \n Error: ",e)
