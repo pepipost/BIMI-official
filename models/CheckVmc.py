@@ -1,5 +1,5 @@
 from Config import Config
-import urllib.request
+import urllib3.request
 import sys,os
 from asn1crypto import pem
 from certvalidator import CertificateValidator, errors
@@ -17,7 +17,7 @@ class CheckVmc():
         print('Beginning file download certificate with urllib2')
         self.Utils.check_dir_folder(self.STORAGE_CERT_DIR)
         file_name_hash = str(uuid.uuid4())
-        with urllib.request.urlopen(url) as response, open(self.STORAGE_CERT_DIR+file_name_hash+".pem", 'wb') as out_file:
+        with urllib3.request.urlopen(url) as response, open(self.STORAGE_CERT_DIR+file_name_hash+".pem", 'wb') as out_file:
             data = response.read()
             out_file.write(data)
         return self.STORAGE_CERT_DIR+file_name_hash+".pem"

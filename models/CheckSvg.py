@@ -2,7 +2,7 @@ from lxml import etree
 import xml.etree.cElementTree as et
 import subprocess
 from utils.Utils import Utils
-import urllib.request
+import urllib3.request
 import sys,os
 import uuid
 from Config import Config
@@ -20,7 +20,7 @@ class CheckSvg:
         print('Beginning file download with urllib2')
         self.Utils.check_dir_folder(self.STORAGE_SVG_DIR)
         file_name_hash = str(uuid.uuid4())
-        with urllib.request.urlopen(url) as response, open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb') as out_file:
+        with urllib3.request.urlopen(url) as response, open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb') as out_file:
             data = response.read()
             out_file.write(data)
         return self.STORAGE_SVG_DIR+file_name_hash+".svg"
