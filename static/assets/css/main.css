@@ -101,21 +101,22 @@ hr {
 
 .logo-box .square {
     background: #fff;
-    margin: 1.5rem;
+    margin: 0.8rem;
     padding: 1.2rem;
+    border: .3rem;
 }
 
 .logo-box .circle {
     background: #fff;
-    margin: 1.5rem;
+    margin: 0.8rem;
     border-radius: 50%;
     padding: 1.2rem;
 }
 
 .logo-box .squircle {
     background: #fff;
-    margin: 1.5rem;
-    border-radius: 1.5rem;
+    margin: 0.8rem;
+    border-radius: 3rem;
     padding: 1.2rem;
 }
 

@@ -684,9 +684,13 @@
                   error_message = "Invalid svg link provided. Please enter url in format https://domain.com/path/file.svg"
                 }
               } else {
-                if((Object.keys(this.generate_bimi.svg_file).length === 0 && this.generate_bimi.svg_file.constructor === Object) || !this.generate_bimi.svg_file[0].name.endsWith(".svg")){
+                if((Object.keys(this.generate_bimi.svg_file).length === 0 && this.generate_bimi.svg_file.constructor === Object)){
                   error = 1
                   error_message = "Please enter an valid svg link or Upload SVG file"
+                }
+                if((Object.keys(this.generate_bimi.svg_file).length !== 0 && !this.generate_bimi.svg_file[0].name.endsWith(".svg"))){
+                  error = 1
+                  error_message = "Please select an svg file"
                 }
               }
 
