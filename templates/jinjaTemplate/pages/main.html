@@ -184,11 +184,11 @@
                         <strong>Status:</strong> <span v-if="bimi_check_details.svg_validation.svg_link">
                           Found BIMI SVG Image
                         </span>
-                        <span v-else>
-                          Bimi SVG Image not found
+                        <span v-else-if="!bimi_check_details.svg_validation.status">
+                          Found Some Issues
                         </span>
-                        <span v-if="!bimi_check_details.svg_validation.status">
-                          - Svg Image Found Some Issues
+                        <span v-else>
+                          Found
                         </span>
                         <span class="crossed"  v-if="!bimi_check_details.svg_validation.status">
                           <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -224,7 +224,7 @@
                           </div>
                         </div>
                       </div>
-                      <button @click="svg_errors_toggle=!svg_errors_toggle" class="btn btn-outline-danger btn-red btn-sm">View Issues</button>
+                      <button @click="toggle_svg_errors()" v-if="bimi_check_details.svg_validation.errors.length" class="btn btn-outline-danger btn-red btn-sm">View Issues</button>
                       <div class="issues" v-if="bimi_check_details.svg_validation.errors.length > 0 && svg_errors_toggle">
                         <h5>SVG Issues You Need To Fix</h5>
                         <ul v-for="(bimi_error, bimi_error_index) in bimi_check_details.svg_validation.errors">
@@ -647,6 +647,9 @@
                 this.generated_note_vmc = ""
               }
               return checkstring
+            },
+            toggle_svg_errors(){
+              this.svg_errors_toggle = !this.svg_errors_toggle
             },
             generateRecord(){
               this.generate_bimi_loader = true
