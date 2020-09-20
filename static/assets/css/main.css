@@ -3,7 +3,7 @@ body,html{
     width: 100%;
     color: #3D4145;
 }
-#logo{
+/* #logo{
     -webkit-transition: all .4s ease-in-out;
     transition: all .4s ease-in-out;
     margin-bottom: 0;
@@ -17,6 +17,12 @@ body,html{
     -o-transform: translateZ(0);
     transform: translateZ(0);
 
+} */
+.navbar-nav a.nav-link.dropdown-toggle {
+    color: #121416;
+}
+.dropdown-toggle::after {
+    color: #007bff;
 }
 .image-bordered-grey{
     padding: 2px;
@@ -378,6 +384,10 @@ width: 85%;
 margin: 5px 0;
 }
 
+.svg-image{
+    margin-bottom: 15px;
+}
+
 .grid .text-section-bar .brand_message hr{
 border-top: 10px solid;
 width: 85%;
@@ -388,3 +398,19 @@ margin: 5px 0;
     text-transform: uppercase;
 }
 /*Mobile ends*/
+
+.footer {
+	padding: 40px 0;
+	text-align: center;
+}
+.logo {
+	width: 140px;
+}
+
+.navbar-item, .navbar-link {
+    color: #4a4a4a;
+    display: block;
+    line-height: 1.5;
+    padding: .5rem .75rem;
+    position: relative;
+}

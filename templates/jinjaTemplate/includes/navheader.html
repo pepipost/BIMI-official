@@ -1,45 +1,60 @@
-<header class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
-    <!-- 	<h5 class="my-0 mr-md-auto font-weight-normal"><img id="logo" src="./bimi.png"></h5>
-        <nav class="my-2 my-md-0 mr-md-3">
-            <a class="p-2 text-dark" href="#">Features</a>
-            <a class="p-2 text-dark" href="#">Enterprise</a>
-            <a class="p-2 text-dark" href="#">Support</a>
-            <a class="p-2 text-dark" href="#">Pricing</a>
-        </nav>
-        <a class="btn btn-outline-primary" href="#">Sign up</a> -->
-        <div class="my-0 mr-md-auto font-weight-normal"><h5><img id="logo" src="https://pepipost.com/wp-content/uploads/2018/11/pepipost-logo.png"></h5></div>
-        <nav class="navbar navbar-expand-md">
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav ml-auto mt-2 mt-lg-0 font-weight-normal">
-                    <li>
-                        <a class="nav-link p-2 text-dark" href="#">
-                            Features
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link p-2 text-dark" href="#">
-                            Enterprise
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link p-2 text-dark" href="#">
-                            Support
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link p-2 text-dark" href="#">
-                            Pricing
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        <button
-            class="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            >
-            <span class="navbar-toggler-icon"></span>
+<header class="">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+        <a class="navbar-brand" href="#"><h5><img id="logo" src="https://pepipost.com/wp-content/uploads/2018/11/pepipost-logo.png"></h5></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
         </button>
-    </header>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link p-2 text-dark" href="https://pepipost.com/pricing?utm_source=Tutorials&utm_medium=Tutorials&utm_campaign=Tutorials">Pricing</a>
+            </li>
+            <b-nav-item-dropdown text="Features" class="p2" right class="text-dark">
+                <b-dropdown-item href="https://pepipost.com/features/smtp?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials">SMTP </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/features/email-api?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials">Email API </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/features/open-source-email-marketing?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign">Email Marketing </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/features/artificial-intelligence?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials">Artificial Intelligence </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/features/security?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" >Security </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/features/real-time-reports?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials">Real-Time Reports </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/features/webhooks?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" >Webhooks </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/features/bounce-forwarding?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials">Bounce Forwarding </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/features/subaccounts?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" >Subaccounts </b-dropdown-item>
+            </b-nav-item-dropdown>
+            <b-nav-item-dropdown text="Developers" class="p2" right>
+                <b-dropdown-item href="https://docs.pepipost.com?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" class="navbar-item"> Documentation </b-dropdown-item>
+                <b-dropdown-item href="https://developers.pepipost.com/api/getstarted/overview?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" class="navbar-item"> API Docs </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/developers/migration?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" class="navbar-item"> Migration </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/developers/integrations?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" class="navbar-item"> Integrations </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/tutorials?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" class="navbar-item"> Tutorials </b-dropdown-item>
+            </b-nav-item-dropdown>
+            <b-nav-item-dropdown text="Marketers" class="p2" right>
+                <b-dropdown-item href="https://pepipost.com/mautic?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" class="navbar-item"> Mautic </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/mailtrain?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" class="navbar-item"> Mailtrain </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/marketers/aboutemail?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" class="navbar-item"> About Email </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/marketers/compliance?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" class="navbar-item"> GDPR, CAN-SPAM and CASL </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/marketers/resources?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" class="navbar-item"> Resources </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/marketers/deliverability-services?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" class="navbar-item"> Deliverability Services </b-dropdown-item>
+                <b-dropdown-item href="https://pepipost.com/webinar?utm_source=Tutorials&amp;utm_medium=Tutorials&amp;utm_campaign=Tutorials" class="navbar-item"> Webinar </b-dropdown-item>
+            </b-nav-item-dropdown>
+            <li class="nav-item">
+              <a class="nav-link p-2 text-dark" href="https://pepipost.com/blog?utm_source=Tutorials&utm_medium=Tutorials&utm_campaign=Tutorials">Blog</a>
+            </li>
+          </ul>
+          <div>
+            <a href="/panel/login?utm_source=TutorialTools&amp;utm_medium=TutorialTools&amp;utm_campaign=TutorialTools" class="btn btn-outline-primary">
+                <strong>Sign In</strong>
+            </a>
+            <a href="https://app.pepipost.com/index.php/signup/registeruser?reference=tools&amp;utm_source=TutorialTools&amp;utm_medium=TutorialTools&amp;utm_campaign=TutorialTools" class="btn btn-primary"> Sign Up Free </a>            
+          </div>
+        </div>
+      </nav>
+    <!-- <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        >
+        <span class="navbar-toggler-icon"></span>
+    </button> -->
+</header>

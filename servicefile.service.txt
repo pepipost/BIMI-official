@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI/Gunicorn instance to serve BIMI project
+After=network.target
+
+[Service]
+User=root
+Group=nginx
+WorkingDirectory=/opt/transmail/bimi-inspector
+Environment="PATH=/opt/transmail/bimi-inspector/setup_env/bin"
+ExecStart=/opt/transmail/bimi-inspector/setup_env/bin/gunicorn --workers 5 --bind localhost:8000 app:application
+
+[Install]
+WantedBy=multi-user.target

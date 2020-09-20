@@ -2,7 +2,7 @@ from lxml import etree
 import xml.etree.cElementTree as et
 import subprocess
 from utils.Utils import Utils
-import urllib.request
+from urllib.request import Request, urlopen
 import sys,os
 import uuid
 from Config import Config
@@ -18,12 +18,19 @@ class CheckSvg:
     # Donwnload SVG
     def download_svg_path(self, url):
         print('Beginning file download with urllib2')
-        self.Utils.check_dir_folder(self.STORAGE_SVG_DIR)
-        file_name_hash = str(uuid.uuid4())
-        with urllib.request.urlopen(url) as response, open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb') as out_file:
-            data = response.read()
-            out_file.write(data)
-        return self.STORAGE_SVG_DIR+file_name_hash+".svg"
+        try:
+            self.Utils.check_dir_folder(self.STORAGE_SVG_DIR)
+            file_name_hash = str(uuid.uuid4())
+            req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urlopen(req) as response, open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb') as out_file:
+                data = response.read()
+                out_file.write(data)
+            return self.STORAGE_SVG_DIR+file_name_hash+".svg"
+        except Exception as e:
+            print(e)
+            self.svg_response['errors'].append({"short_error":error_str,"error_details":clear_error_string})
+            return 
+            
 
     # CHECK SVG Extension
     def is_svg_extension(self):

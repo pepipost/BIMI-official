@@ -88,15 +88,28 @@ class CheckRecords(Resource):
             for i in dkim_data.response.answer:
                 for j in i.items:
                     bimiRecord['record'] = j.to_text()
-                bimi_str = bimiRecord['record']
-                if re.search(regex_cert, bimi_str):
+                if re.search(regex_cert, bimiRecord['record']):
                     bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
                     bimiRecord['vmc'] = (bimiRecord['record'].split('a=')[1]).split('.pem')[0]+'.pem'
                     bimiRecord['status'] = True
-                elif re.search(regex_without_cert, bimi_str):
+                elif re.search(regex_without_cert, bimiRecord['record']):
                     bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
                     bimiRecord['vmc'] = ""
                     bimiRecord['status'] = True
+                    
+                    if bimiRecord['record'].find("a=") !=-1:
+                        pem_string = bimiRecord['record'].split("a=")[1]
+                        pem_string = pem_string.replace(" ","")
+                        if pem_string.find(";") != -1:
+                            pem_string = pem_string.split(';')[0]
+                            print(pem_string)
+                            if len(pem_string) > 0:
+                                bimiRecord['errors'].append("BIMI record has an invalid a= record format. The linked file must be .pem file or empty record a=;")
+                                bimiRecord['status'] = False
+                        else:
+                            if len(pem_string) > 0:
+                                bimiRecord['errors'].append("BIMI record has an invalid a= record format. The linked file must be .pem file or empty record a=;")
+                                bimiRecord['status'] = False
                 else:
                     bimiRecord['status'] = False
                     bimiRecord['svg'] = ""
