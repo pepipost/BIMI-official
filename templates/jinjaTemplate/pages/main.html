@@ -181,11 +181,12 @@
                         BIMI SVG Image
                       </h5>
                       <h6 class="status">
-                        <strong>Status:</strong> <span v-if="bimi_check_details.svg_validation.svg_link">
-                          Found BIMI SVG Image
-                        </span>
-                        <span v-else-if="!bimi_check_details.svg_validation.status">
+                        <strong>Status:</strong>
+                        <span v-if="!bimi_check_details.svg_validation.status">
                           Found few problems
+                        </span>
+                         <span v-else-if="bimi_check_details.svg_validation.svg_link">
+                          Found BIMI SVG Image
                         </span>
                         <span v-else>
                           Found
@@ -242,11 +243,12 @@
                         VMC Certificate
                       </h5>
                       <h6 class="stautus">
-                       <strong>Status: </strong> <span v-if="bimi_check_details.vmc_validation.vmc_link!=''">
-                          Found VMC certificate File
-                        </span>
-                        <span v-else-if="!bimi_check_details.vmc_validation.status">
+                        <strong>Status: </strong> 
+                        <span v-if="!bimi_check_details.vmc_validation.status">
                           Found few problems
+                        </span>
+                        <span v-else-if="bimi_check_details.vmc_validation.vmc_link!=''">
+                          Found VMC certificate File
                         </span>
                         <span v-else>
                           VMC certificate File not found
