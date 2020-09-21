@@ -8,16 +8,13 @@ import re
 class CheckRecords(Resource):
     def __init__(self,domain):
         self.domain = domain
-        # set nameserver empty to use cloudflare
-        self.nameserver = "8.8.8.8"
-        self.resolver = dns.resolver.Resolver()
-        self.resolver.nameservers = [self.nameserver]
-        self.resolver.timeout = 6
+        self.resolver = dns.resolver
+        self.resolver.timeout = 5.0
 
     def getDnsTXT(self):
         # Check SPF DMARC MX from TXT record
         try:
-            result = subprocess.run(['checkdmarc', self.domain, "-t 6.0", "-n",self.nameserver], stdout=subprocess.PIPE)
+            result = subprocess.run(['checkdmarc', self.domain, "-t", "5.0"], stdout=subprocess.PIPE)
             complied_dict = json.loads(result.stdout)
             return complied_dict
         except Exception as e:

@@ -2,8 +2,8 @@ class Config():
     """
     Base Configurations
     """
-    APP_HOST="" #Defaults to 127.0.0.1
-    APP_PORT="" #Defaults to 5000
+    APP_HOST="" #Defaults to 127.0.0.1 For Dev instance
+    APP_PORT= ""#Numerical value Defaults to 5000 For Dev instance
     BASE_URL_API="" #Beta
     DEBUG=True #Set False for production. Enables debug mode for python and vue
 
@@ -28,9 +28,9 @@ class Config():
     LOG_FILE_PATH="logs/"
     LOG_FILE_NAME="app.log"
     #LOG_LEVEL = INFO/DEBUG/WARNING
-    LOGGING_LEVEL=""
+    LOGGING_LEVEL="" # Inactive
     #LOGGING_TYPE = FILE/DB/ALL
-    LOGGING_TYPE=""
+    LOGGING_TYPE="" # Inactive
     
     """
     SVG Configuration

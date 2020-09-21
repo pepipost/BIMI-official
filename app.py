@@ -20,7 +20,7 @@ api.add_resource(GenerateBimiController, '/generate-bimi')
 if __name__ == '__main__':
     application.debug = DEBUG=Config.DEBUG
     host=Config.APP_HOST if Config.APP_HOST else '127.0.0.1'
-    port=Config.APP_PORT if Config.APP_PORT and Number.isInteger else 5000
+    port=Config.APP_PORT if (Config.APP_PORT and type(Config.APP_PORT) == int) else 5000
     application.config['TEMPLATES_AUTO_RELOAD'] = True
     application.jinja_env.globals.update(DEBUG=Config.DEBUG)
     application.run(
