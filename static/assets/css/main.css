@@ -40,10 +40,15 @@ pre {
 
 .jumbotron {
     margin-bottom: unset;
+    color: #3d4145;
 }
 
 .jumbotron-border-gray{
     border: 1px solid darkgray;
+}
+
+.jumbotron .pricing-header .display-4 h3{
+    font-weight: 600;
 }
 
 .btn.btn-purple .spinner-grow {

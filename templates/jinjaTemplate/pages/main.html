@@ -3,23 +3,21 @@
 <body>
     <div id="app">
         {% include 'includes/navheader.html' %}
-        <section>
+        <!-- <section>
           <div class="container-fluid">
             <h2>BIMI Checker</h2>
           </div>
           <hr>
-        </section>
+        </section> -->
         <div class="container">
           <section>
-            <p class="text-center">RELEASE: This tool is currently in BETA. Feedbacks are most welcomed. Feel free to write on dx@pepipost.com.</p>
             {% if config['DEBUG'] %}
             <p class="text-center">Warning: Running in debug mode. Disable debug mode in config file for Production deployment.</p>
             {% endif %}
             <div class="jumbotron jumbotron-border-gray">
               <div class="pricing-header px-3 py-3 mx-auto text-center">
-                <h1 class="display-4">Look Up And Generate <strong class="tcolor">BIMI</strong></h1>
-                <h3>Indentify BIMI For Your Emails</h3> 
-                <!-- <p class="lead">Quickly build an effective pricing table for your potential customers with this Bootstrap example. It’s built with default Bootstrap components and utilities with little customization.</p> -->
+                <h1 class="display-4"><strong>BIMI</strong> LookUp & Generator</h1>
+                <h3>Check your brand's compliance with BIMI standards</h3> 
               </div>
               <div class="row justify-content-md-center">
                 <div class="card-deck col-md-8 text-center">
@@ -41,8 +39,13 @@
                 </div>
               </div>
               <p class="text-center text-danger pt-1" v-if="bimi_check_error">[[domain_validation_error]]</p>
-              <div class="text-center">
+              <!-- <div class="text-center">
                 <p>(Note : Generation and validation BIMI record might take few seconds)</p>
+              </div> -->
+              <div class="row justify-content-md-center">
+                <div class="col-md-8">
+                  <p class="release">This tool is currently in BETA and you might experience some delays in processing results. Feel free to share your feedback on dx@pepipost.com.</p>
+                </div>
               </div>
             </div>
           </section>
@@ -735,7 +738,11 @@
        })
   </script>
 </body>
-<style>
-	
+<style scoped>
+	.release {
+    color: #646464;
+    padding: 5px;
+    margin-top: 15px;
+  }
 </style>
 {% endblock %}
