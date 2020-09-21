@@ -8,11 +8,16 @@ import re
 class CheckRecords(Resource):
     def __init__(self,domain):
         self.domain = domain
+        # set nameserver empty to use cloudflare
+        self.nameserver = "8.8.8.8"
+        self.resolver = dns.resolver.Resolver()
+        self.resolver.nameservers = [self.nameserver]
+        self.resolver.timeout = 6
 
     def getDnsTXT(self):
         # Check SPF DMARC MX from TXT record
         try:
-            result = subprocess.run(['checkdmarc', self.domain], stdout=subprocess.PIPE)
+            result = subprocess.run(['checkdmarc', self.domain, "-t 6.0", "-n",self.nameserver], stdout=subprocess.PIPE)
             complied_dict = json.loads(result.stdout)
             return complied_dict
         except Exception as e:
@@ -69,7 +74,7 @@ class CheckRecords(Resource):
         # DKIM CHECK
         dkimrecord = {"status": "", "record": "","warnings":""}
         try:
-            dkim_data = dns.resolver.query('default._domainkey.'+self.domain, 'TXT')
+            dkim_data = self.resolver.query('default._domainkey.'+self.domain, 'TXT')
             for i in dkim_data.response.answer:
                 print(i.to_text())
                 for j in i.items:
@@ -84,7 +89,7 @@ class CheckRecords(Resource):
         regex_cert = r"v=BIMI1;(| )l=((.*):\/\/.*);(| )a=((.*):\/\/(.*.pem))"
         regex_without_cert = r"v=BIMI1;(| )l=((.*):\/\/.*)(;| |)"
         try:
-            dkim_data = dns.resolver.query('default._bimi.'+self.domain, 'TXT')
+            dkim_data = self.resolver.query('default._bimi.'+self.domain, 'TXT')
             for i in dkim_data.response.answer:
                 for j in i.items:
                     bimiRecord['record'] = j.to_text()

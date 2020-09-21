@@ -231,7 +231,7 @@
                         <ul v-for="(bimi_error, bimi_error_index) in bimi_check_details.svg_validation.errors">
                           <li>
                             <span class="short_error">[[bimi_error.short_error]]</span>
-                            <div class="expand_error_button">More Detials <span class="text-danger" v-b-toggle.collapse-bimi_error_index @click="expand_error($event)">[+]</span></div>
+                            <div class="expand_error_button">More Details <span class="text-danger" v-b-toggle.collapse-bimi_error_index @click="expand_error($event)">[+]</span></div>
                             <p :class="'error_details '+active_class_name" :id="'collapse-'+bimi_error_index">[[bimi_error.error_details]]</p>
                           </li>
                         </ul>
