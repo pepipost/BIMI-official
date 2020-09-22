@@ -9,12 +9,12 @@ class CheckRecords(Resource):
     def __init__(self,domain):
         self.domain = domain
         self.resolver = dns.resolver
-        self.resolver.timeout = 5.0
+        # self.resolver.timeout = 5.0
 
     def getDnsTXT(self):
         # Check SPF DMARC MX from TXT record
         try:
-            result = subprocess.run(['checkdmarc', self.domain, "-t", "5.0"], stdout=subprocess.PIPE)
+            result = subprocess.run(['checkdmarc', self.domain], stdout=subprocess.PIPE)
             complied_dict = json.loads(result.stdout)
             return complied_dict
         except Exception as e:
