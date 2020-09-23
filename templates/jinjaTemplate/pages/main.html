@@ -2,13 +2,13 @@
 {% block body %}
 <body>
     <div id="app">
-        {% include 'includes/navheader.html' %}
-        <!-- <section>
-          <div class="container-fluid">
-            <h2>BIMI Checker</h2>
+        {# include 'includes/navheader.html' #}
+        <section>
+          <div class="container-fluid pt-2">
+            <h3>BIMI Checker</h3>
           </div>
           <hr>
-        </section> -->
+        </section>
         <div class="container">
           <section>
             {% if config['DEBUG'] %}
@@ -117,6 +117,9 @@
                       </svg>
                     </span>
                   </h5>
+                  <div class="copy-button-wrapper">
+                    <button class="btn-sm copy-btn" @click="copyToClipboard($event)">copy</button>
+                  </div>
                   <div class="code" v-if="generated_bimi_response.status">
                     <code>
                       [[generated_bimi_response.record]]
@@ -213,18 +216,18 @@
                       </div>
                       <div class="row">
                         <div class="logo-box ml-md-4 col-md-3 square">
-                          <div class="square">
-                            <img class="img-fluid" :src="img_logo">
+                          <div class="square" :style="{'background-image':'url('+img_logo+')'}">
+                            <!-- <img class="img-fluid" :src="img_logo"> -->
                           </div>
                         </div>
                         <div class="logo-box ml-md-4 mr-md-4 col-md-3 square">
-                          <div class="circle">
-                            <img class="img-fluid" :src="img_logo">
+                          <div class="circle" :style="{'background-image':'url('+img_logo+')'}">
+                            <!-- <img class="img-fluid" :src="img_logo"> -->
                           </div>
                         </div>
                         <div class="logo-box squircle col-md-3 square">
-                          <div class="squircle">
-                            <img class="img-fluid" :src="img_logo">
+                          <div class="squircle" :style="{'background-image':'url('+img_logo+')'}">
+                            <!-- <img class="img-fluid" :src="img_logo"> -->
                           </div>
                         </div>
                       </div>
@@ -290,176 +293,212 @@
                   <div class="col-md-4">
                     <h5>Your Logo Might Appear Like This</h5>
                     <!-- Mobile box -->
-                    <div class="smartphone mt-4">
-                      <!-- <div class="content">
-                        <img class="fill_image" src="gmail_4.jpg" alt="gmail image" />
-                        <img v-if="img_logo" :src="img_logo" alt="" class="logo_image">
-                        <div v-else class="logo_image">Loading...</div>
-                        <div class="brandname">Brandname</div>
-                        <div class="brand_subject">Your Email Subject Line...</div>
-                        <div class="brand_message">Your email text messag...</div>
-                      </div> -->
-                      <div class="content">
-                        <img src="./static/assets/images/mobile-top.jpg" class="img-fluid mobi-strip">
-                        <div class="esp-brand-strip row">
-                          <div class="burger col-2">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                          </div>
-                          <div class="Label col-7">
-                            Inbox
-                          </div>
-                          <div class="search col-2">
-                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-search" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                              <path fill-rule="evenodd" d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"/>
-                              <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
-                            </svg>
-                          </div>
-                        </div>
-                        <div class="grid shadow-sm">
-                          <div class="row">
-                            <div class="col-3">
-                              <div class="logo_image_wrapper_circle">
-                                <img :src="img_logo" alt="" class="logo_image img-fluid">
-                              </div>
+                    <div class=" col-md-12">
+                      <div class="iphone-x">
+                        <div class="content">
+                          <i>Speaker</i>
+                          <b>Camera</b>
+                          <!-- <img src="./static/assets/images/mobile-top.jpg" class="img-fluid mobi-strip"> -->
+                          <div class="esp-brand-strip row">
+                            <div class="time col-3">
+                              <p> 7:15</p>
                             </div>
-                            <div class="col-9">
-                              <div class="text-section">
-                                <div class="brandname">[[processed_domain]]</div>
-                                <div class="brand_subject">Your Email Subject Line...</div>
-                                <div class="brand_message">Your email text messag... 
-                                  <span class="star">
-                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                      <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
-                                    </svg>
+                            <div class="Label col-5">
+                              
+                            </div>
+                            <div class="search col-4">
+                              <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-wifi-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13.229 8.271c.216-.216.194-.578-.063-.745A9.456 9.456 0 0 0 8 6c-1.905 0-3.68.56-5.166 1.526a.48.48 0 0 0-.063.745.525.525 0 0 0 .652.065A8.46 8.46 0 0 1 8 7a8.46 8.46 0 0 1 4.577 1.336c.205.132.48.108.652-.065zm-2.183 2.183c.226-.226.185-.605-.1-.75A6.473 6.473 0 0 0 8 9c-1.06 0-2.062.254-2.946.704-.285.145-.326.524-.1.75l.015.015c.16.16.408.19.611.09A5.478 5.478 0 0 1 8 10c.868 0 1.69.201 2.42.56.203.1.45.07.611-.091l.015-.015zM9.06 12.44c.196-.196.198-.52-.04-.66A1.99 1.99 0 0 0 8 11.5a1.99 1.99 0 0 0-1.02.28c-.238.14-.236.464-.04.66l.706.706a.5.5 0 0 0 .708 0l.707-.707z"/>
+                              </svg>
+                              <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-reception-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 11.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-8zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-11z"/>
+                              </svg>
+                            </div>
+                          </div>
+                          <div class="esp-brand-strip row">
+                            <div class="burger col-3">
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                            </div>
+                            <div class="Label col-6">
+                              Inbox
+                            </div>
+                            <div class="search col-3">
+                              <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-search" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"/>
+                                <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
+                              </svg>
+                            </div>
+                          </div>
+                          <div class="grid shadow-sm">
+                            <div class="row">
+                              <div class="col-3">
+                                <div class="logo_image_wrapper_circle">
+                                  <img :src="img_logo" alt="" class="logo_image img-fluid">
+                                </div>
+                              </div>
+                              <div class="col-9">
+                                <div class="text-section">
+                                  <div class="brandname">[[processed_domain]]</div>
+                                  <div class="brand_subject">Your Email Subject Line...</div>
+                                  <div class="brand_message">Your email text messag... 
+                                    <span class="star">
+                                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                                      </svg>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>	
+                            </div>
+                          </div>
+                          <div class="grid shadow-sm">
+                            <div class="row">
+                              <div class="col-3">
+                                <div class="logo_image_wrapper_squircle">
+                                  <img :src="img_logo" alt="" class="logo_image img-fluid">
+                                </div>
+                              </div>
+                              <div class="col-9">
+                                <div class="text-section">
+                                  <div class="brandname">[[processed_domain]]</div>
+                                  <div class="brand_subject">Your Email Subject Line...</div>
+                                  <div class="brand_message">Your email text messag... 
+                                    <span class="star">
+                                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                                      </svg>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>	
+                            </div>
+                          </div>
+                          <div class="grid shadow-sm">
+                            <div class="row">
+                              <div class="col-3">
+                                <div class="logo_image_wrapper_circle bg-secondary">
+                                  <span class="chars">
+                                    A	
                                   </span>
                                 </div>
                               </div>
-                            </div>	
-                          </div>
-                        </div>
-                        <div class="grid shadow-sm">
-                          <div class="row">
-                            <div class="col-3">
-                              <div class="logo_image_wrapper_squircle">
-                                <img :src="img_logo" alt="" class="logo_image img-fluid">
-                              </div>
+                              <div class="col-9">
+                                <div class="text-section-bar">
+                                  <div class="brandname"><hr></div>
+                                  <div class="brand_subject"><hr></div>
+                                  <div class="brand_message"><hr>
+                                    <span class="star">
+                                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                                      </svg>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>	
                             </div>
-                            <div class="col-9">
-                              <div class="text-section">
-                                <div class="brandname">[[processed_domain]]</div>
-                                <div class="brand_subject">Your Email Subject Line...</div>
-                                <div class="brand_message">Your email text messag... 
-                                  <span class="star">
-                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                      <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
-                                    </svg>
+                          </div>
+                          <div class="grid shadow-sm">
+                            <div class="row">
+                              <div class="col-3">
+                                <div class="logo_image_wrapper_circle bg-warning">
+                                  <span class="chars">
+                                    B	
                                   </span>
                                 </div>
                               </div>
-                            </div>	
-                          </div>
-                        </div>
-                        <div class="grid shadow-sm">
-                          <div class="row">
-                            <div class="col-3">
-                              <div class="logo_image_wrapper_circle bg-secondary">
-                                <span class="chars">
-                                  A	
-                                </span>
-                              </div>
+                              <div class="col-9">
+                                <div class="text-section-bar">
+                                  <div class="brandname"><hr></div>
+                                  <div class="brand_subject"><hr></div>
+                                  <div class="brand_message"><hr> 
+                                    <span class="star">
+                                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                                      </svg>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>	
                             </div>
-                            <div class="col-9">
-                              <div class="text-section-bar">
-                                <div class="brandname"><hr></div>
-                                <div class="brand_subject"><hr></div>
-                                <div class="brand_message"><hr>
-                                  <span class="star">
-                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                      <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
-                                    </svg>
+                          </div>
+                          <div class="grid shadow-sm">
+                            <div class="row">
+                              <div class="col-3">
+                                <div class="logo_image_wrapper_circle bg-danger">
+                                  <span class="chars">
+                                    C	
                                   </span>
                                 </div>
                               </div>
-                            </div>	
-                          </div>
-                        </div>
-                        <div class="grid shadow-sm">
-                          <div class="row">
-                            <div class="col-3">
-                              <div class="logo_image_wrapper_circle bg-warning">
-                                <span class="chars">
-                                  B	
-                                </span>
-                              </div>
+                              <div class="col-9">
+                                <div class="text-section-bar">
+                                  <div class="brandname"><hr></div>
+                                  <div class="brand_subject"><hr></div>
+                                  <div class="brand_message"><hr>
+                                    <span class="star">
+                                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                                      </svg>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>	
                             </div>
-                            <div class="col-9">
-                              <div class="text-section-bar">
-                                <div class="brandname"><hr></div>
-                                <div class="brand_subject"><hr></div>
-                                <div class="brand_message"><hr> 
-                                  <span class="star">
-                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                      <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
-                                    </svg>
+                          </div>
+                          <div class="grid shadow-sm">
+                            <div class="row">
+                              <div class="col-3">
+                                <div class="logo_image_wrapper_circle bg-success">
+                                  <span class="chars">
+                                    D	
                                   </span>
                                 </div>
                               </div>
-                            </div>	
-                          </div>
-                        </div>
-                        <div class="grid shadow-sm">
-                          <div class="row">
-                            <div class="col-3">
-                              <div class="logo_image_wrapper_circle bg-danger">
-                                <span class="chars">
-                                  C	
-                                </span>
-                              </div>
+                              <div class="col-9">
+                                <div class="text-section-bar">
+                                  <div class="brandname"><hr></div>
+                                  <div class="brand_subject"><hr></div>
+                                  <div class="brand_message"><hr>
+                                    <span class="star">
+                                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                                      </svg>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>	
                             </div>
-                            <div class="col-9">
-                              <div class="text-section-bar">
-                                <div class="brandname"><hr></div>
-                                <div class="brand_subject"><hr></div>
-                                <div class="brand_message"><hr>
-                                  <span class="star">
-                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                      <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
-                                    </svg>
+                          </div>
+                          <div class="grid shadow-sm">
+                            <div class="row">
+                              <div class="col-3">
+                                <div class="logo_image_wrapper_circle bg-primary">
+                                  <span class="chars">
+                                    E	
                                   </span>
                                 </div>
                               </div>
-                            </div>	
-                          </div>
-                        </div>
-                        <div class="grid shadow-sm">
-                          <div class="row">
-                            <div class="col-3">
-                              <div class="logo_image_wrapper_circle bg-success">
-                                <span class="chars">
-                                  D	
-                                </span>
-                              </div>
-                            </div>
-                            <div class="col-9">
-                              <div class="text-section-bar">
-                                <div class="brandname"><hr></div>
-                                <div class="brand_subject"><hr></div>
-                                <div class="brand_message"><hr>
-                                  <span class="star">
-                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                      <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
-                                    </svg>
-                                  </span>
+                              <div class="col-9">
+                                <div class="text-section-bar">
+                                  <div class="brandname"><hr></div>
+                                  <div class="brand_subject"><hr></div>
+                                  <div class="brand_message"><hr>
+                                    <span class="star">
+                                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                                      </svg>
+                                    </span>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>	
+                              </div>	
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>	
+                  </div>	 
                 </div>
                 <div class="text-center" v-if="!modifyBimi">
                   <button class="btn btn-outline-purple" @click="modifyBimi_scroll()">[[bimi_generate_text]]</button>
@@ -487,7 +526,6 @@
             </p>	
           </section>
           {% include 'includes/footer.html' %}
-          <div class="text-center border-top pt-3"><p>Made with ❤️ by Pepipost</p></div>
         </div>
     </div>
   <script>
@@ -663,6 +701,21 @@
             toggle_svg_errors(){
               this.svg_errors_toggle = !this.svg_errors_toggle
             },
+            copyToClipboard(element) {
+              let elementStr = element.target.parentElement.nextElementSibling.firstChild.innerHTML
+              console.log(elementStr)
+              const el = document.createElement('textarea')
+              el.value = document
+              el.setAttribute('readonly', '')
+              el.style.position = 'absolute'
+              el.style.left = '-9999px'
+              document.body.appendChild(el)
+              el.value = elementStr
+              // el.focus()
+              el.select()
+              document.execCommand('copy')
+              document.body.removeChild(el)
+            },
             generateRecord(){
               this.generate_bimi_loader = true
               const svg_regex = /((https:)[\\|\/\/].*?\.svg$)/gm
@@ -708,12 +761,12 @@
                 this.generate_bimi_loader = false
               }
               else {
-                let formData = new FormData();
-                formData.append("domain", this.generate_bimi.domain);
-                formData.append("svg_link", this.generate_bimi.svg_link);
-                formData.append("vmc_link", this.generate_bimi.vmc_link);
-                formData.append("svg_file", this.generate_bimi.svg_file[0]);
-                formData.append("vmc_file", this.generate_bimi.vmc_file[0]);
+                let formData = new FormData()
+                formData.append("domain", this.generate_bimi.domain)
+                formData.append("svg_link", this.generate_bimi.svg_link)
+                formData.append("vmc_link", this.generate_bimi.vmc_link)
+                formData.append("svg_file", this.generate_bimi.svg_file[0])
+                formData.append("vmc_file", this.generate_bimi.vmc_file[0])
                 axios.post(this.apiurls.generateBimiRecord, formData, {
                             headers: {
                               'Content-Type': 'multipart/form-data'

@@ -8,8 +8,6 @@ import re
 class CheckRecords(Resource):
     def __init__(self,domain):
         self.domain = domain
-        self.resolver = dns.resolver
-        # self.resolver.timeout = 5.0
 
     def getDnsTXT(self):
         # Check SPF DMARC MX from TXT record
@@ -55,7 +53,7 @@ class CheckRecords(Resource):
         if dmarc['record'] in (None, ''):
             dmarcRecord['status'] = False
         else:
-            if dmarc['record'].find("p=none") != -1:
+            if dmarc['tags']['p']['value'] == "none":
                 dmarcRecord['status'] = False
                 dmarcRecord['errors'] = ["dmarc policy should be set to p=quarantine or p=reject for BIMI to work"]
                 dmarcRecord['record'] = dmarc['record']
@@ -71,7 +69,7 @@ class CheckRecords(Resource):
         # DKIM CHECK
         dkimrecord = {"status": "", "record": "","warnings":""}
         try:
-            dkim_data = self.resolver.query('default._domainkey.'+self.domain, 'TXT')
+            dkim_data = dns.resolver.query('default._domainkey.'+self.domain, 'TXT')
             for i in dkim_data.response.answer:
                 print(i.to_text())
                 for j in i.items:
@@ -86,7 +84,7 @@ class CheckRecords(Resource):
         regex_cert = r"v=BIMI1;(| )l=((.*):\/\/.*);(| )a=((.*):\/\/(.*.pem))"
         regex_without_cert = r"v=BIMI1;(| )l=((.*):\/\/.*)(;| |)"
         try:
-            dkim_data = self.resolver.query('default._bimi.'+self.domain, 'TXT')
+            dkim_data = dns.resolver.query('default._bimi.'+self.domain, 'TXT')
             for i in dkim_data.response.answer:
                 for j in i.items:
                     bimiRecord['record'] = j.to_text()

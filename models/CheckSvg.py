@@ -31,7 +31,6 @@ class CheckSvg:
             self.svg_response['errors'].append({"short_error":error_str,"error_details":clear_error_string})
             return 
             
-
     # CHECK SVG Extension
     def is_svg_extension(self):
         if self.is_file:
