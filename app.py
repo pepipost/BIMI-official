@@ -1,5 +1,6 @@
 from flask import Flask,redirect,url_for,request, render_template
 from flask_restful import Api,Resource
+from flask_cors import CORS
 from controllers.GetList import GetList
 from controllers.CheckBimiController import CheckBimiController
 from controllers.GenerateBimiController import GenerateBimiController
@@ -9,6 +10,7 @@ import json
 
 application = Flask(__name__, static_folder = Config.STATIC_FOLDER, template_folder = Config.TEMPLATE_FOLDER)
 api = Api(application)
+cors = CORS(application)
 
 @application.route('/')
 def index():

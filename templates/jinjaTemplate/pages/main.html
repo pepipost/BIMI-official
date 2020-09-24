@@ -3,18 +3,12 @@
 <body>
     <div id="app">
         {# include 'includes/navheader.html' #}
-        <section>
-          <div class="container-fluid pt-2">
-            <h3>BIMI Checker</h3>
-          </div>
-          <hr>
-        </section>
         <div class="container">
           <section>
             {% if config['DEBUG'] %}
-            <p class="text-center">Warning: Running in debug mode. Disable debug mode in config file for Production deployment.</p>
+            <p class="text-center mt-3">Warning: Running in debug mode. Set DEBUG = False in config file for Production deployment.</p>
             {% endif %}
-            <div class="jumbotron jumbotron-border-gray">
+            <div class="jumbotron jumbotron-border-gray mt-4">
               <div class="pricing-header px-3 py-3 mx-auto text-center">
                 <h1 class="display-4"><strong>BIMI</strong> LookUp & Generator</h1>
                 <h4>Check your brand's compliance with BIMI standards</h4> 
@@ -510,20 +504,7 @@
             <h2 class="tcolor">About BIMI</h2>
             <hr>
             <p>Brand Indicators for Message Identification abbreviated as BIMI is an email specification which gives a brand the flexibility to decide on what logo should appear as sender in all outgoing email messages. </p>
-    
-          <!-- 	<p><strong>Example of an email with no sender logo:</strong></p> -->
-    
-    <!-- 				<p><img class="img-fluid" src="bimi-example1.png" class="image-bordered-grey"></p><br>
-            <p><img class="img-fluid" src="bimi-example2.png" class="image-bordered-grey"></p> -->
-            <p>There is no platform to define BIMI. It's just a set of DNS based instructions which you will be passing to an email client requesting them to show your logo in the email messages. BIMI doesn't guarantee the display of your logo as it works only with the supported email clients.
-            </p>
-            <p>The adoption of BIMI is currently in its early stage. Yahoo has been the first one to extend its support for BIMI. And, now with Gmail announcing its support for BIMI in 2020, this topic has started trending among email marketers. </p>
-    
-            <p>BIMI is an open framework built to create trust between a sender and receiver. So, its usage is not limited in email as a channel. Instead, the opportunities are endless. Linkedin has been one of the core members for supporting this initiative, so very soon its adoption might increase across social media platforms and messaging apps like WhatsApp, Telegram and even in different mobile payment solutions.
-            </p>
-    
-            <p>It is important to understand what BIMI is, why email giants are so serious about this, and how this is going to affect your email delivery.
-            </p>	
+            <p>There is no platform to define BIMI. It's just a set of DNS based instructions which you will be passing to an email client requesting them to show your logo in the email messages. BIMI doesn't guarantee the display of your logo as it works only with the supported email clients. </p>
           </section>
           {% include 'includes/footer.html' %}
         </div>
@@ -579,7 +560,7 @@
             checkBimi(){
               if(this.bimi_check_button_loader!=true){
                 this.generated = false
-                if(this.validate_domain()){
+                if(this.validate_domain(this.domain)){
                   this.bimi_check_button_loader = true
                   this.modifyBimi = false
                   this.generated_note_svg = null
@@ -649,9 +630,12 @@
                 }
               }
             },
-            validate_domain(domain = this.domain.trim()){
+            validate_domain(domain){
               const REGEXT_DOMAIN = /(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/gm
-              if (REGEXT_DOMAIN.exec(domain)){
+              if (domain==null || domain == ""){
+                this.domain_validation_error = "Please enter a domain"
+                return false
+              } else if (REGEXT_DOMAIN.exec(domain.trim())){
                 this.domain_validation_error = ""
                 return true
               } else {
