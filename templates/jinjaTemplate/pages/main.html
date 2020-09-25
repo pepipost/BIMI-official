@@ -20,7 +20,7 @@
                       <h4 class="my-0 font-weight-normal">BIMI Checker</h4>
                     </div> -->
                     <div class="input-group lg-8 md-8">
-                      <input type="text" v-on:keyup.enter="checkBimi" class="form-control" placeholder="Domain Name" aria-label="Domain Name" aria-describedby="basic-addon2" v-model="domain">
+                      <input type="text" v-on:keyup.enter="checkBimi" class="form-control" placeholder="Domain Name (example.com)" aria-label="Domain Name" aria-describedby="basic-addon2" v-model="domain">
                       <div class="input-group-append">
                         <button class="btn btn-purple" @click="checkBimi" type="button">
                           <div v-if="bimi_check_button_loader" class="spinner-grow" role="status">
@@ -112,7 +112,7 @@
                     </span>
                   </h5>
                   <div class="copy-button-wrapper">
-                    <button class="btn-sm copy-btn" @click="copyToClipboard($event)">copy</button>
+                    <button class="btn-sm copy-btn" v-if="generated_bimi_response.status" @click="copyToClipboard($event)">copy</button>
                   </div>
                   <div class="code" v-if="generated_bimi_response.status">
                     <code>
@@ -631,7 +631,8 @@
               }
             },
             validate_domain(domain){
-              const REGEXT_DOMAIN = /(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/gm
+              // const REGEXT_DOMAIN = /(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/gm
+              const REGEXT_DOMAIN = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/gm
               if (domain==null || domain == ""){
                 this.domain_validation_error = "Please enter a domain"
                 return false
