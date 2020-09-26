@@ -6,12 +6,14 @@
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     {% if config['DEBUG'] %}
-        <script src=https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.11.5/polyfill.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js"></script>
+        <script src=https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.js"></script>
     {% else %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.11.5/polyfill.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.11.5/polyfill.min.js"></script> 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js"></script>
     {% endif %}
     <script src="//unpkg.com/bootstrap-vue@2.16.0/dist/bootstrap-vue.min.js"></script>

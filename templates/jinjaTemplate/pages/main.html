@@ -2,7 +2,7 @@
 {% block body %}
 <body>
     <div id="app">
-        {# include 'includes/navheader.html' #}
+        {% include 'includes/navheader.html' %}
         <div class="container">
           <section>
             {% if config['DEBUG'] %}
@@ -160,7 +160,6 @@
                           <ul class="errors">
                             <li v-for="(error, error_index) in result.errors" v-bind:key="error_index">Error: [[error]]</li>
                           </ul>
-                          <!-- <button class="btn btn-sm btn-outline-purple">Fix SVG Issues</button> -->
                         </div>
                     </div>
                     </div>
@@ -235,7 +234,18 @@
                             <p :class="'error_details '+active_class_name" :id="'collapse-'+bimi_error_index">[[bimi_error.error_details]]</p>
                           </li>
                         </ul>
-                        <!-- <button class="btn btn-sm btn-outline-purple">Fix SVG Issues</button> -->
+                        <!-- <div class="fix-svg" v-if="bimi_check_details.svg_validation.errors.length > 0 && img_logo != 'static/assets/images/error.svg'">
+                          <button class="btn btn-md btn-outline-warning" @click="fixSvg">
+                            <div v-if="fix_svg_loader" class="spinner-grow" role="status">
+                              <span class="sr-only">Loading...</span>
+                            </div>
+                            Fix SVG Issues</button>
+                            <p v-if="fix_svg_details.fixed_svg_link">
+                              Click <a :href="fix_svg_details.fixed_svg_link">
+                                here
+                              </a> to view the fixed file.
+                            </p>
+                        </div> -->
                       </div>
                     </div>
                     <div class="vmc-certificate" v-if="bimi_check_details.vmc_validation.status!='Option'">
@@ -509,7 +519,7 @@
           {% include 'includes/footer.html' %}
         </div>
     </div>
-  <script>
+  <script type="text/babel">
       new Vue({
           el: '#app',
           delimiters: ["[[","]]"],
@@ -525,7 +535,8 @@
               bimi_check_button_loader: false,
               apiurls: {
                 checkBimiRecord: window.location+"/check-bimi",
-                generateBimiRecord: window.location+"/generate-bimi"
+                generateBimiRecord: window.location+"/generate-bimi",
+                fixBimiRecord: window.location+"/fix-bimi"
               },
               processed_domain: "",
               searchStatus: false,
@@ -553,7 +564,9 @@
               generated_note_vmc: null,
               vmc_selected_filename: null,
               svg_selected_filename: null,
-              svg_errors_toggle: false
+              svg_errors_toggle: false,
+              fix_svg_loader: false,
+              fix_svg_details: []
             }
           },
           methods: {
@@ -768,13 +781,36 @@
                     this.vmc_display_link = response.data.bimi_generation.vmc_link ? response.data.bimi_generation.vmc_link : ""
                     this.generateNoteSvg(this.svg_display_link)
                     this.generateNoteVmc(this.vmc_display_link)
-                    // alert("Success")
                   })
                   .catch((error) => {
                     console.log(error);
                     this.generate_bimi_loader = false
                   });
               } 
+            },
+            fixSvg(){
+              this.fix_svg_loader = true
+              let file = false
+              if (this.generated){
+                file = true
+              }
+              axios.post(this.apiurls.fixBimiRecord, {
+                domain: this.processed_domain, svg_path: this.img_logo, file: file    
+              })
+              .then((response) => {
+                console.log(response.data.status);
+                if (response.data.status){
+                  this.fix_svg_details = response.data
+                  this.fix_svg_loader = false
+                } else {
+                  this.fix_svg_details.push({error:"Error connecting to the endpoint"})
+                  this.fix_svg_loader = false
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+                this.fix_svg_loader = false
+              });
             }
           },
        })
