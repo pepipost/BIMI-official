@@ -5,19 +5,20 @@ from asn1crypto import pem
 from certvalidator import CertificateValidator, errors
 from utils.Utils import Utils
 import uuid
-class CheckVmc():
-    def __init__(self, vmc_file, is_file=False):
+class CheckVmc:
+    def __init__(self, vmc_file, user_agent, is_file=False):
         self.STORAGE_CERT_DIR = Config.STORAGE_CERT_DIR
         self.vmc_file = vmc_file
         self.Utils = Utils()
         self.vmc_response = {"status": False, "errors":[], "vmc_link":vmc_file}
         self.is_file = is_file
+        self.user_agent = user_agent
 
     def download_pem_path(self, url):
         print('Beginning file download certificate with urllib')
         self.Utils.check_dir_folder(self.STORAGE_CERT_DIR)
         file_name_hash = str(uuid.uuid4())
-        req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        req = Request(url, headers={'User-Agent': self.user_agent})
         with urlopen(req) as response, open(self.STORAGE_CERT_DIR+file_name_hash+".pem", 'wb') as out_file:
             data = response.read()
             out_file.write(data)
@@ -46,7 +47,7 @@ class CheckVmc():
             self.vmc_response["errors"].append("Error: Certificate Is Invalid.\n"+str(InvalidCertificateError))
             print(InvalidCertificateError)
         except errors.PathBuildingError as PathBuildingError:
-            # self.vmc_response["errors"].append("Error: Cannot Build Path.\n"+str(PathBuildingError))
+            self.vmc_response["errors"].append("Error: Cannot Build Path.\n"+str(PathBuildingError))
             print(PathBuildingError)
         except Exception as e:
             self.vmc_response["errors"].append("Error: Validation Exception.\n"+str(e))

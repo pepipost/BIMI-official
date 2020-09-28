@@ -14,26 +14,27 @@ class GenerateBimiController(Resource):
 
     def post(self):
         content = request.form
+        user_agent = request.headers.get('User-Agent')
         CR = CheckRecords(content['domain'])
         data = CR.get_dns_details()
 
         if content['svg_link']!="":
             svg_link = content['svg_link']
-            CS = CheckSvg(svg_link)
+            CS = CheckSvg(svg_link,user_agent)
         else:
             self.svg_file_flag = True
             svg_link = self.Utils.upload_request_file("svg_file", request, Config.STORAGE_SVG_DIR, self.svg_file_flag)
-            CS = CheckSvg(svg_link,self.svg_file_flag)
+            CS = CheckSvg(svg_link,user_agent,self.svg_file_flag)
         
         data['svg_validation'] = CS.check_svg()
             
         if content['vmc_link']!="":
             vmc_link = content['vmc_link']
-            CV = CheckVmc(vmc_link)
+            CV = CheckVmc(vmc_link,user_agent)
         else:
             self.vmc_file_flag = True
             vmc_link = self.Utils.upload_request_file("vmc_file", request, Config.STORAGE_CERT_DIR, self.vmc_file_flag)
-            CV = CheckVmc(vmc_link,self.vmc_file_flag)
+            CV = CheckVmc(vmc_link,user_agent,self.vmc_file_flag)
 
         data['vmc_validation'] = CV.check_vmc()
         

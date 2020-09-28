@@ -7,13 +7,14 @@ import sys,os
 import uuid
 from Config import Config
 class CheckSvg:
-    def __init__(self, svg_file, is_file=False):
+    def __init__(self, svg_file, user_agent, is_file=False):
         self.RNG_SCHEMA_FILE = Config.RNG_SCHEMA_FILE
         self.STORAGE_SVG_DIR = Config.STORAGE_SVG_DIR
         self.svg_file = svg_file
         self.Utils = Utils()
         self.svg_response = {"status": False, "errors":[], "svg_link":svg_file}
         self.is_file = is_file
+        self.user_agent = user_agent
 
     # Donwnload SVG
     def download_svg_path(self, url):
@@ -21,14 +22,14 @@ class CheckSvg:
         try:
             self.Utils.check_dir_folder(self.STORAGE_SVG_DIR)
             file_name_hash = str(uuid.uuid4())
-            req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            req = Request(url, headers={'User-Agent': self.user_agent})
             with urlopen(req) as response, open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb') as out_file:
                 data = response.read()
                 out_file.write(data)
             return self.STORAGE_SVG_DIR+file_name_hash+".svg"
         except Exception as e:
             print(e)
-            self.svg_response['errors'].append({"short_error":error_str,"error_details":clear_error_string})
+            self.svg_response['errors'].append({"short_error":str(e),"error_details":clear_error_string})
             return 
             
     # CHECK SVG Extension
@@ -85,9 +86,8 @@ class CheckSvg:
             # print(result.stdout)
             error_string = result.stdout.decode()
             if error_string:
-                if error_string.find("error:"):
+                if error_string.find("error:")!=-1:
                     err = error_string.split("error:")
-                    # print(error_string)
                     for i in range(1, len(err)-1):
                         clear_error_string = self.Utils.clear_response_single_string(err[i])
                         error_str = self.Utils.strip_svg_plugin_errors(self.STORAGE_SVG_DIR,clear_error_string,", Check Line ")

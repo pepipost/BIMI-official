@@ -52,7 +52,7 @@ class CheckRecords:
         if dmarc['record'] in (None, ''):
             dmarcRecord['status'] = False
         else:
-            if dmarc['tags']['p']['value'] == "none":
+            if dmarc['record'].find('p=none')!=-1:
                 dmarcRecord['status'] = False
                 dmarcRecord['errors'] = ["dmarc policy should be set to p=quarantine or p=reject for BIMI to work"]
                 dmarcRecord['record'] = dmarc['record']
@@ -102,7 +102,6 @@ class CheckRecords:
                         pem_string = pem_string.replace("\"","")
                         if pem_string.find(";") != -1:
                             pem_string = pem_string.split(';')[0]
-                            print(pem_string)
                             if len(pem_string) > 0:
                                 bimiRecord['errors'].append("BIMI record has an invalid a= record format. The linked file must be .pem file or empty record a=;")
                                 bimiRecord['status'] = False

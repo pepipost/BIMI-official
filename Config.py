@@ -1,10 +1,10 @@
-class Config():
+class Config:
     """
     Base Configurations
     """
     APP_HOST="" #Defaults to 127.0.0.1 For Dev instance
     APP_PORT= ""#Numerical value Defaults to 5000 For Dev instance
-    BASE_URL_API="" #Beta
+    BASE_URL_API="" #Inactive
     DEBUG=True #Set False for production. Enables debug mode for python and vue
 
     """

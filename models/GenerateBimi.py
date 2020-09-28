@@ -1,4 +1,4 @@
-class GenerateBimi():
+class GenerateBimi:
     def generate_bimi(self,domain, svg, vmc=""):
         if vmc!="":
             vmc = vmc+";"
