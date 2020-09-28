@@ -1,11 +1,10 @@
-from flask_restful import Resource,request
 import json
 import subprocess
 import dns.resolver
 import re
 # from pprint import pprint
 
-class CheckRecords(Resource):
+class CheckRecords:
     def __init__(self,domain):
         self.domain = domain
 
@@ -100,6 +99,7 @@ class CheckRecords(Resource):
                     if bimiRecord['record'].find("a=") !=-1:
                         pem_string = bimiRecord['record'].split("a=")[1]
                         pem_string = pem_string.replace(" ","")
+                        pem_string = pem_string.replace("\"","")
                         if pem_string.find(";") != -1:
                             pem_string = pem_string.split(';')[0]
                             print(pem_string)
