@@ -45,7 +45,7 @@ logs/
 storage/
 *.swp
 *test.py
-client/node_modules
+client/
 node_modules
 *.log
 *.zip
