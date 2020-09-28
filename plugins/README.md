@@ -12,7 +12,7 @@
 
    ![set new page](https://i.imgur.com/aVZKLGb.png)
 
- - Download the [BIMI Zip]() file and move the zip to your WP server under directory - /path-to-wordpress/wp-content/plugins/ 
+ - Download the [BIMI Zip](https://github.com/pepipost/BIMI-official/blob/master/plugins/bimi-inspector.zip?raw=true) file and move the zip to your WP server under directory - /path-to-wordpress/wp-content/plugins/ 
 
  - Unzip the BIMI-inspector file. 
 
