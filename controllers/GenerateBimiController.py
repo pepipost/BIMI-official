@@ -45,13 +45,17 @@ class GenerateBimiController(Resource):
         if self.vmc_file_flag:
             vmc_generate_link = self.Utils.vmc_replace_file_link(content['domain'], vmc_link)
 
+        GB = GenerateBimi()
+        data['bimi_generation'] = GB.generate_bimi(content['domain'], svg_generate_link, vmc_generate_link)
+        data['bimi_generation']['svg_link'] = svg_generate_link
+        data['bimi_generation']['vmc_link'] = vmc_generate_link
+
         if (data['svg_validation']['status'] and data['dmarc']['status'] and data['mx']['status'] and data['spf']['status'] and data['vmc_validation']['status']):
-            GB = GenerateBimi()
-            data['bimi_generation'] = GB.generate_bimi(content['domain'], svg_generate_link, vmc_generate_link)
-            data['bimi_generation']['svg_link'] = svg_generate_link
-            data['bimi_generation']['vmc_link'] = vmc_generate_link
+            data['bimi_generation']['status'] = True
         else:
-            data['bimi_generation'] = {"status":False, "record":"", "message":"Some errors was found in your bimi check","errors":["Please fix the errors shown below to successfully generate BIMI record."], "svg_link":svg_generate_link, "vmc_link": vmc_generate_link}
+            data['bimi_generation']['status'] = False
+            data['bimi_generation']['errors'] = ["Your BIMI record is not compliant with the standard requirements. Please check the below report to understand what really went wrong."]
+            # data['bimi_generation'] = {"status":False, "record":"", "message":"Some errors was found in your bimi check","errors":["Please fix the errors shown below to successfully generate BIMI record."], "svg_link":svg_generate_link, "vmc_link": vmc_generate_link}
         
         return data
 
