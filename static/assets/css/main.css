@@ -184,7 +184,7 @@ hr {
     max-width: 650px;
     margin: 0 auto;
     text-align: left;
-    padding: 15px;
+    padding: 25px;
 }
 
 .generated {
@@ -225,10 +225,15 @@ a.format-anchor:hover{
 	color: blueviolet;
 	text-align: center;
 	position: absolute;
-	top: -4px;
+	top: 0;
 	right: 0;
     border: none;
     outline: 0;
+}
+
+.btn-sm.copy-btn:hover {
+	border: 1px solid;
+	padding: 0px 5px;
 }
 
 .copy-button-wrapper {
@@ -469,7 +474,7 @@ margin: 5px 0;
 }
 
 .logo_image_wrapper_squircle {
-	border-radius: 50%;
+	border-radius: 24%;
 	height: 35px;
 	width: 35px;
 	margin: 5px 10px;
@@ -549,6 +554,10 @@ margin: 5px 0;
 
 .generate-heading-wrapper {
     margin-top: 15px;
+}
+
+.dark-background{
+    background-color: #282c34 !important;
 }
 
 /*Override the bootstrap classes*/
