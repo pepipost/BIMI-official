@@ -127,8 +127,13 @@
                       [[generated_bimi_response.record]]
                     </code>
                   </div>
-                  <div class="text-danger"  v-for="(generate_error, generate_error_index) in generated_bimi_response.errors" v-bind:key="generate_error_index">
+                  <!-- <div class="text-danger"  v-for="(generate_error, generate_error_index) in generated_bimi_response.errors" v-bind:key="generate_error_index">
                     <p>[[generate_error]]</p>
+                  </div> -->
+                  <div>
+                    <b-alert show dismissible class="mt-4" v-if="generated_bimi_response.status == false" variant='warning' v-for="(generate_error, generate_error_index) in generated_bimi_response.errors" v-bind:key="generate_error_index">
+                      <p><b>Warning: </b>[[generate_error]]</p>
+                    </b-alert>
                   </div>
                 </div>
               </div>
@@ -137,7 +142,7 @@
           <section class="section shadow-sm" v-if="bimi_check_details">
             <div class="seach-result">
               <div class="record-found">
-                <h2 class="tcolor">BIMI Checker Report For <strong>[[processed_domain]]</strong></h2>
+                <h2 class="tcolor">BIMI Audit Report For <strong>[[processed_domain]]</strong></h2>
                 <hr>
                 <div class="row">
                   <div class="col-md-8">
@@ -206,18 +211,25 @@
                         </p>
                       </div>
                       <div class="row">
+                        <div class="col-md-10 mb-3">
+                          <b-form-checkbox v-model="background_toggle" name="check-button" switch size="lg">
+                            Switch Logo-box Background
+                          </b-form-checkbox>
+                        </div>
+                      </div>
+                      <div class="row">
                         <div class="logo-box ml-md-4 col-md-3 square">
-                          <div class="square" :style="{'background-image':'url('+img_logo+')'}">
+                          <div v-bind:class="['square', {'dark-background':background_toggle}]" :style="{'background-image':'url('+img_logo+')'}">
                             <!-- <img class="img-fluid" :src="img_logo"> -->
                           </div>
                         </div>
                         <div class="logo-box ml-md-4 mr-md-4 col-md-3 square">
-                          <div class="circle" :style="{'background-image':'url('+img_logo+')'}">
+                          <div v-bind:class="['circle', {'dark-background':background_toggle}]" :style="{'background-image':'url('+img_logo+')'}">
                             <!-- <img class="img-fluid" :src="img_logo"> -->
                           </div>
                         </div>
                         <div class="logo-box squircle col-md-3 square">
-                          <div class="squircle" :style="{'background-image':'url('+img_logo+')'}">
+                          <div v-bind:class="['squircle', {'dark-background':background_toggle}]" :style="{'background-image':'url('+img_logo+')'}">
                             <!-- <img class="img-fluid" :src="img_logo"> -->
                           </div>
                         </div>
@@ -336,7 +348,7 @@
                           <div class="grid shadow-sm">
                             <div class="row">
                               <div class="col-3">
-                                <div class="logo_image_wrapper_circle">
+                                <div v-bind:class="['logo_image_wrapper_circle', {'dark-background':background_toggle}]">
                                   <img :src="img_logo" alt="" class="logo_image img-fluid">
                                 </div>
                               </div>
@@ -358,7 +370,7 @@
                           <div class="grid shadow-sm">
                             <div class="row">
                               <div class="col-3">
-                                <div class="logo_image_wrapper_squircle">
+                                <div v-bind:class="['logo_image_wrapper_squircle', {'dark-background':background_toggle}]">
                                   <img :src="img_logo" alt="" class="logo_image img-fluid">
                                 </div>
                               </div>
@@ -565,7 +577,8 @@
               svg_selected_filename: null,
               svg_errors_toggle: false,
               fix_svg_loader: false,
-              fix_svg_details: []
+              fix_svg_details: [],
+              background_toggle: false
             }
           },
           methods: {
