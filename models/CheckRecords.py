@@ -1,8 +1,9 @@
 import json
-import subprocess
-import dns.resolver
+# import subprocess
+# import dns.resolver
+import checkdmarc
 import re
-# from pprint import pprint
+from pprint import pprint
 
 class CheckRecords:
     def __init__(self,domain):
@@ -11,9 +12,10 @@ class CheckRecords:
     def getDnsTXT(self):
         # Check SPF DMARC MX from TXT record
         try:
-            result = subprocess.run(['checkdmarc', self.domain], stdout=subprocess.PIPE)
-            complied_dict = json.loads(result.stdout)
-            return complied_dict
+            # result = subprocess.run(['checkdmarc', self.domain], stdout=subprocess.PIPE)
+            # complied_dict = json.loads(result)
+            result = checkdmarc.check_domains([self.domain],False,None,None,False,False,None,2.0,2.0)
+            return result
         except Exception as e:
             print("error in executing checkdmarc. Error: ",e)
 
@@ -23,7 +25,7 @@ class CheckRecords:
         if  len(mx['hosts']) == 0:
             mxRecord['status'] = False
         else:
-            for host in mx['hosts']: 
+            for host in mx['hosts']:
                 mxRecord['records'].append(host['hostname'])
                 mxRecord['status'] = True
                 if host['hostname']=="" or host['hostname']==None:
@@ -64,18 +66,20 @@ class CheckRecords:
         return dmarcRecord
 
     # EXCLUDED
+    # DKIM CHECK
+    """    
     def get_dkim(self):
-        # DKIM CHECK
-        dkimrecord = {"status": "", "record": "","warnings":""}
-        try:
-            dkim_data = dns.resolver.query('default._domainkey.'+self.domain, 'TXT')
-            for i in dkim_data.response.answer:
-                print(i.to_text())
-                for j in i.items:
-                    # print(j.to_text())
-                    dkimrecord['record'] = j.to_text()
-        except Exception as e:
-            print("error in executing dns resolver for dmarc record. Error: ",e)
+            dkimrecord = {"status": "", "record": "","warnings":""}
+            try:
+                dkim_data = dns.resolver.query('default._domainkey.'+self.domain, 'TXT')
+                for i in dkim_data.response.answer:
+                    print(i.to_text())
+                    for j in i.items:
+                        # print(j.to_text())
+                        dkimrecord['record'] = j.to_text()
+            except Exception as e:
+                print("error in executing dns resolver for dmarc record. Error: ",e)
+    """
 
     def get_bimi(self):
         # BIMI CHECK
@@ -83,37 +87,41 @@ class CheckRecords:
         regex_cert = r"v=BIMI1;(| )l=((.*):\/\/.*);(| )a=((.*):\/\/(.*.pem))"
         regex_without_cert = r"v=BIMI1;(| )l=((.*):\/\/.*)(;| |)"
         try:
-            dkim_data = dns.resolver.query('default._bimi.'+self.domain, 'TXT')
-            for i in dkim_data.response.answer:
-                for j in i.items:
-                    bimiRecord['record'] = j.to_text()
-                if re.search(regex_cert, bimiRecord['record']):
-                    bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
-                    bimiRecord['vmc'] = (bimiRecord['record'].split('a=')[1]).split('.pem')[0]+'.pem'
-                    bimiRecord['status'] = True
-                elif re.search(regex_without_cert, bimiRecord['record']):
-                    bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
-                    bimiRecord['vmc'] = ""
-                    bimiRecord['status'] = True
-                    
-                    if bimiRecord['record'].find("a=") !=-1:
-                        pem_string = bimiRecord['record'].split("a=")[1]
-                        pem_string = pem_string.replace(" ","")
-                        pem_string = pem_string.replace("\"","")
-                        if pem_string.find(";") != -1:
-                            pem_string = pem_string.split(';')[0]
-                            if len(pem_string) > 0:
-                                bimiRecord['errors'].append("BIMI record has an invalid a= record format. The linked file must be .pem file or empty record a=;")
-                                bimiRecord['status'] = False
-                        else:
-                            if len(pem_string) > 0:
-                                bimiRecord['errors'].append("BIMI record has an invalid a= record format. The linked file must be .pem file or empty record a=;")
-                                bimiRecord['status'] = False
-                else:
-                    bimiRecord['status'] = False
-                    bimiRecord['svg'] = ""
-                    bimiRecord['vmc'] = ""
-                    bimiRecord['errors'].append("BIMI has an invalid format: Correct format : v=BIMI1; l=https://"+self.domain+"/svg-file-path/logo-image.svg; a=https://"+self.domain+"/pem-certificate-path/file.pem. \n Pem certificate being optional currently")
+            # dkim_data = dns.resolver.query('default._bimi.'+self.domain, 'TXT')
+            # for i in dkim_data.response.answer:
+            #     for j in i.items:
+            #         bimiRecord['record'] = j.to_text()
+            dkim_data = checkdmarc.query_bimi_record(self.domain, selector='default', nameservers=None, timeout=2.0)
+            bimiRecord['record'] = dkim_data['record']
+            if re.search(regex_cert, bimiRecord['record']):
+                bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
+                bimiRecord['vmc'] = (bimiRecord['record'].split('a=')[1]).split('.pem')[0]+'.pem'
+                bimiRecord['status'] = True
+            elif re.search(regex_without_cert, bimiRecord['record']):
+                bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
+                bimiRecord['vmc'] = ""
+                bimiRecord['status'] = True
+                
+                if bimiRecord['record'].find("a=") !=-1:
+                    pem_string = bimiRecord['record'].split("a=")[1]
+                    pem_string = pem_string.replace(" ","")
+                    pem_string = pem_string.replace("\"","")
+                    if pem_string.find(";") != -1:
+                        pem_string = pem_string.split(';')[0]
+                        if len(pem_string) > 0:
+                            bimiRecord['errors'].append("BIMI record has an invalid a= record format. The linked file must be .pem file or empty record a=;")
+                            bimiRecord['status'] = False
+                    else:
+                        if len(pem_string) > 0:
+                            bimiRecord['errors'].append("BIMI record has an invalid a= record format. The linked file must be .pem file or empty record a=;")
+                            bimiRecord['status'] = False
+                bimiRecord['errors'].append(dkim_data['warnings'])
+            else:
+                bimiRecord['status'] = False
+                bimiRecord['svg'] = ""
+                bimiRecord['vmc'] = ""
+                bimiRecord['errors'].append("BIMI has an invalid format: Correct format : v=BIMI1; l=https://"+self.domain+"/svg-file-path/logo-image.svg; a=https://"+self.domain+"/pem-certificate-path/file.pem. \n Pem certificate being optional currently")
+                bimiRecord['errors'].append(dkim_data['warnings'])
         except Exception as e:
             print("Error in executing DNS Resolver for BIMI DKIM Check. Error: ", e)
             bimiRecord['status'] = False

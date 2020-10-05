@@ -113,7 +113,7 @@
                         <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                       </svg>
                     </span>
-                    <span v-else class="text-warning" v-else>
+                    <span v-else class="warned" v-else>
                       <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-exclamation-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
                       </svg>
@@ -154,15 +154,15 @@
                               <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                             </svg>
                           </span>
-                          <span v-else class="text-warning">
+                          <span v-else class="warned">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-exclamation-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                               <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
                             </svg>
                           </span>
                         </h5>
                         <h6 class="status">
-                          <span v-if="result.records && result.records.length > 0 && result.records[0] != ''"><span class="record_name">[[index]]</span> Record Found. </span><span v-else-if="result.record"><span class="record_name">[[index]]</span> Record Found. </span><span v-else><span class="record_name">[[index]]</span> Record Not Found.</span>
-                          <span v-if="result.status">Your [[index]] Record is set as per BIMI compliance. </span><span v-else>This record has some BIMI compliance issues.</span>
+                          <span v-if="result.records && result.records.length > 0 && result.records[0] != ''"><span class="record_name">[[index]]</span> Record Found. </span><span v-else-if="result.record"><span class="record_name">[[index]]</span> Record Found. </span><span v-else><span class="record_name">[[index]]</span> record not found.</span>
+                          <span v-if="result.status">Your <span class="record_name">[[index]]</span> Record is set as per BIMI compliance. </span><span v-else>This record has some BIMI compliance issues.</span>
                         </h6>
                         <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="result.records && result.records.length > 0 && result.records[0] != ''">
                           <pre><div v-for="(mx, mx_index) in result.records" v-bind:key="mx_index"><code>[[mx]]</code></div></pre>
@@ -170,11 +170,11 @@
                         <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="result.record"><pre><code>[[result.record]]</code></pre></div>
                         <div class="issues" v-if="result.status==false">
                           <h6><strong>What changes are required in <span class="record_name">[[index]]</span> record?</strong></h6>
-                          <ul class="warnings" >
-                            <li v-for="(warning, warn_index) in result.warnings" v-bind:key="warn_index">Warning: [[warning]]</li>
+                          <ul class="warnings" v-if="result.warnings.length > 0">
+                            <li v-for="(warning, warn_index) in result.warnings" v-bind:key="warn_index" v-if="warning">Warning: [[warning]]</li>
                           </ul>
-                          <ul class="warnings">
-                            <li v-for="(error, error_index) in result.errors" v-bind:key="error_index">Warning: [[error]]</li>
+                          <ul class="warnings" v-if="result.errors.length > 0">
+                            <li v-for="(error, error_index) in result.errors" v-bind:key="error_index" v-if="error">Warning: [[error]]</li>
                           </ul>
                         </div>
                     </div>
@@ -182,7 +182,7 @@
                     <div class="svg-image">
                       <h5>
                         BIMI SVG Image 
-                        <span class="text-warning" v-if="!bimi_check_details.svg_validation.status">
+                        <span class="warned" v-if="!bimi_check_details.svg_validation.status">
                           <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-exclamation-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
                           </svg>
@@ -238,7 +238,18 @@
                           </div>
                         </div>
                       </div>
-                      <button @click="toggle_svg_errors()" v-if="bimi_check_details.svg_validation.errors.length" class="btn btn-outline-danger btn-red btn-sm">View Issues</button>
+                      <div class="issues-button-wrapper text-center">
+                        <button @click="toggle_svg_errors()" v-if="bimi_check_details.svg_validation.errors.length > 3" class="btn btn-outline-danger btn-red btn-sm">View Issues</button>
+                      </div>
+                      <div class="issues" v-if="bimi_check_details.svg_validation.errors.length <= 3">
+                        <ul v-for="(bimi_error, bimi_error_index) in bimi_check_details.svg_validation.errors">
+                          <li>
+                            <span class="short_error">[[bimi_error.short_error]]</span>
+                            <div class="expand_error_button">More Details <span class="text-danger" v-b-toggle.collapse-bimi_error_index @click="expand_error($event)">[+]</span></div>
+                            <p :class="'error_details '+active_class_name" :id="'collapse-'+bimi_error_index">[[bimi_error.error_details]]</p>
+                          </li>
+                        </ul>
+                      </div>
                       <div class="issues" v-if="bimi_check_details.svg_validation.errors.length > 0 && svg_errors_toggle">
                         <h5>SVG Issues You Need To Fix</h5>
                         <ul v-for="(bimi_error, bimi_error_index) in bimi_check_details.svg_validation.errors">
@@ -270,7 +281,7 @@
                             <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                           </svg>
                         </span>
-                        <span v-else class="text-warning">
+                        <span v-else class="warned">
                           <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-exclamation-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
                           </svg>
@@ -794,7 +805,7 @@
                             }
                           })
                   .then((response) => {
-                    console.log(response)
+                    // console.log(response)
                     this.generated_bimi_response = response.data.bimi_generation
                     this.bimi_check_details = {bimi: response.data.bimi, dmarc: response.data.dmarc, mx: response.data.mx, spf: response.data.spf, svg_validation: response.data.svg_validation, vmc_validation: response.data.vmc_validation}
                     this.img_logo = response.data.svg_validation.svg_link ? response.data.svg_validation.svg_link : this.svg_not_found

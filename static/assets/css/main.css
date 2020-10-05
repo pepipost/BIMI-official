@@ -101,6 +101,11 @@ hr {
     vertical-align: bottom;
 }
 
+.warned{
+    color: #ffc107;
+    vertical-align: bottom;
+}
+
 .crossed{
     color: #d9534f;
     vertical-align: bottom;
@@ -576,7 +581,7 @@ margin: 5px 0;
 
 .bimi-record {
 	border-bottom: 1px solid #e2e3e5;
-	margin-bottom: 15px;
+	margin-bottom: 20px;
 }
 
 .vmc-certificate {
