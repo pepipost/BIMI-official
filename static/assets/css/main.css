@@ -573,3 +573,13 @@ margin: 5px 0;
 	background-color: #dc3545 !important;
 	border-color: #dc3545 !important;
 }
+
+.bimi-record {
+	border-bottom: 1px solid #e2e3e5;
+	margin-bottom: 15px;
+}
+
+.vmc-certificate {
+	border-top: 1px solid #e2e3e5;
+	padding-top: 15px;
+}
