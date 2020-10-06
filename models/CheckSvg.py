@@ -2,6 +2,7 @@ from lxml import etree
 import xml.etree.cElementTree as et
 import subprocess
 from utils.Utils import Utils
+import urllib
 from urllib.request import Request, urlopen
 import sys,os
 import uuid
@@ -27,10 +28,10 @@ class CheckSvg:
                 data = response.read()
                 out_file.write(data)
             return self.STORAGE_SVG_DIR+file_name_hash+".svg"
-        except Exception as e:
-            print(e)
-            self.svg_response['errors'].append({"short_error":str(e),"error_details":clear_error_string})
-            return 
+        except urllib.error.URLError as e:
+            print(e.reason)
+            self.svg_response['errors'].append({"short_error":str(e.reason),"error_details":str(e.reason)+", For the provided SVG link."})
+            return False
             
     # CHECK SVG Extension
     def is_svg_extension(self):
@@ -64,14 +65,17 @@ class CheckSvg:
             if self.is_svg_extension():
                 if not self.is_file:
                     self.svg_file = self.download_svg_path(self.svg_file)
-                if self.is_svg_xml():
-                    self.check_svg_schema()
-                    if len(self.svg_response['errors']) > 0:
-                        self.svg_response['status'] = False
+                    if self.svg_file:
+                        if self.is_svg_xml():
+                            self.check_svg_schema()
+                            if len(self.svg_response['errors']) > 0:
+                                self.svg_response['status'] = False
+                            else:
+                                self.svg_response['status'] = True
+                        else:
+                            self.svg_response['errors'].append({"short_error":"Invalid SVG","error_details":"The SVG image in your BIMI record has no SVG tag"})
                     else:
-                        self.svg_response['status'] = True
-                else:
-                    self.svg_response['errors'].append({"short_error":"Invalid SVG","error_details":"The SVG image in your BIMI record has no SVG tag"})
+                        self.svg_response['errors'].append({"short_error":"File extraction error","error_details":"There was an issue with downloading the SVG. Either the SVG image file doesn't exist or the link is unreachable / blocked."})
             else:
                 self.svg_response['errors'].append({"short_error":"Extension Error","error_details":"Invalid File extension"})
         else:
