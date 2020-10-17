@@ -15,7 +15,7 @@ class CheckVmc:
         self.user_agent = user_agent
 
     def download_pem_path(self, url):
-        print('Beginning file download certificate with urllib')
+        print('Beginning VMC file download certificate with urllib')
         self.Utils.check_dir_folder(self.STORAGE_CERT_DIR)
         file_name_hash = str(uuid.uuid4())
         req = Request(url, headers={'User-Agent': self.user_agent})
@@ -38,19 +38,19 @@ class CheckVmc:
             validated = validator.validate_usage(set(['digital_signature']))
             # print(intermediates)
         except errors.PathValidationError as PathValidationError:
-            self.vmc_response["errors"].append("Error: "+str(PathValidationError))
+            self.vmc_response["errors"].append("Warning: "+str(PathValidationError))
             print(PathValidationError)
         except errors.RevokedError as RevokedError:
-            self.vmc_response["errors"].append("Error: Certificate Revoked.\n"+str(RevokedError))
+            self.vmc_response["errors"].append("Warning: Certificate Revoked.\n"+str(RevokedError))
             print(RevokedError)
         except errors.InvalidCertificateError as InvalidCertificateError:
-            self.vmc_response["errors"].append("Error: Certificate Is Invalid.\n"+str(InvalidCertificateError))
+            self.vmc_response["errors"].append("Warning: Certificate Is Invalid.\n"+str(InvalidCertificateError))
             print(InvalidCertificateError)
         except errors.PathBuildingError as PathBuildingError:
-            self.vmc_response["errors"].append("Error: Cannot Build Path.\n"+str(PathBuildingError))
+            self.vmc_response["errors"].append("Warning: Cannot Build Path.\n"+str(PathBuildingError))
             print(PathBuildingError)
         except Exception as e:
-            self.vmc_response["errors"].append("Error: Validation Exception.\n"+str(e))
+            self.vmc_response["errors"].append("Warning: Validation Exception.\n"+str(e))
             print(e)
 
 
@@ -60,13 +60,13 @@ class CheckVmc:
             if self.vmc_file != None:
                 return True
             else:
-                print(self.vmc_file, "Upload Vmc certificates has an Invalid Extension")
+                print(self.vmc_file, "Uploaded Vmc certificates has an Invalid Extension")
                 return False
         else:
             if self.vmc_file.endswith('.pem') or self.vmc_file.endswith('.PEM'):
                 return True
             else:
-                self.vmc_response["errors"].append("Invalid file extension use. Only .pem files allowed")
+                self.vmc_response["errors"].append("Invalid file extension used. Only .pem files allowed")
                 return False
 
     # Check vmc certificate

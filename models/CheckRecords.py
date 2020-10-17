@@ -84,7 +84,8 @@ class CheckRecords:
     def get_bimi(self):
         # BIMI CHECK
         bimiRecord = {"status": "", "record": "","errors":[], "warnings":[] ,"svg":""}
-        regex_cert = r"v=BIMI1;(| )l=((.*):\/\/.*);(| )a=((.*):\/\/(.*.pem))"
+        # regex_cert = r"v=BIMI1;(| )l=((.*):\/\/.*);(| )a=((.*):\/\/(.*.pem))"
+        regex_cert = r"v=BIMI1;(?=.*(l=((.*):\/\/(.*.svg)))\b)(?=.*(a=((.*):\/\/(.*.pem)))\b).*(;$| |$)"
         regex_without_cert = r"v=BIMI1;(| )l=((.*):\/\/.*)(;| |)"
         try:
             # dkim_data = dns.resolver.query('default._bimi.'+self.domain, 'TXT')
@@ -134,7 +135,7 @@ class CheckRecords:
             bimiRecord['status'] = False
             bimiRecord['svg'] = ""
             bimiRecord['vmc'] = ""
-            bimiRecord['errors'].append("Error with bimi dns check."+str(e))
+            bimiRecord['errors'].append("Error with bimi dns check. "+str(e))
         return bimiRecord
 
     def get_dns_details(self):

@@ -10,6 +10,7 @@ class CheckBimiController(Resource):
         CR = CheckRecords(content['domain'])
         data = CR.get_dns_details()
         CS = CheckSvg(data['bimi']['svg'],user_agent)
+        print(data['bimi']['svg'])
         data['svg_validation'] = CS.check_svg()
         CV = CheckVmc(data['bimi']['vmc'],user_agent)
         data['vmc_validation'] = CV.check_vmc()
