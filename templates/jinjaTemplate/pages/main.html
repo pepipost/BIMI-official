@@ -242,6 +242,7 @@
                         <button @click="toggle_svg_errors()" v-if="bimi_check_details.svg_validation.errors.length > 3" class="btn btn-outline-danger btn-red btn-sm">View Issues</button>
                       </div>
                       <div class="issues" v-if="bimi_check_details.svg_validation.errors.length <= 3">
+                        <h5>SVG Issues You Need To Fix</h5>
                         <ul v-for="(bimi_error, bimi_error_index) in bimi_check_details.svg_validation.errors">
                           <li>
                             <span class="short_error">[[bimi_error.short_error]]</span>
@@ -250,7 +251,7 @@
                           </li>
                         </ul>
                       </div>
-                      <div class="issues" v-if="bimi_check_details.svg_validation.errors.length > 0 && svg_errors_toggle">
+                      <div class="issues" v-if="bimi_check_details.svg_validation.errors.length > 3 && svg_errors_toggle">
                         <h5>SVG Issues You Need To Fix</h5>
                         <ul v-for="(bimi_error, bimi_error_index) in bimi_check_details.svg_validation.errors">
                           <li>
