@@ -676,8 +676,8 @@
               }
             },
             validate_domain(domain){
-              // const REGEXT_DOMAIN = /(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/gm
-              const REGEXT_DOMAIN = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/gm
+              // const REGEXT_DOMAIN = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/gm
+              const REGEXT_DOMAIN = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/gm
               if (domain==null || domain == ""){
                 this.domain_validation_error = "Please enter a domain"
                 return false
