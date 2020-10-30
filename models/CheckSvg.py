@@ -19,7 +19,7 @@ class CheckSvg:
 
     # Donwnload SVG
     def download_svg_path(self, url):
-        print('Beginning file download with urllib2')
+        print('Beginning SVG file download with urllib')
         try:
             self.Utils.check_dir_folder(self.STORAGE_SVG_DIR)
             file_name_hash = str(uuid.uuid4())
@@ -28,9 +28,12 @@ class CheckSvg:
                 data = response.read()
                 out_file.write(data)
             return self.STORAGE_SVG_DIR+file_name_hash+".svg"
-        except urllib.error.URLError as e:
+        except urllib.error.URLError as libe_e:
             print(e.reason)
-            self.svg_response['errors'].append({"short_error":str(e.reason),"error_details":str(e.reason)+", For the provided SVG link."})
+            self.svg_response['errors'].append({"short_error":str(libe_e.reason),"error_details":str(libe_e.reason)+", For the provided SVG link."})
+            return False
+        except Exception as e:
+            self.svg_response["errors"].append({"short_error":"Something went wrong while downloading the SVG Image","error_details":"Either you have a really bad SVG link or Your SVG cannot be downloaded for processing."})
             return False
             
     # CHECK SVG Extension

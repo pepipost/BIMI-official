@@ -14,7 +14,7 @@ class CheckRecords:
         try:
             # result = subprocess.run(['checkdmarc', self.domain], stdout=subprocess.PIPE)
             # complied_dict = json.loads(result)
-            result = checkdmarc.check_domains([self.domain],False,None,None,False,False,None,5.0,1.0)
+            result = checkdmarc.check_domains([self.domain],False,None,None,True,False,None,2.0,0.0)
             return result
         except Exception as e:
             print("error in executing checkdmarc. Error: ",e)
