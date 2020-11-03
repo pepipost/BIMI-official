@@ -85,9 +85,9 @@ class CheckRecords:
         # BIMI CHECK
         bimiRecord = {"status": "", "record": "","errors":[], "warnings":[] ,"svg":""}
         # regex_cert = r"v=BIMI1;(| )l=((.*):\/\/.*);(| )a=((.*):\/\/(.*.pem))"
-        regex_cert = r"v=BIMI1;(?=.*(l=((.*):\/\/(.*.svg)))\b)(?=.*(a=((.*):\/\/(.*.pem)))\b).*(;$| |$)"
+        regex_cert = r"v=BIMI1;(?=.*(l=((.*):\/\/(.*.svg|.*.SVG)))\b)(?=.*(a=((.*):\/\/(.*.pem|.*.PEM)))\b).*(;$| |$)"
         # regex_without_cert = r"v=BIMI1;\s+(| )l=((.*):\/\/.*)(;| |)"
-        regex_without_cert = r"v=BIMI1;(|\s+)l=((.*):\/\/(.*.svg))(;| |).*"
+        regex_without_cert = r"v=BIMI1;(|\s+)l=((.*):\/\/(.*.svg|.*.SVG))(;| |).*"
         try:
             dkim_data = checkdmarc.query_bimi_record(self.domain, selector='default', nameservers=None, timeout=4.0)
             # print(dkim_data)
