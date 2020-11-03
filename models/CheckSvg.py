@@ -38,7 +38,7 @@ class CheckSvg:
             
     # CHECK SVG Extension
     def is_svg_extension(self):
-        print('Checking Svg extion')
+        print('Checking Svg extension')
         if self.is_file:
             if self.svg_file != None:
                 return True

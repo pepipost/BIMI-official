@@ -94,17 +94,34 @@ class CheckRecords:
             bimiRecord['record'] = dkim_data['record']
             if re.search(regex_cert, bimiRecord['record']):
                 print("Bimi Record is with pem certificate")
-                bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
-                bimiRecord['vmc'] = (bimiRecord['record'].split('a=')[1]).split('.pem')[0]+'.pem'
                 bimiRecord['status'] = True
+                if ("SVG" in bimiRecord['record']):
+                    bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.SVG')[0]+'.SVG'
+                elif ("svg" in bimiRecord['record']):
+                    bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
+                else:
+                    bimiRecord['status'] = False
+                    bimiRecord['errors'].append("BIMI record doesn't have a .svg image")
+                
+                bimiRecord['vmc'] = (bimiRecord['record'].split('a=')[1]).split('.pem')[0]+'.pem'
+                
                 if(len(dkim_data['warnings'])) > 0:
                     dkim_data['warnings'] += dkim_data['warnings']
                     bimiRecord['status'] = False
+
             elif re.search(regex_without_cert, bimiRecord['record']):
                 print("Bimi Record is without pem certificate")
-                bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
-                bimiRecord['vmc'] = ""
                 bimiRecord['status'] = True
+
+                if ("SVG" in bimiRecord['record']):
+                    bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.SVG')[0]+'.SVG'
+                elif ("svg" in bimiRecord['record']):
+                    bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
+                else:
+                    bimiRecord['status'] = False
+                    bimiRecord['errors'].append("BIMI record doesn't have a .svg image")
+
+                bimiRecord['vmc'] = ""
 
                 if(len(dkim_data['warnings'])) > 0:
                     bimiRecord['status'] = False
