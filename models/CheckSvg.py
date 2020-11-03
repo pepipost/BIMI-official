@@ -38,6 +38,7 @@ class CheckSvg:
             
     # CHECK SVG Extension
     def is_svg_extension(self):
+        print('Checking Svg extion')
         if self.is_file:
             if self.svg_file != None:
                 return True
@@ -52,6 +53,7 @@ class CheckSvg:
 
     # Check if xml file has an SVG tag
     def is_svg_xml(self):
+        print('Checking If this is an XML file')
         tag = None
         with open(self.svg_file, "r") as f:
             try:
@@ -68,17 +70,17 @@ class CheckSvg:
             if self.is_svg_extension():
                 if not self.is_file:
                     self.svg_file = self.download_svg_path(self.svg_file)
-                    if self.svg_file:
-                        if self.is_svg_xml():
-                            self.check_svg_schema()
-                            if len(self.svg_response['errors']) > 0:
-                                self.svg_response['status'] = False
-                            else:
-                                self.svg_response['status'] = True
+                if self.svg_file:
+                    if self.is_svg_xml():
+                        self.check_svg_schema()
+                        if len(self.svg_response['errors']) > 0:
+                            self.svg_response['status'] = False
                         else:
-                            self.svg_response['errors'].append({"short_error":"Invalid SVG","error_details":"The SVG image in your BIMI record has no SVG tag"})
+                            self.svg_response['status'] = True
                     else:
-                        self.svg_response['errors'].append({"short_error":"File extraction error","error_details":"There was an issue with downloading the SVG. Either the SVG image file doesn't exist or the link is unreachable / blocked."})
+                        self.svg_response['errors'].append({"short_error":"Invalid SVG","error_details":"The SVG image in your BIMI record has no SVG tag"})
+                else:
+                    self.svg_response['errors'].append({"short_error":"File extraction error","error_details":"There was an issue with downloading the SVG. Either the SVG image file doesn't exist or the link is unreachable / blocked."})
             else:
                 self.svg_response['errors'].append({"short_error":"Extension Error","error_details":"Invalid File extension"})
         else:

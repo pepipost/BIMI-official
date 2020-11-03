@@ -241,7 +241,7 @@
                       <div class="issues-button-wrapper text-center">
                         <button @click="toggle_svg_errors()" v-if="bimi_check_details.svg_validation.errors.length > 3" class="btn btn-outline-danger btn-red btn-sm">View Issues</button>
                       </div>
-                      <div class="issues" v-if="bimi_check_details.svg_validation.errors.length <= 3">
+                      <div class="issues" v-if="bimi_check_details.svg_validation.errors.length <= 3 && bimi_check_details.svg_validation.errors.length > 0">
                         <h5>SVG Issues You Need To Fix</h5>
                         <ul v-for="(bimi_error, bimi_error_index) in bimi_check_details.svg_validation.errors">
                           <li>
