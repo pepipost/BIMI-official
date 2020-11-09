@@ -29,7 +29,7 @@ class CheckSvg:
                 out_file.write(data)
             return self.STORAGE_SVG_DIR+file_name_hash+".svg"
         except urllib.error.URLError as libe_e:
-            print(e.reason)
+            print(libe_e.reason)
             self.svg_response['errors'].append({"short_error":str(libe_e.reason),"error_details":str(libe_e.reason)+", For the provided SVG link."})
             return False
         except Exception as e:
