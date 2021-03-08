@@ -95,9 +95,9 @@ class CheckRecords:
             if re.search(regex_cert, bimiRecord['record']):
                 print("Bimi Record is with pem certificate")
                 bimiRecord['status'] = True
-                if ("SVG" in bimiRecord['record']):
+                if (".SVG" in bimiRecord['record']):
                     bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.SVG')[0]+'.SVG'
-                elif ("svg" in bimiRecord['record']):
+                elif (".svg" in bimiRecord['record']):
                     bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'
                 else:
                     bimiRecord['status'] = False

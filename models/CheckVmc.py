@@ -46,12 +46,15 @@ class CheckVmc:
         except errors.InvalidCertificateError as InvalidCertificateError:
             self.vmc_response["errors"].append("Warning: Certificate Is Invalid.\n"+str(InvalidCertificateError))
             print(InvalidCertificateError)
-        except errors.PathBuildingError as PathBuildingError:
-            self.vmc_response["errors"].append("Warning: Cannot Build Path.\n"+str(PathBuildingError))
-            print(PathBuildingError)
+        # except errors.PathBuildingError as PathBuildingError:
+        #     self.vmc_response["errors"].append("Warning: Cannot Build Path.\n"+str(PathBuildingError))
+        #     print(PathBuildingError)
         except Exception as e:
-            self.vmc_response["errors"].append("Warning: Validation Exception.\n"+str(e))
-            print(e)
+            if "Unable to build a validation path" in str(e):
+                pass
+            else:
+                self.vmc_response["errors"].append("Warning: Validation Exception.\n"+str(e))
+                print(e)
 
 
     # Check VMC extension

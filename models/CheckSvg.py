@@ -23,16 +23,18 @@ class CheckSvg:
         try:
             self.Utils.check_dir_folder(self.STORAGE_SVG_DIR)
             file_name_hash = str(uuid.uuid4())
-            req = Request(url, headers={'User-Agent': self.user_agent})
-            with urlopen(req) as response, open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb') as out_file:
-                data = response.read()
-                out_file.write(data)
+            #req = Request(url, headers={'User-Agent': self.user_agent})
+            # with urlopen(req) as response, open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb') as out_file:
+            #     data = response.read()
+            #     out_file.write(data)
+            urllib.request.urlretrieve(url, self.STORAGE_SVG_DIR+file_name_hash+".svg")
             return self.STORAGE_SVG_DIR+file_name_hash+".svg"
         except urllib.error.URLError as libe_e:
             print(libe_e.reason)
             self.svg_response['errors'].append({"short_error":str(libe_e.reason),"error_details":str(libe_e.reason)+", For the provided SVG link."})
             return False
         except Exception as e:
+            print(e)
             self.svg_response["errors"].append({"short_error":"Something went wrong while downloading the SVG Image","error_details":"Either you have a really bad SVG link or Your SVG cannot be downloaded for processing."})
             return False
             
