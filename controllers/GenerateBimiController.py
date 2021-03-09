@@ -6,6 +6,7 @@ from models.CheckVmc import CheckVmc
 from models.GenerateBimi import GenerateBimi
 from utils.Utils import Utils
 from Config import Config
+import tldextract
 class GenerateBimiController(Resource):
     def __init__(self):
         self.Utils = Utils()
@@ -34,7 +35,7 @@ class GenerateBimiController(Resource):
             return data, 400
 
         user_agent = request.headers.get('User-Agent')
-        CR = CheckRecords(content['domain'])
+        CR = CheckRecords(tldextract.extract(content['domain']).registered_domain)
         data = CR.get_dns_details()
 
         if content['svg_link']!="":
