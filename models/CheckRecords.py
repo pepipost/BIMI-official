@@ -103,7 +103,10 @@ class CheckRecords:
                     bimiRecord['status'] = False
                     bimiRecord['errors'].append("BIMI record doesn't have a .svg image")
                 
-                bimiRecord['vmc'] = (bimiRecord['record'].split('a=')[1]).split('.pem')[0]+'.pem'
+                if (".PEM" in bimiRecord['record']):
+                    bimiRecord['vmc'] = (bimiRecord['record'].split('a=')[1]).split('.PEM')[0]+'.PEM'
+                elif (".pem" in bimiRecord['record']):
+                    bimiRecord['vmc'] = (bimiRecord['record'].split('a=')[1]).split('.pem')[0]+'.pem'
                 
                 if(len(dkim_data['warnings'])) > 0:
                     dkim_data['warnings'] += dkim_data['warnings']
