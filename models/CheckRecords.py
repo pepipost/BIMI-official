@@ -89,9 +89,9 @@ class CheckRecords:
         # regex_without_cert = r"v=BIMI1;\s+(| )l=((.*):\/\/.*)(;| |)"
         regex_without_cert = r"v=BIMI1;(|\s+)l=((.*):\/\/(.*.svg|.*.SVG))(;| |).*"
         try:
-            dkim_data = checkdmarc.query_bimi_record(self.domain, selector='default', nameservers=None, timeout=4.0)
-            # print(dkim_data)
-            bimiRecord['record'] = dkim_data['record']
+            bimi_data = checkdmarc.query_bimi_record(self.domain, selector='default', nameservers=None, timeout=4.0)
+            # print(bimi_data)
+            bimiRecord['record'] = bimi_data['record']
             if re.search(regex_cert, bimiRecord['record']):
                 print("Bimi Record is with pem certificate")
                 bimiRecord['status'] = True
@@ -108,8 +108,8 @@ class CheckRecords:
                 elif (".pem" in bimiRecord['record']):
                     bimiRecord['vmc'] = (bimiRecord['record'].split('a=')[1]).split('.pem')[0]+'.pem'
                 
-                if(len(dkim_data['warnings'])) > 0:
-                    dkim_data['warnings'] += dkim_data['warnings']
+                if(len(bimi_data['warnings'])) > 0:
+                    bimi_data['warnings'] += bimi_data['warnings']
                     bimiRecord['status'] = False
 
             elif re.search(regex_without_cert, bimiRecord['record']):
@@ -126,7 +126,7 @@ class CheckRecords:
 
                 bimiRecord['vmc'] = ""
 
-                if(len(dkim_data['warnings'])) > 0:
+                if(len(bimi_data['warnings'])) > 0:
                     bimiRecord['status'] = False
 
                 if bimiRecord['record'].find("a=") !=-1:
@@ -142,14 +142,14 @@ class CheckRecords:
                         if len(pem_string) > 0:
                             bimiRecord['errors'].append("BIMI record has an invalid a= record format. The linked file must be .pem file or empty record a=;")
                             bimiRecord['status'] = False
-                bimiRecord['errors'] += dkim_data['warnings']
+                bimiRecord['errors'] += bimi_data['warnings']
             else:
                 print("Bimi Record is Invalid")
                 bimiRecord['status'] = False
                 bimiRecord['svg'] = ""
                 bimiRecord['vmc'] = ""
                 bimiRecord['errors'].append("BIMI has an invalid format: Correct format : v=BIMI1; l=https://"+self.domain+"/svg-file-path/logo-image.svg; a=https://"+self.domain+"/pem-certificate-path/file.pem. \n Pem certificate being optional currently.")
-                bimiRecord['errors'] += dkim_data['warnings']
+                bimiRecord['errors'] += bimi_data['warnings']
         except Exception as e:
             print("Error in executing DNS Resolver for BIMI DKIM Check. Error: ", e)
             bimiRecord['status'] = False

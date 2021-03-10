@@ -35,7 +35,13 @@ class CheckVmc:
                     else:
                         intermediates.append(der_bytes)
             validator = CertificateValidator(end_entity_cert, intermediates)
-            validated = validator.validate_usage(set(['digital_signature']))
+            validated = validator.validate_usage(
+                set(['digital_signature']),
+                    extended_key_usage=set(["server_auth", "client_auth"])
+                )
+            if validated:
+                print("Certificate Validated")
+                pass
             # print(intermediates)
         except errors.PathValidationError as PathValidationError:
             self.vmc_response["errors"].append("Warning: "+str(PathValidationError))
