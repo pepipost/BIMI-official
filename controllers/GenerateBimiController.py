@@ -35,7 +35,17 @@ class GenerateBimiController(Resource):
             return data, 400
 
         user_agent = request.headers.get('User-Agent')
-        CR = CheckRecords(tldextract.extract(content['domain']).registered_domain)
+
+        # Check if the current domain has a bimi record set (In case of sub domains)
+        CR = CheckRecords(content['domain'])
+        bimi_data = CR.get_bimi()
+
+        # print(bimi_data, "\n")
+
+        # Try to extract parent domain in case the no record found was due to subdomain search
+        if bimi_data['record'] == "":
+            CR = CheckRecords(tldextract.extract(content['domain']).registered_domain)
+
         data = CR.get_dns_details()
 
         if content['svg_link']!="":
