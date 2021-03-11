@@ -50,17 +50,20 @@ class CheckRecords:
 
     def get_dmarc(self, dmarc):
         # DMARC CHECK
+        regex_pct = r"pct=(100|[1-9][0-9]|[1-9])"
         dmarcRecord = {"status": "", "record": "","warnings":[],"errors":[]}
         if dmarc['record'] in (None, ''):
             dmarcRecord['status'] = False
         else:
+            dmarcRecord['status'] = dmarc['valid']
+            searchpct = re.search(regex_pct, dmarc['record'])
             if dmarc['record'].find('p=quarantine')==-1 and dmarc['record'].find('p=reject')==-1:
                 dmarcRecord['status'] = False
                 dmarcRecord['errors'] = ["dmarc policy should be set to p=quarantine or p=reject for BIMI to work"]
-                dmarcRecord['record'] = dmarc['record']
-            else:
-                dmarcRecord['status'] = dmarc['valid']
-                dmarcRecord['record'] = dmarc['record']
+            if searchpct and int(searchpct.group(0).split("=")[1]) != 100:
+                dmarcRecord['status'] = False
+            dmarcRecord['record'] = dmarc['record']
+
         dmarcRecord['errors'] += [dmarc['error']] if 'error' in dmarc else []
         dmarcRecord['warnings'] += dmarc['warnings'] if 'warnings' in dmarc else []
         return dmarcRecord
