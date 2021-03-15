@@ -1,4 +1,5 @@
 from Config import Config
+import urllib
 from urllib.request import Request, urlopen
 import sys,os
 from asn1crypto import pem
@@ -15,14 +16,25 @@ class CheckVmc:
         self.user_agent = user_agent
 
     def download_pem_path(self, url):
-        print('Beginning VMC file download certificate with urllib')
-        self.Utils.check_dir_folder(self.STORAGE_CERT_DIR)
-        file_name_hash = str(uuid.uuid4())
-        req = Request(url, headers={'User-Agent': self.user_agent})
-        with urlopen(req) as response, open(self.STORAGE_CERT_DIR+file_name_hash+".pem", 'wb') as out_file:
-            data = response.read()
-            out_file.write(data)
-        return self.STORAGE_CERT_DIR+file_name_hash+".pem"
+        try:
+            print('Beginning VMC file download certificate with urllib')
+            self.Utils.check_dir_folder(self.STORAGE_CERT_DIR)
+            file_name_hash = str(uuid.uuid4())
+            # req = Request(url, headers={'User-Agent': self.user_agent})
+            # with urlopen(req) as response, open(self.STORAGE_CERT_DIR+file_name_hash+".pem", 'wb') as out_file:
+            #     data = response.read()
+            #     out_file.write(data)
+            opener = urllib.request.build_opener()
+            opener.addheaders = [('User-Agent', self.user_agent)]
+            urllib.request.install_opener(opener)
+            urllib.request.urlretrieve(url, self.STORAGE_CERT_DIR+file_name_hash+".pem")
+            return self.STORAGE_CERT_DIR+file_name_hash+".pem"
+        except urllib.error.URLError as libe_e:
+            print(libe_e.reason)
+            return ""
+        except Exception as e:
+            print(e)
+            return ""
 
     def validate_vmc(self):
         try:
@@ -36,8 +48,8 @@ class CheckVmc:
                         intermediates.append(der_bytes)
             validator = CertificateValidator(end_entity_cert, intermediates)
             validated = validator.validate_usage(
-                set(['digital_signature']),
-                    extended_key_usage=set(["server_auth", "client_auth"])
+                set(['digital_signature'])
+                # ,extended_key_usage=set(["server_auth", "client_auth"])
                 )
             if validated:
                 print("Certificate Validated")

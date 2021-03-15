@@ -23,10 +23,13 @@ class CheckSvg:
         try:
             self.Utils.check_dir_folder(self.STORAGE_SVG_DIR)
             file_name_hash = str(uuid.uuid4())
-            #req = Request(url, headers={'User-Agent': self.user_agent})
+            # req = Request(url, headers={'User-Agent': self.user_agent})
             # with urlopen(req) as response, open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb') as out_file:
             #     data = response.read()
             #     out_file.write(data)
+            opener = urllib.request.build_opener()
+            opener.addheaders = [('User-Agent', self.user_agent)]
+            urllib.request.install_opener(opener)
             urllib.request.urlretrieve(url, self.STORAGE_SVG_DIR+file_name_hash+".svg")
             return self.STORAGE_SVG_DIR+file_name_hash+".svg"
         except urllib.error.URLError as libe_e:
