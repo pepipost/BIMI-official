@@ -26,10 +26,11 @@ class Utils:
     def strip_svg_plugin_errors(self,directory,error_str,replace_string):
         try:
             path = self.get_abs_path(directory)
-            replaced = error_str
-            for key,value in Constants.svg_regex.items():
-                replaced = re.sub(value,replace_string,replaced)
-            return replaced
+            # replaced = error_str
+            # for key,value in Constants.svg_regex.items():
+            #     replaced = re.sub(value,replace_string,replaced)
+            error_str = error_str.split(";")[0].split("error:")[1] + ", At line number: " +(re.search(Constants.svg_error_line,error_str)).group(0)
+            return error_str
         except Exception as e:
             print("Exception in strip_svg_plugin_errors for SVG. Error in - ",self.__class__.__name__,". \n Error: ",e)
     

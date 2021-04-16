@@ -101,11 +101,13 @@ class CheckSvg:
             error_string = result.stdout.decode()
             if error_string:
                 if error_string.find("error:")!=-1:
-                    err = error_string.split("error:")
-                    for i in range(1, len(err)-1):
-                        clear_error_string = self.Utils.clear_response_single_string(err[i])
-                        error_str = self.Utils.strip_svg_plugin_errors(self.STORAGE_SVG_DIR,clear_error_string,", Check Line ")
-                        self.svg_response['errors'].append({"short_error":error_str,"error_details":clear_error_string})
+                    err = error_string.split("\n")
+                    for i in range(len(err)):
+                        # print(err[i])
+                        if err[i]:
+                            clear_error_string = self.Utils.clear_response_single_string(err[i])
+                            error_str = self.Utils.strip_svg_plugin_errors(self.STORAGE_SVG_DIR,clear_error_string,", Check Line ")
+                            self.svg_response['errors'].append({"short_error":error_str,"error_details":clear_error_string})
                     self.svg_response['status'] = False
             else:
                 self.svg_response['status'] = True

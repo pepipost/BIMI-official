@@ -48,5 +48,6 @@ storage/
 client/
 node_modules
 *.log
+backup/
 # *.zip
 

@@ -31,7 +31,7 @@ class CheckBimiController(Resource):
         # print(bimi_data, "\n")
 
         if bimi_data['record'] == "":
-            CR = CheckRecords(tldextract.extract(content['domain']).registered_domain)
+            CR = CheckRecords(tldextract.extract(content['domain'], include_psl_private_domains=True).registered_domain)
 
         data = CR.get_dns_details()
         CS = CheckSvg(data['bimi']['svg'],user_agent)
