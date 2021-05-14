@@ -50,18 +50,41 @@ class CheckRecords:
 
     def get_dmarc(self, dmarc):
         # DMARC CHECK
-        regex_pct = r"pct=(100|[1-9][0-9]|[1-9])"
         dmarcRecord = {"status": "", "record": "","warnings":[],"errors":[]}
+        subdomainPolicy = None
+        policy = None
+        pct = 100
         if dmarc['record'] in (None, ''):
             dmarcRecord['status'] = False
         else:
             dmarcRecord['status'] = dmarc['valid']
-            searchpct = re.search(regex_pct, dmarc['record'])
-            if dmarc['record'].find('p=quarantine')==-1 and dmarc['record'].find('p=reject')==-1:
+            if "tags" in dmarc:
+                # Set Policy
+                if "p" in dmarc["tags"]:
+                    policy = dmarc["tags"]["p"]["value"]
+                    print("policy",policy)
+                # Set SubdomainPolicy
+                if "sp" in dmarc["tags"]:
+                    subdomainPolicy = dmarc["tags"]["sp"]["value"]
+                    print(" sub policy",subdomainPolicy)
+                # Set mail percentage
+                if "pct" in dmarc["tags"]:
+                    pct = dmarc["tags"]["pct"]["value"]
+                    print(" pct",pct)
+
+            # BIMI strict policy checks
+            if policy == "quarantine":
+                if pct != 100:
+                    dmarcRecord['status'] = False
+                    dmarcRecord['errors'] = ["dmarc policy when set to p=quarantine, it is recommended to set pct=100 for BIMI to work"]
+            elif policy == "reject":
+                if pct == 0:
+                    dmarcRecord['status'] = False
+                    dmarcRecord['errors'] = ["dmarc policy when set to p=reject, it is recommended to set pct should be atleast > 0 for BIMI to work"]
+            else:
                 dmarcRecord['status'] = False
                 dmarcRecord['errors'] = ["dmarc policy should be set to p=quarantine or p=reject for BIMI to work"]
-            if searchpct and int(searchpct.group(0).split("=")[1]) != 100:
-                dmarcRecord['status'] = False
+
             dmarcRecord['record'] = dmarc['record']
 
         dmarcRecord['errors'] += [dmarc['error']] if 'error' in dmarc else []
@@ -119,7 +142,7 @@ class CheckRecords:
                 print("Bimi Record is without pem certificate")
                 bimiRecord['status'] = True
 
-                if ("SVG" in bimiRecord['record']):
+                if (".SVG" in bimiRecord['record']):
                     bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.SVG')[0]+'.SVG'
                 elif ("svg" in bimiRecord['record']):
                     bimiRecord['svg'] = (bimiRecord['record'].split('l=')[1]).split('.svg')[0]+'.svg'

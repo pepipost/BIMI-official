@@ -2,8 +2,7 @@ from lxml import etree
 import xml.etree.cElementTree as et
 import subprocess
 from utils.Utils import Utils
-import urllib
-from urllib.request import Request, urlopen
+import requests
 import sys,os
 import uuid
 from Config import Config
@@ -19,23 +18,27 @@ class CheckSvg:
 
     # Donwnload SVG
     def download_svg_path(self, url):
-        print('Beginning SVG file download with urllib')
+        print('Beginning SVG file download with requests')
         try:
             self.Utils.check_dir_folder(self.STORAGE_SVG_DIR)
             file_name_hash = str(uuid.uuid4())
-            # req = Request(url, headers={'User-Agent': self.user_agent})
-            # with urlopen(req) as response, open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb') as out_file:
-            #     data = response.read()
-            #     out_file.write(data)
-            opener = urllib.request.build_opener()
-            opener.addheaders = [('User-Agent', self.user_agent)]
-            urllib.request.install_opener(opener)
-            urllib.request.urlretrieve(url, self.STORAGE_SVG_DIR+file_name_hash+".svg")
-            return self.STORAGE_SVG_DIR+file_name_hash+".svg"
-        except urllib.error.URLError as libe_e:
-            print(libe_e.reason)
-            self.svg_response['errors'].append({"short_error":str(libe_e.reason),"error_details":str(libe_e.reason)+", For the provided SVG link."})
-            return False
+
+            response = requests.get(url, headers={'User-Agent': self.user_agent})
+            if response:
+                with open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb+') as out_file:
+                    out_file.write(response.content)
+                print(self.STORAGE_SVG_DIR+file_name_hash+".svg")
+                return self.STORAGE_SVG_DIR+file_name_hash+".svg"
+            else:
+                response.raise_for_status()
+                return False
+        
+        except HTTPError as http_err:
+            if (http_err > 400):
+                self.svg_response['errors'].append({"short_error":"Http Error","error_details":"An error occured while fetching the BIMI SVG Image."})
+                print(f'HTTP error : {http_err} occure while fetching image');
+                return False
+
         except Exception as e:
             print(e)
             self.svg_response["errors"].append({"short_error":"Something went wrong while downloading the SVG Image","error_details":"Either you have a really bad SVG link or Your SVG cannot be downloaded for processing."})

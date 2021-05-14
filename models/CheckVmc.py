@@ -1,6 +1,5 @@
 from Config import Config
-import urllib
-from urllib.request import Request, urlopen
+import requests
 import sys,os
 from asn1crypto import pem
 from certvalidator import CertificateValidator, errors
@@ -17,21 +16,23 @@ class CheckVmc:
 
     def download_pem_path(self, url):
         try:
-            print('Beginning VMC file download certificate with urllib')
+            print('Beginning VMC file download certificate')
             self.Utils.check_dir_folder(self.STORAGE_CERT_DIR)
             file_name_hash = str(uuid.uuid4())
-            # req = Request(url, headers={'User-Agent': self.user_agent})
-            # with urlopen(req) as response, open(self.STORAGE_CERT_DIR+file_name_hash+".pem", 'wb') as out_file:
-            #     data = response.read()
-            #     out_file.write(data)
-            opener = urllib.request.build_opener()
-            opener.addheaders = [('User-Agent', self.user_agent)]
-            urllib.request.install_opener(opener)
-            urllib.request.urlretrieve(url, self.STORAGE_CERT_DIR+file_name_hash+".pem")
-            return self.STORAGE_CERT_DIR+file_name_hash+".pem"
-        except urllib.error.URLError as libe_e:
-            print(libe_e.reason)
-            return ""
+
+            response = requests.get(url, headers={'User-Agent': self.user_agent})
+            if response:
+                with open(self.STORAGE_CERT_DIR+file_name_hash+".pem", 'wb+') as out_file:
+                    out_file.write(response.content)
+                return self.STORAGE_CERT_DIR+file_name_hash+".pem"
+            else:
+                response.raise_for_status()
+                return False
+        except HTTPError as http_err:
+            if (http_err > 400):
+                self.svg_response['errors'].append({"short_error":"Http Error","error_details":"An error occured while fetching the Certificate."})
+                print(f'HTTP error : {http_err} occure while fetching the Certificate');
+                return False
         except Exception as e:
             print(e)
             return ""

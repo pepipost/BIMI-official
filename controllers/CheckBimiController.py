@@ -24,7 +24,7 @@ class CheckBimiController(Resource):
             return data, 400
 
         user_agent = request.headers.get('User-Agent')
-
+        
         CR = CheckRecords(content['domain'])
         bimi_data = CR.get_bimi()
 
