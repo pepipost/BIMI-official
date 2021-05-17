@@ -3,11 +3,12 @@ import json
 # import dns.resolver
 import checkdmarc
 import re
-from pprint import pprint
+from utils.Utils import Utils
 
 class CheckRecords:
     def __init__(self,domain):
         self.domain = domain
+        self.Utils = Utils()
 
     def getDnsTXT(self):
         # Check SPF DMARC MX from TXT record
@@ -50,28 +51,27 @@ class CheckRecords:
 
     def get_dmarc(self, dmarc):
         # DMARC CHECK
-        dmarcRecord = {"status": "", "record": "","warnings":[],"errors":[]}
         subdomainPolicy = None
         policy = None
         pct = 100
+        dmarcRecord = {"status": "", "record": "","warnings":[],"errors":[]}
         if dmarc['record'] in (None, ''):
             dmarcRecord['status'] = False
         else:
             dmarcRecord['status'] = dmarc['valid']
-            if "tags" in dmarc:
-                # Set Policy
-                if "p" in dmarc["tags"]:
-                    policy = dmarc["tags"]["p"]["value"]
-                    print("policy",policy)
-                # Set SubdomainPolicy
-                if "sp" in dmarc["tags"]:
-                    subdomainPolicy = dmarc["tags"]["sp"]["value"]
-                    print(" sub policy",subdomainPolicy)
-                # Set mail percentage
-                if "pct" in dmarc["tags"]:
-                    pct = dmarc["tags"]["pct"]["value"]
-                    print(" pct",pct)
-
+            dmarc['record_a'] = self.Utils.record_str_to_dict(dmarc['record'])
+            # Set Policy
+            if "p" in dmarc["record_a"]:
+                policy = dmarc["record_a"]["p"]
+                print("policy",policy)
+		# Set SubdomainPolicy
+            if "sp" in dmarc["record_a"]:
+                subdomainPolicy = dmarc["record_a"]["sp"]
+                print("sub policy",subdomainPolicy)
+		# Set mail percentage
+            if "pct" in dmarc["record_a"]:
+                pct = int(dmarc["record_a"]["pct"].strip())
+                print("pct",pct)    
             # BIMI strict policy checks
             if policy == "quarantine":
                 if pct != 100:
@@ -85,7 +85,7 @@ class CheckRecords:
                 dmarcRecord['status'] = False
                 dmarcRecord['errors'] = ["dmarc policy should be set to p=quarantine or p=reject for BIMI to work"]
 
-            dmarcRecord['record'] = dmarc['record']
+        dmarcRecord['record'] = dmarc['record']
 
         dmarcRecord['errors'] += [dmarc['error']] if 'error' in dmarc else []
         dmarcRecord['warnings'] += dmarc['warnings'] if 'warnings' in dmarc else []

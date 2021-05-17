@@ -6,6 +6,15 @@ from werkzeug.utils import secure_filename
 import os
 from flask import Flask, request
 class Utils:
+    def record_str_to_dict(self, record_str):
+        d = {}
+        list_data = record_str.split(";")
+        for i in list_data:
+            if i.strip() !='':
+                s = i.split("=")
+                d[s[0].strip()] = s[1]
+        return d
+
     def clear_response_single_string(self, response_str):
         response_str = response_str.replace("\r", "")
         response_str = response_str.replace("\n", "")
