@@ -12,7 +12,7 @@ class Utils:
         for i in list_data:
             if i.strip() !='':
                 s = i.split("=")
-                d[s[0].strip()] = s[1]
+                d[(s[0].strip()).lower()] = s[1]
         return d
 
     def clear_response_single_string(self, response_str):
