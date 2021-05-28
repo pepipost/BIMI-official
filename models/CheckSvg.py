@@ -23,21 +23,28 @@ class CheckSvg:
             self.Utils.check_dir_folder(self.STORAGE_SVG_DIR)
             file_name_hash = str(uuid.uuid4())
 
-            response = requests.get(url, headers={'User-Agent': self.user_agent})
+            session = requests.Session()
+            session.max_redirects = 3
+            response = session.get(url, headers={'User-Agent': self.user_agent})
             if response:
                 with open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb+') as out_file:
                     out_file.write(response.content)
-                print(self.STORAGE_SVG_DIR+file_name_hash+".svg")
+                print("Generated file: "+self.STORAGE_SVG_DIR+file_name_hash+".svg")
                 return self.STORAGE_SVG_DIR+file_name_hash+".svg"
             else:
                 response.raise_for_status()
                 return False
         
         except HTTPError as http_err:
-            if (http_err > 400):
+            if (http_err >= 400):
                 self.svg_response['errors'].append({"short_error":"Http Error","error_details":"An error occured while fetching the BIMI SVG Image."})
                 print(f'HTTP error : {http_err} occure while fetching image');
                 return False
+
+        except requests.exceptions.TooManyRedirects as red_err:
+            self.svg_response['errors'].append({"short_error":"Too many redirects","error_details":"The svg URL redirected too many times, please remove the redirections, or atleast reduce them to 3 or less."})
+            print(f'HTTP error : More than 3 redirects while fetching the svg image');
+            return False
 
         except Exception as e:
             print(e)

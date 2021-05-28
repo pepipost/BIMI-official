@@ -20,7 +20,9 @@ class CheckVmc:
             self.Utils.check_dir_folder(self.STORAGE_CERT_DIR)
             file_name_hash = str(uuid.uuid4())
 
-            response = requests.get(url, headers={'User-Agent': self.user_agent})
+            session = requests.Session()
+            session.max_redirects = 3
+            response = session.get(url, headers={'User-Agent': self.user_agent})
             if response:
                 with open(self.STORAGE_CERT_DIR+file_name_hash+".pem", 'wb+') as out_file:
                     out_file.write(response.content)
@@ -29,13 +31,17 @@ class CheckVmc:
                 response.raise_for_status()
                 return False
         except HTTPError as http_err:
-            if (http_err > 400):
-                self.svg_response['errors'].append({"short_error":"Http Error","error_details":"An error occured while fetching the Certificate."})
+            if (http_err >= 400):
+                self.svg_response['errors'].append({"short_error":"Http Error","error_details":"An error occured while fetching the Certificate from the provided Url."})
                 print(f'HTTP error : {http_err} occure while fetching the Certificate');
                 return False
+        except requests.exceptions.TooManyRedirects as red_err:
+            self.svg_response['errors'].append({"short_error":"Too many redirects","error_details":"The cetificate URL redirected too many times, please remove the redirections, or atleast reduce them to 3 or less."})
+            print(f'HTTP error : More than 3 redirects while fetching the svg image');
+            return False
         except Exception as e:
             print(e)
-            return ""
+            return False
 
     def validate_vmc(self):
         try:

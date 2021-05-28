@@ -43,10 +43,12 @@ class GenerateBimiController(Resource):
         # print(bimi_data, "\n")
 
         # Try to extract parent domain in case the no record found was due to subdomain search
-        if bimi_data['record'] == "":
-            CR = CheckRecords(tldextract.extract(content['domain'], include_psl_private_domains=True).registered_domain)
-
-        data = CR.get_dns_details()
+        maindomain = tldextract.extract(content['domain'], include_psl_private_domains=True).registered_domain
+        if bimi_data['record'] == "" and maindomain != content['domain']:
+            CR = CheckRecords(maindomain)
+            data = CR.get_dns_details()
+        else:
+            data = CR.get_dns_details(bimi=bimi_data)
 
         if content['svg_link']!="":
             svg_link = content['svg_link']

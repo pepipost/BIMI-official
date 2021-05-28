@@ -29,11 +29,14 @@ class CheckBimiController(Resource):
         bimi_data = CR.get_bimi()
 
         # print(bimi_data, "\n")
+        # Try to extract parent domain in case the no record found was due to subdomain search
+        maindomain = tldextract.extract(content['domain'], include_psl_private_domains=True).registered_domain
+        if bimi_data['record'] == "" and maindomain != content['domain']:
+            CR = CheckRecords(maindomain)
+            data = CR.get_dns_details()
+        else:
+            data = CR.get_dns_details(bimi=bimi_data)
 
-        if bimi_data['record'] == "":
-            CR = CheckRecords(tldextract.extract(content['domain'], include_psl_private_domains=True).registered_domain)
-
-        data = CR.get_dns_details()
         CS = CheckSvg(data['bimi']['svg'],user_agent)
         print(data['bimi']['svg'])
         data['svg_validation'] = CS.check_svg()
