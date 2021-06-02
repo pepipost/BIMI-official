@@ -36,5 +36,5 @@ svg.path==4.0.2
 svgcheck==0.6.0
 timeout-decorator==0.4.1
 tldextract==3.1.0
-urllib3==1.25.10
+urllib3==1.26.5
 Werkzeug==1.0.1
