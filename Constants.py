@@ -6,4 +6,4 @@ svg_regex = {
     "REGEX_ELEMENTS" : r"(; expected the element.*?\.svg:|; expected element.*?\.svg:|missing required element.*?\.svg:)"
 }
 
-svg_error_line = r"(?<=\.svg:)(.*)(?=: error)"
+svg_error_line = r"(.*)(?=: error)"

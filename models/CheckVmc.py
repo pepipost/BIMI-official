@@ -3,8 +3,10 @@ import requests
 import sys,os
 from asn1crypto import pem
 from certvalidator import CertificateValidator, errors
-from utils.Utils import Utils
+from requests import HTTPError
 import uuid
+from utils.Utils import Utils
+
 class CheckVmc:
     def __init__(self, vmc_file, user_agent, is_file=False):
         self.STORAGE_CERT_DIR = Config.STORAGE_CERT_DIR

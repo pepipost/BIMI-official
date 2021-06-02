@@ -4,21 +4,115 @@ import json
 import checkdmarc
 import re
 from utils.Utils import Utils
+from collections import OrderedDict
+import tldextract
 
 class CheckRecords:
 	def __init__(self,domain):
-		self.domain = domain
+		self.approved_nameservers = None
+		self.approved_mx_hostnames = None
+		self.skip_tls = True
+		self.include_dmarc_tag_descriptions = False
+		self.nameservers = None
+		self.timeout = 2.0
+		self.parked = False
+		# self.wait=0.0
 		self.Utils = Utils()
+		self.domain_results = {}
+		self.domain = domain.rstrip(".\r\n").strip().lower()
+		self.base_domain  = checkdmarc.get_base_domain(self.domain)
+		# self.mxRecord = {"status": "", "records": [],"warnings":[], "errors":[]}
+		# self.spfRecord = {"status": "", "records": [],"warnings":[], "errors":[]}
+		# self.dmarcRecord = {"status": "", "record": "","warnings":[],"errors":[]}
+		# self.bimiRecord = {"status": "", "record": "","errors":[], "warnings":[] ,"svg":"","vmc":""}
 
-	def getDnsTXT(self):
-		# Check SPF DMARC MX from TXT record
+	def fetchNs(self):
+		result = {}
 		try:
-			# result = subprocess.run(['checkdmarc', self.domain], stdout=subprocess.PIPE)
-			# complied_dict = json.loads(result)
-			result = checkdmarc.check_domains([self.domain],False,None,None,True,False,None,2.0,0.0)
-			return result
-		except Exception as e:
-			print("error in executing checkdmarc. Error: ",e)
+			result = checkdmarc.get_nameservers(
+			self.domain,
+			approved_nameservers=self.approved_nameservers,
+			nameservers=self.nameservers,
+			timeout=self.timeout)
+		except checkdmarc.DNSException as error:
+			result = OrderedDict([("hostnames", []),
+				("error", error.__str__())])
+		return result
+
+	def fetchMx(self):
+		result = {}
+		try:
+			result = checkdmarc.get_mx_hosts(
+				self.domain,
+				skip_tls=self.skip_tls,
+				approved_hostnames=self.approved_mx_hostnames,
+				nameservers=self.nameservers,
+				timeout=self.timeout)
+
+		except checkdmarc.DNSException as error:
+			result = OrderedDict([("hosts", []),
+				("error", error.__str__())])
+		return result
+
+	def fetchSpf(self):
+		result = OrderedDict(
+            [("record", None), ("valid", True), ("dns_lookups", None)])
+		try:
+			spf_query = checkdmarc.query_spf_record(
+				self.domain,
+				nameservers=self.nameservers,
+				timeout=self.timeout)
+			result["record"] = spf_query["record"]
+			result["warnings"] = spf_query["warnings"]
+			parsed_spf = checkdmarc.parse_spf_record(result["record"],
+				self.domain,
+				parked=self.parked,
+				nameservers=self.nameservers,
+				timeout=self.timeout)
+
+			result["dns_lookups"] = parsed_spf[
+			"dns_lookups"]
+
+			result["parsed"] = parsed_spf["parsed"]
+			result["warnings"] += parsed_spf["warnings"]
+		except checkdmarc.SPFError as error:
+			result["error"] = str(error)
+			del result["dns_lookups"]
+			result["valid"] = False
+			if hasattr(error, "data") and error.data:
+				for key in error.data:
+					result[key] = error.data[key]
+		return result
+
+	def fetchDmarc(self):
+		result = OrderedDict([("record", None),
+			("valid", True),
+			("location", None)])
+		try:
+			dmarc_query = checkdmarc.query_dmarc_record(self.domain,
+				nameservers=self.nameservers,
+				timeout=self.timeout)
+			result["record"] = dmarc_query["record"]
+			result["location"] = dmarc_query["location"]
+			parsed_dmarc_record = checkdmarc.parse_dmarc_record(
+				dmarc_query["record"],
+				dmarc_query["location"],
+				parked=self.parked,
+				include_tag_descriptions=self.include_dmarc_tag_descriptions,
+				nameservers=self.nameservers,
+				timeout=self.timeout)
+			result["warnings"] = dmarc_query["warnings"]
+
+			result["tags"] = parsed_dmarc_record["tags"]
+			result["warnings"] += parsed_dmarc_record[
+			"warnings"]
+		except checkdmarc.DMARCError as error:
+			result["error"] = str(error)
+			result["valid"] = False
+			if hasattr(error, "data") and error.data:
+				for key in error.data:
+					result[key] = error.data[key]
+		return result
 
 	def get_mx(self,mx):
 		# MX CHECK
@@ -39,7 +133,8 @@ class CheckRecords:
 	
 	def get_spf(self, spf):
 		# SPF CHECK
-		spfRecord = {"status": "", "record": "","warnings":[], "errors":[]}
+		spfRecord = {"status": "", "records": [],"warnings":[], "errors":[]}
+
 		if  spf['record'] in (None, ''):
 			spfRecord['status'] = False
 		else:
@@ -49,12 +144,13 @@ class CheckRecords:
 		spfRecord['warnings'] += spf['warnings'] if 'warnings' in spf else [] 
 		return spfRecord
 
-	def get_dmarc(self, dmarc):
+	def get_dmarc(self, dmarc, setrecord=True):
 		# DMARC CHECK
+		dmarcRecord = {"status": "", "record": "","warnings":[],"errors":[]}
+
 		subdomainPolicy = None
 		policy = None
 		pct = 100
-		dmarcRecord = {"status": "", "record": "","warnings":[],"errors":[]}
 		if dmarc['record'] in (None, ''):
 			dmarcRecord['status'] = False
 		else:
@@ -86,7 +182,8 @@ class CheckRecords:
 				dmarcRecord['status'] = False
 				dmarcRecord['errors'] = ["dmarc policy should be set to p=quarantine or p=reject for BIMI to work"]
 
-		dmarcRecord['record'] = dmarc['record']
+		if setrecord==True:
+			dmarcRecord['record'] = dmarc['record']
 
 		dmarcRecord['errors'] += [dmarc['error']] if 'error' in dmarc else []
 		dmarcRecord['warnings'] += dmarc['warnings'] if 'warnings' in dmarc else []
@@ -108,40 +205,54 @@ class CheckRecords:
 				print("error in executing dns resolver for dmarc record. Error: ",e)
 	"""
 
-	def get_bimi(self):
+	def get_bimi(self,setrecord=True):
 		# BIMI CHECK
 		bimiRecord = {"status": "", "record": "","errors":[], "warnings":[] ,"svg":"","vmc":""}
+		# regex_cert = r"v=BIMI1;(| )l=((.*):\/\/.*);(| )a=((.*):\/\/(.*.pem))"
+		regex_cert = r"v=bimi1;(?=.*(l=((.*):\/\/(.*.svg)))\b)(?=.*(a=((.*):\/\/(.*.pem)))\b).*(;$| |$)"
+		# regex_without_cert = r"v=BIMI1;\s+(| )l=((.*):\/\/.*)(;| |)"
+		regex_without_cert = r"v=bimi1;(|\s+)l=((.*):\/\/(.*.svg))(;| |).*"
 		try:
 			bimi_data = checkdmarc.query_bimi_record(self.domain, selector='default', nameservers=None, timeout=4.0)
-			bimiRecord['record'] = bimi_data['record']
+			if setrecord == True:
+				bimiRecord['record'] = bimi_data['record']
 			bimiRecord['status'] = True
-			records = self.Utils.record_str_to_dict(bimiRecord['record'])
-			if (records['v'] == 'BIMI1'):
-				if 'l' in records:
-					bimiRecord['svg'] = records['l']
-				if 'a' in records:
-					bimiRecord['vmc'] = records['a']
-
-				if (not bimiRecord['svg']):
-					bimiRecord['errors'].append("BIMI record should have a mandatory l= record containing your brand svg logo url")
-					bimiRecord['status'] = False
-				elif (not bimiRecord['svg'].lower().split('?')[0].endswith('.svg')):
-					bimiRecord['errors'].append("BIMI logo should be strictly a SVG file")
-					bimiRecord['svg'] = ""
-					bimiRecord['status'] = False
-
-				if (bimiRecord['vmc']!=""):
-					if (not bimiRecord['vmc'].lower().split('?')[0].endswith('.pem')):
-						bimiRecord['errors'].append("BIMI certificate should be strictly a PEM file")
-						bimiRecord['vmc'] = ""
-						bimiRecord['status'] = False
-
-			else:
-				bimiRecord['errors'].append("BIMI record should have a strict bimi version identifier v=BIMI1 at the beginning of the record")
+			if bimi_data['record'] in (None, ''):
 				bimiRecord['status'] = False
-				bimiRecord['svg'] = ""
-				bimiRecord['vmc'] = ""
-				bimiRecord['errors'].append("BIMI has an invalid format: Correct format : v=BIMI1; l=https://"+self.domain+"/svg-file-path/logo-image.svg; a=https://"+self.domain+"/pem-certificate-path/file.pem. \n Pem certificate being optional currently.")
+				bimiRecord['errors'].append("BIMI Record not found. BIMI record should be set for BIMI to work in the following format : v=BIMI1; l=https://"+self.domain+"/svg-file-path/logo-image.svg; a=https://"+self.domain+"/vmc-certificate-path/file.pem. \n Vmc certificate currently being optional.")
+			else:
+				if (re.search(regex_cert, bimiRecord['record'].lower()) or re.search(regex_without_cert, bimiRecord['record'].lower())):
+					records = self.Utils.record_str_to_dict(bimi_data['record'])
+					if (records['v'] == 'BIMI1'):
+						if 'l' in records:
+							bimiRecord['svg'] = records['l']
+						if 'a' in records:
+							bimiRecord['vmc'] = records['a']
+
+						if (not bimiRecord['svg']):
+							bimiRecord['errors'].append("BIMI record should have a mandatory l= record containing your brand svg logo url")
+							bimiRecord['status'] = False
+						elif (not bimiRecord['svg'].lower().split('?')[0].endswith('.svg')):
+							bimiRecord['errors'].append("BIMI logo should be strictly a SVG file, check your bimi record's \"l=\" parameter.")
+							bimiRecord['svg'] = ""
+							bimiRecord['status'] = False
+
+						if (bimiRecord['vmc']!=""):
+							if (not bimiRecord['vmc'].lower().split('?')[0].endswith('.pem')):
+								bimiRecord['errors'].append("BIMI vmc certificate should be strictly a PEM file, check your bimi record's \"a=\" parameter.")
+								bimiRecord['vmc'] = ""
+								bimiRecord['status'] = False
+					else:
+						bimiRecord['errors'].append("BIMI record should have a strict bimi version identifier v=BIMI1 at the beginning of the record")
+						bimiRecord['status'] = False
+						bimiRecord['svg'] = ""
+						bimiRecord['vmc'] = ""
+				else:
+					bimiRecord['errors'].append("BIMI has an invalid format: Correct format : v=BIMI1; l=https://"+self.domain+"/svg-file-path/logo-image.svg; a=https://"+self.domain+"/vmc-certificate-path/file.pem. \n Vmc certificate currently being optional.")
+					bimiRecord['status'] = False
+					bimiRecord['svg'] = ""
+					bimiRecord['vmc'] = ""
+
 			bimiRecord['errors'] += [bimi_data['error']] if 'error' in bimi_data else []
 			bimiRecord['warnings'] += bimi_data['warnings'] if 'warnings' in bimi_data else []
 		except Exception as e:
@@ -152,17 +263,39 @@ class CheckRecords:
 			bimiRecord['errors'].append("Error with bimi dns check. "+str(e))
 		return bimiRecord
 
-	def get_dns_details(self, bimi=None):
-		dnsRecords = self.getDnsTXT()
-		# return dnsRecords
-		mxRecord = self.get_mx(dnsRecords['mx'])
-		spfRecord = self.get_spf(dnsRecords['spf'])
-		dmarcRecord = self.get_dmarc(dnsRecords['dmarc'])
-		if bimi == None:
-			bimiRecord = self.get_bimi()
-		else:
-			bimiRecord = bimi
-		response = {"mx":mxRecord, "spf":spfRecord, "dmarc":dmarcRecord, "bimi": bimiRecord}
-		return response
+	# def get_dns_details(self, bimi=None):
+	# 	dnsRecords = self.getDnsTXT()
+	# 	# return dnsRecords
+	# 	mxRecord = self.get_mx(dnsRecords['mx'])
+	# 	spfRecord = self.get_spf(dnsRecords['spf'])
+	# 	dmarcRecord = self.get_dmarc(dnsRecords['dmarc'])
+	# 	if bimi == None:
+	# 		bimiRecord = self.get_bimi()
+	# 	else:
+	# 		bimiRecord = bimi
+	# 	response = {"mx":mxRecord, "spf":spfRecord, "dmarc":dmarcRecord, "bimi": bimiRecord}
+	# 	return response
 
+
+	def get_dns_details(self, bimi=None):
+		# return dnsRecords
+		mxRecord = self.get_mx(self.fetchMx())
+		spfRecord = self.get_spf(self.fetchSpf())
+		dmarcRecord = self.get_dmarc(self.fetchDmarc())
+		bimiRecord = self.get_bimi()
+		# Check for main domain if provided domain is a subdomain
+		maindomain = tldextract.extract(self.domain, include_psl_private_domains=True).registered_domain
+		if bimiRecord['record'] == "" and maindomain != self.domain:
+			self.domain = maindomain
+			if bimiRecord['status']:
+				dmarcRecord = self.get_dmarc(self.fetchDmarc())
+			else:
+				mxRecord = self.get_mx(self.fetchMx())
+				spfRecord = self.get_spf(self.fetchSpf())
+				dmarcRecord = self.get_dmarc(self.fetchDmarc())
+				bimiRecord = self.get_bimi()
+		response = {"mx":mxRecord, "spf":spfRecord, "dmarc":dmarcRecord, "bimi": bimiRecord}
+		# print(domain_results)
+		# return
+		return response
 

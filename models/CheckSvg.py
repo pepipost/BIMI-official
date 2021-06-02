@@ -3,9 +3,12 @@ import xml.etree.cElementTree as et
 import subprocess
 from utils.Utils import Utils
 import requests
+from requests import HTTPError
 import sys,os
 import uuid
 from Config import Config
+from utils.Utils import Utils
+
 class CheckSvg:
     def __init__(self, svg_file, user_agent, is_file=False):
         self.RNG_SCHEMA_FILE = Config.RNG_SCHEMA_FILE
@@ -115,7 +118,7 @@ class CheckSvg:
                     for i in range(len(err)):
                         # print(err[i])
                         if err[i]:
-                            clear_error_string = self.Utils.clear_response_single_string(err[i])
+                            clear_error_string = self.Utils.clear_response_single_string(err[i].split('.svg:')[1])
                             error_str = self.Utils.strip_svg_plugin_errors(self.STORAGE_SVG_DIR,clear_error_string,", Check Line ")
                             self.svg_response['errors'].append({"short_error":error_str,"error_details":clear_error_string})
                     self.svg_response['status'] = False
