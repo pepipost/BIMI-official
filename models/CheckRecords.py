@@ -55,8 +55,7 @@ class CheckRecords:
 		return result
 
 	def fetchSpf(self):
-		result = OrderedDict(
-            [("record", None), ("valid", True), ("dns_lookups", None)])
+		result = OrderedDict([("record", ''), ("valid", True), ("dns_lookups", None)])
 		try:
 			spf_query = checkdmarc.query_spf_record(
 				self.domain,
@@ -70,12 +69,19 @@ class CheckRecords:
 				nameservers=self.nameservers,
 				timeout=self.timeout)
 
-			result["dns_lookups"] = parsed_spf[
-			"dns_lookups"]
+			result["dns_lookups"] = parsed_spf["dns_lookups"]
 
 			result["parsed"] = parsed_spf["parsed"]
 			result["warnings"] += parsed_spf["warnings"]
 		except checkdmarc.SPFError as error:
+			# Incase of exception records are blank, so fetching it again
+			records = []
+			records = self.querySpf()
+			
+			for record in records:
+				if record.startswith("v=spf1"):
+					result["record"]+=record+'\n'
+
 			result["error"] = str(error)
 			del result["dns_lookups"]
 			result["valid"] = False
@@ -83,6 +89,13 @@ class CheckRecords:
 				for key in error.data:
 					result[key] = error.data[key]
 		return result
+
+	def querySpf(self):
+		try:
+			return checkdmarc._query_dns(self.domain, "TXT")
+		except Exception as e:
+			return ''
+			
 
 	def fetchDmarc(self):
 		result = OrderedDict([("record", None),
@@ -114,9 +127,9 @@ class CheckRecords:
 					result[key] = error.data[key]
 		return result
 
-	def get_mx(self,mx):
+	def get_mx(self, mx, chk=None):
 		# MX CHECK
-		mxRecord = {"status": "", "records": [],"warnings":[], "errors":[]}
+		mxRecord = {"status": "", "records": [], "warnings":[], "errors":[], "domain":self.domain, "precheck":chk}
 		if  len(mx['hosts']) == 0:
 			mxRecord['status'] = False
 		else:
@@ -131,9 +144,9 @@ class CheckRecords:
 		mxRecord['warnings'] += mx['warnings'] if 'warnings' in mx else []
 		return mxRecord
 	
-	def get_spf(self, spf):
+	def get_spf(self, spf, chk=None):
 		# SPF CHECK
-		spfRecord = {"status": "", "records": [],"warnings":[], "errors":[]}
+		spfRecord = {"status": "", "records": [], "warnings":[], "errors":[], "domain":self.domain, "precheck":chk}
 
 		if  spf['record'] in (None, ''):
 			spfRecord['status'] = False
@@ -144,14 +157,17 @@ class CheckRecords:
 		spfRecord['warnings'] += spf['warnings'] if 'warnings' in spf else [] 
 		return spfRecord
 
-	def get_dmarc(self, dmarc, setrecord=True):
+	def get_dmarc(self, dmarc, chk=None, setrecord=True):
 		# DMARC CHECK
-		dmarcRecord = {"status": "", "record": "","warnings":[],"errors":[]}
+		dmarcRecord = {"status": "", "record": "","warnings":[], "errors":[], "domain":self.domain, "precheck":chk}
 
 		subdomainPolicy = None
 		policy = None
 		pct = 100
 		if dmarc['record'] in (None, ''):
+			if chk != None:
+				dmarcRecord['errors'] += ["DMARC policy needs to be set for your root domain for BIMI to work."]
+
 			dmarcRecord['status'] = False
 		else:
 			dmarcRecord['status'] = dmarc['valid']
@@ -173,14 +189,14 @@ class CheckRecords:
 			if policy == "quarantine":
 				if pct != 100:
 					dmarcRecord['status'] = False
-					dmarcRecord['errors'] = ["dmarc policy when set to p=quarantine, it is recommended to set pct=100 for BIMI to work"]
+					dmarcRecord['errors'] += ["dmarc policy when set to p=quarantine, it is recommended to set pct=100 for BIMI to work"]
 			elif policy == "reject":
 				if pct == 0:
 					dmarcRecord['status'] = False
-					dmarcRecord['errors'] = ["dmarc policy when set to p=reject, it is recommended to set pct should be atleast > 0 for BIMI to work"]
+					dmarcRecord['errors'] += ["dmarc policy when set to p=reject, it is recommended to set pct should be atleast > 0 for BIMI to work"]
 			else:
 				dmarcRecord['status'] = False
-				dmarcRecord['errors'] = ["dmarc policy should be set to p=quarantine or p=reject for BIMI to work"]
+				dmarcRecord['errors'] += ["dmarc policy should be set to p=quarantine or p=reject for BIMI to work"]
 
 		if setrecord==True:
 			dmarcRecord['record'] = dmarc['record']
@@ -205,9 +221,9 @@ class CheckRecords:
 				print("error in executing dns resolver for dmarc record. Error: ",e)
 	"""
 
-	def get_bimi(self,setrecord=True):
+	def get_bimi(self,setrecord=True, chk=None):
 		# BIMI CHECK
-		bimiRecord = {"status": "", "record": "","errors":[], "warnings":[] ,"svg":"","vmc":""}
+		bimiRecord = {"status": "", "record": "", "errors":[], "warnings":[], "svg":"", "vmc":"", "domain":self.domain, "precheck":chk}
 		# regex_cert = r"v=BIMI1;(| )l=((.*):\/\/.*);(| )a=((.*):\/\/(.*.pem))"
 		regex_cert = r"v=bimi1;(?=.*(l=((.*):\/\/(.*.svg)))\b)(?=.*(a=((.*):\/\/(.*.pem)))\b).*(;$| |$)"
 		# regex_without_cert = r"v=BIMI1;\s+(| )l=((.*):\/\/.*)(;| |)"
@@ -285,17 +301,16 @@ class CheckRecords:
 		bimiRecord = self.get_bimi()
 		# Check for main domain if provided domain is a subdomain
 		maindomain = tldextract.extract(self.domain, include_psl_private_domains=True).registered_domain
-		if bimiRecord['record'] == "" and maindomain != self.domain:
+		if maindomain != self.domain:
+			prevDomain = self.domain
 			self.domain = maindomain
 			if bimiRecord['status']:
-				dmarcRecord = self.get_dmarc(self.fetchDmarc())
+				dmarcRecord = self.get_dmarc(self.fetchDmarc(),chk={'domain':prevDomain,'status':dmarcRecord['status']})
 			else:
-				mxRecord = self.get_mx(self.fetchMx())
-				spfRecord = self.get_spf(self.fetchSpf())
-				dmarcRecord = self.get_dmarc(self.fetchDmarc())
-				bimiRecord = self.get_bimi()
+				# mxRecord = self.get_mx(self.fetchMx(),chk={prevDomain:mxRecord['status']})
+				# spfRecord = self.get_spf(self.fetchSpf(),chk={prevDomain:spfRecord['status']})
+				dmarcRecord = self.get_dmarc(self.fetchDmarc(),chk={'domain':prevDomain,'status':dmarcRecord['status']})
+				bimiRecord = self.get_bimi(chk={'domain':prevDomain,'status':bimiRecord['status'],'warnings':bimiRecord['warnings'],'errors':bimiRecord['errors']})
 		response = {"mx":mxRecord, "spf":spfRecord, "dmarc":dmarcRecord, "bimi": bimiRecord}
-		# print(domain_results)
-		# return
 		return response
 

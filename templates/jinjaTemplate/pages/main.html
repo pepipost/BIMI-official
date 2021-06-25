@@ -149,7 +149,7 @@
                     <div class="bimi-record" v-for="(result, index) in bimi_check_details" v-bind:key="index"  v-if="index !='svg_validation' && index !='vmc_validation'">
                       <div v-if="index !='svg_validation' && index !='vmc_validation'">
                         <h5><span class="record_name">[[index]]</span> Record 
-                          <span v-if="result.status && result.warnings.length == 0" class="checked">
+                          <span v-if="result.status" class="checked">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                               <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                             </svg>
@@ -160,21 +160,93 @@
                             </svg>
                           </span>
                         </h5>
-                        <h6 class="status">
-                          <span v-if="result.records && result.records.length > 0 && result.records[0] != ''"><span class="record_name">[[index]]</span> Record Found,</span><span v-else-if="result.record"><span class="record_name">[[index]]</span> Record Found,</span><span v-else><span class="record_name">[[index]]</span> record not found.</span>
-                          <span v-if="result.status">and is BIMI compliant<span v-if="result.warnings.length > 0 && result.warnings[0]!=''">, but with few warnings</span>.</span><span v-else>This record has some BIMI compliance issues.</span>
-                        </h6>
                         <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="result.records && result.records.length > 0 && result.records[0] != ''">
                           <pre><div v-for="(mx, mx_index) in result.records" v-bind:key="mx_index"><code>[[mx]]</code></div></pre>
                         </div>
-                        <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="result.record"><pre><code>[[result.record]]</code></pre></div>
+                        <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="result.record"><pre><code>[[result.record]]</code></pre>
+                        </div>
+                        <h6 class="status">
+                              <!-- <span class="record_name">[[index]]</span> Record check 
+                              <span v-if="checks">Passed</span>
+                              <span v-else>Failed</span> for domain <span>[[precheck_index]]</span> -->
+                            <div v-if="result.precheck">
+                              <table class="table table-bordered table-sm">
+                                <tbody>
+                                  <tr>
+                                    <th>Domain</th>
+                                    <th>Status</th>
+                                  </tr>
+                                  <tr>
+                                    <td>[[result.precheck.domain]]</td>
+                                    <td>
+                                      <span v-if="result.precheck.status">
+                                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                        </svg> Passed
+                                      </span>
+                                      <span v-else>
+                                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-exclamation-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                          <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+                                        </svg> Failed
+                                      </span> <br>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>[[result.domain]]</td>
+                                    <td>
+                                      <span v-if="result.status">
+                                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                          <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                        </svg> Passed
+                                      </span>
+                                      <span v-else>
+                                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-exclamation-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                          <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+                                        </svg> Failed
+                                      </span>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                            <p>
+                              <span v-if="result.records && result.records.length > 0 && result.records[0] != ''">
+                                <span class="record_name">[[index]]</span>
+                                 record found for [[result.domain]], 
+                              </span>
+                              <span v-else-if="result.record">
+                                <span class="record_name">[[index]]</span>
+                                  record found for [[result.domain]], 
+                              </span>
+                              <span v-else>
+                                <span class="record_name">[[index]]</span>
+                                record not found for [[result.domain]].
+                              </span>
+                              <span v-if="result.status">and is BIMI compliant
+                                <span v-if="result.warnings.length > 0 && result.warnings[0]!=''">, but with few warnings
+                                </span>.
+                              </span>
+                              <span v-else> <span v-if='result.record'>However, it is not as per the required BIMI specifications. Please check the warnings below for suggestions.</span>
+                              </span>
+                            </p>
+                          </p>
+                        </h6>
                         <div class="issues" v-if="result.warnings.length > 0 || result.errors.length > 0">
-                          <h6><strong>What changes are <span v-if="result.warnings.length > 0 && result.errors.length == 0">recommended</span><span v-else>required</span> in <span class="record_name">[[index]]</span> record?</strong></h6>
+                          <h6><strong>Warnings in <span class="record_name">[[index]]</span> record for [[result.domain]]</strong></h6>
                           <ul class="warnings" v-if="result.warnings.length > 0">
                             <li v-for="(warning, warn_index) in result.warnings" v-bind:key="warn_index" v-if="warning">Warning: [[warning]]</li>
                           </ul>
                           <ul class="warnings" v-if="result.errors.length > 0">
                             <li v-for="(error, error_index) in result.errors" v-bind:key="error_index" v-if="error">Warning: [[error]]</li>
+                          </ul>
+                        </div>
+                        <div class="issues" v-if="result.precheck && ('warnings' in result.precheck || 'errors' in result.precheck)">
+                          <h6><strong>Warnings in <span class="record_name">[[index]]</span> record for [[result.precheck.domain]]</strong></h6>
+                          <ul class="warnings">
+                            <li v-for="(pwarning, p_warn_index) in result.precheck.warnings" v-bind:key="p_warn_index" v-if="pwarning">Warning: [[pwarning]]</li>
+                          </ul>
+                          <ul class="warnings">
+                            <li v-for="(perror, p_error_index) in result.precheck.errors" v-bind:key="p_error_index" v-if="perror">Warning: [[perror]]</li>
                           </ul>
                         </div>
                     </div>
