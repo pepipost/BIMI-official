@@ -166,9 +166,6 @@
                         <div class="alert alert-secondary mt-4 mr-5" role="alert" v-if="result.record"><pre><code>[[result.record]]</code></pre>
                         </div>
                         <h6 class="status">
-                              <!-- <span class="record_name">[[index]]</span> Record check 
-                              <span v-if="checks">Passed</span>
-                              <span v-else>Failed</span> for domain <span>[[precheck_index]]</span> -->
                             <div v-if="result.precheck">
                               <table class="table table-bordered table-sm">
                                 <tbody>
@@ -229,7 +226,6 @@
                               <span v-else> <span v-if='result.record'>However, it is not as per the required BIMI specifications. Please check the warnings below for suggestions.</span>
                               </span>
                             </p>
-                          </p>
                         </h6>
                         <div class="issues" v-if="result.warnings.length > 0 || result.errors.length > 0">
                           <h6><strong>Warnings in <span class="record_name">[[index]]</span> record for [[result.domain]]</strong></h6>
@@ -249,7 +245,7 @@
                             <li v-for="(perror, p_error_index) in result.precheck.errors" v-bind:key="p_error_index" v-if="perror">Warning: [[perror]]</li>
                           </ul>
                         </div>
-                    </div>
+                      </div>
                     </div>
                     <div class="svg-image">
                       <h5>

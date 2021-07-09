@@ -221,7 +221,7 @@ class CheckRecords:
 				print("error in executing dns resolver for dmarc record. Error: ",e)
 	"""
 
-	def get_bimi(self,setrecord=True, chk=None):
+	def get_bimi(self, setrecord=True, chk=None):
 		# BIMI CHECK
 		bimiRecord = {"status": "", "record": "", "errors":[], "warnings":[], "svg":"", "vmc":"", "domain":self.domain, "precheck":chk}
 		# regex_cert = r"v=BIMI1;(| )l=((.*):\/\/.*);(| )a=((.*):\/\/(.*.pem))"
@@ -268,6 +268,10 @@ class CheckRecords:
 					bimiRecord['status'] = False
 					bimiRecord['svg'] = ""
 					bimiRecord['vmc'] = ""
+			# Suppression of bimi error in case of bimi pass in main domain
+			if chk!=None and bimiRecord['status'] == True:
+				chk.pop('warnings', None)
+				chk.pop('errors', None)
 
 			bimiRecord['errors'] += [bimi_data['error']] if 'error' in bimi_data else []
 			bimiRecord['warnings'] += bimi_data['warnings'] if 'warnings' in bimi_data else []
