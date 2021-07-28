@@ -75,13 +75,14 @@ class CheckRecords:
 			result["warnings"] += parsed_spf["warnings"]
 		except checkdmarc.SPFError as error:
 			# Incase of exception records are blank, so fetching it again
-			records = []
-			records = self.querySpf()
-			
-			for record in records:
-				if record.startswith("v=spf1"):
-					result["record"]+=record+'\n'
-
+			"""
+			if not result["record"]:
+				records = []
+				records = self.queryRecords()
+				for record in records:
+					if record.startswith("v=spf1"):
+						result["record"]+=record+'\n'
+			"""
 			result["error"] = str(error)
 			del result["dns_lookups"]
 			result["valid"] = False
@@ -90,7 +91,7 @@ class CheckRecords:
 					result[key] = error.data[key]
 		return result
 
-	def querySpf(self):
+	def queryRecords(self):
 		try:
 			return checkdmarc._query_dns(self.domain, "TXT")
 		except Exception as e:
@@ -172,7 +173,6 @@ class CheckRecords:
 		else:
 			dmarcRecord['status'] = dmarc['valid']
 			dmarc['record_a'] = self.Utils.record_str_to_dict(dmarc['record'])
-			print(dmarc['record_a'])
 			# Set Policy
 			if "p" in dmarc["record_a"]:
 				policy = dmarc["record_a"]["p"]

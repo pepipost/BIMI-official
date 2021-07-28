@@ -10,7 +10,7 @@ class Utils:
         d = {}
         list_data = record_str.split(";")
         for i in list_data:
-            if i.strip() !='':
+            if '=' in i:
                 s = i.split("=")
                 d[(s[0].strip()).lower()] = s[1]
         return d

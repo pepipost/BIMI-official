@@ -673,6 +673,7 @@
             checkBimi(){
               if(this.bimi_check_button_loader!=true){
                 this.generated = false
+                this.domain = this.domain.toLowerCase();
                 if(this.validate_domain(this.domain)){
                   this.bimi_check_button_loader = true
                   this.modifyBimi = false
@@ -824,6 +825,7 @@
               let error = 0
               let error_message = null
               this.generated_note_svg = null
+              this.domain = this.domain.toLowerCase();
               if(!this.validate_domain(this.generate_bimi.domain)){
                 error = 1
                 error_message = "Invalid domain"
