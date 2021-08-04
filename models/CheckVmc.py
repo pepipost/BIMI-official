@@ -33,8 +33,8 @@ class CheckVmc:
                 response.raise_for_status()
                 return False
         except HTTPError as http_err:
-            self.vmc_response['errors'].append("An error occured while fetching the Certificate from the provided Url. "+str(http_err)+".")
-            print(f'HTTP error : {http_err} occured while fetching the Certificate');
+            self.vmc_response['errors'].append("An error occurred while fetching the Certificate from the provided Url. "+str(http_err)+".")
+            print(f'HTTP error : {http_err} occurred while fetching the Certificate');
             return False
         except requests.exceptions.TooManyRedirects as red_err:
             self.vmc_response['errors'].append("The cetificate URL redirected too many times, please remove the redirections, or atleast reduce them to 3 or less.")

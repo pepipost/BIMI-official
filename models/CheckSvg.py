@@ -39,8 +39,8 @@ class CheckSvg:
                 return False
         
         except HTTPError as http_err:
-            self.svg_response['errors'].append({"short_error":"Http Error","error_details":"An error occured while fetching the BIMI SVG Image. "+str(http_err)+"."})
-            print(f'HTTP error : {http_err}, occured while fetching image');
+            self.svg_response['errors'].append({"short_error":"Http Error","error_details":"An error occurred while fetching the BIMI SVG Image. "+str(http_err)+"."})
+            print(f'HTTP error : {http_err}, occurred while fetching image');
             return False
 
         except requests.exceptions.TooManyRedirects as red_err:
