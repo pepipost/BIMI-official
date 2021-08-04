@@ -39,7 +39,7 @@ class CheckSvg:
                 return False
         
         except HTTPError as http_err:
-            self.svg_response['errors'].append({"short_error":"Http Error","error_details":"An error occured while fetching the BIMI SVG Image. HTTP error : "+str(http_err)+", occured while fetching image"})
+            self.svg_response['errors'].append({"short_error":"Http Error","error_details":"An error occured while fetching the BIMI SVG Image. "+str(http_err)+"."})
             print(f'HTTP error : {http_err}, occured while fetching image');
             return False
 
@@ -87,6 +87,9 @@ class CheckSvg:
             if self.is_svg_extension():
                 if not self.is_file:
                     self.svg_file = self.download_svg_path(self.svg_file)
+                    if not self.svg_file:
+                        self.svg_response['status'] = False
+                        return self.svg_response
                 if self.svg_file:
                     if self.is_svg_xml():
                         self.check_svg_schema()

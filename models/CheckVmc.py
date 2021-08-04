@@ -33,12 +33,12 @@ class CheckVmc:
                 response.raise_for_status()
                 return False
         except HTTPError as http_err:
-            self.svg_response['errors'].append({"short_error":"Http Error","error_details":"An error occured while fetching the Certificate from the provided Url. HTTP error : "+str(http_err)+", occured while fetching certificate"})
-            print(f'HTTP error : {http_err} occure while fetching the Certificate');
+            self.vmc_response['errors'].append("An error occured while fetching the Certificate from the provided Url. "+str(http_err)+".")
+            print(f'HTTP error : {http_err} occured while fetching the Certificate');
             return False
         except requests.exceptions.TooManyRedirects as red_err:
-            self.svg_response['errors'].append({"short_error":"Too many redirects","error_details":"The cetificate URL redirected too many times, please remove the redirections, or atleast reduce them to 3 or less."})
-            print(f'HTTP error : More than 3 redirects while fetching the svg image');
+            self.vmc_response['errors'].append("The cetificate URL redirected too many times, please remove the redirections, or atleast reduce them to 3 or less.")
+            print(f'HTTP error : {red_err}. More than 3 redirects while fetching the svg image');
             return False
         except Exception as e:
             print(e)
@@ -103,6 +103,9 @@ class CheckVmc:
         if self.vmc_file != "":
             if not self.is_file:
                 self.vmc_file = self.download_pem_path(self.vmc_file)
+                if not self.vmc_file:
+                    self.vmc_response['status'] = False
+                    return self.vmc_response
             if self.is_vmc_extension():
                 self.validate_vmc()
                 if len(self.vmc_response['errors']) > 0:
