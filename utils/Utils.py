@@ -4,7 +4,7 @@ import Constants
 from Config import Config
 from werkzeug.utils import secure_filename
 import os
-from flask import Flask, request
+from flask import request
 class Utils:
     def record_str_to_dict(self, record_str):
         d = {}
