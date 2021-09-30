@@ -40,7 +40,6 @@ class GenerateBimiController(Resource):
             
             data = CR.get_dns_details()
 
-
             if content['svg_link']!="":
                 svg_link = content['svg_link']
                 CS = CheckSvg(svg_link,user_agent)
@@ -55,11 +54,11 @@ class GenerateBimiController(Resource):
                 
             if content['vmc_link']!="":
                 vmc_link = content['vmc_link']
-                CV = CheckVmc(vmc_link,user_agent)
+                CV = CheckVmc(vmc_link,user_agent,CS.svg_image_path)
             else:
                 self.vmc_file_flag = True
                 vmc_link = self.Utils.upload_request_file("vmc_file", request, Config.STORAGE_CERT_DIR, self.vmc_file_flag)
-                CV = CheckVmc(vmc_link,user_agent,self.vmc_file_flag)
+                CV = CheckVmc(vmc_link,user_agent,CS.svg_image_path,self.vmc_file_flag)
 
             data['vmc_validation'] = CV.check_vmc()
             

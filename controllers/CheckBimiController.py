@@ -32,7 +32,7 @@ class CheckBimiController(Resource):
             CS = CheckSvg(data['bimi']['svg'],user_agent)
             print(data['bimi']['svg'])
             data['svg_validation'] = CS.check_svg()
-            CV = CheckVmc(data['bimi']['vmc'],user_agent)
+            CV = CheckVmc(data['bimi']['vmc'],user_agent,CS.svg_image_path)
             data['vmc_validation'] = CV.check_vmc()
             return data
         except Exception as e:

@@ -9,9 +9,11 @@ from requests import HTTPError
 import uuid
 from utils.Utils import Utils
 from datetime import datetime
+import gzip
+import base64
 
 class CheckVmc:
-    def __init__(self, vmc_file, user_agent, is_file=False):
+    def __init__(self, vmc_file, user_agent, svg_link='', is_file=False):
         self.STORAGE_CERT_DIR = Config.STORAGE_CERT_DIR
         self.vmc_file = vmc_file
         self.Utils = Utils()
@@ -19,6 +21,8 @@ class CheckVmc:
         self.is_file = is_file
         self.user_agent = user_agent
         self.parsed_vmc = None
+        self.svg_link = svg_link
+        self.pem_file_path = None
 
     def download_pem_path(self, url):
         try:
@@ -30,6 +34,7 @@ class CheckVmc:
             session.max_redirects = 3
             response = session.get(url, headers={'User-Agent': self.user_agent})
             if response:
+                self.pem_file_path = self.STORAGE_CERT_DIR+file_name_hash+".pem"
                 with open(self.STORAGE_CERT_DIR+file_name_hash+".pem", 'wb+') as out_file:
                     out_file.write(response.content)
                 return self.STORAGE_CERT_DIR+file_name_hash+".pem"
@@ -87,6 +92,32 @@ class CheckVmc:
             print(e)
 
 
+    # Extract SVG image from VMC cert file
+    def get_svg_from_cert(self):
+        cert_svg = None
+        for i in self.parsed_vmc.extensions:
+            if hasattr(i.value,'value') and 'svg' in str(i.value.value):
+                data = (base64.b64decode(str(i.value.value).split("data:image/svg+xml;base64,")[1]))
+                svg = (gzip.decompress(data).decode())
+                cert_svg = svg.strip()
+                cert_svg = "".join(svg.split())
+        return cert_svg
+
+    # naive comapsion SVG in PEM with BIMI SVG
+    def compare_pem_svg(self):
+        cert_svg = self.get_svg_from_cert()
+        if cert_svg:
+            with open(self.svg_link,encoding='utf-8') as svg_file:
+                # Remove indentation / tabs / newline
+                svg = "".join((svg_file.read()).split())
+                if svg.lower() == cert_svg.lower():
+                    pass
+                else:
+                    self.vmc_response["errors"].append("The SVG image provided in the BIMI record doesn't match the SVG image provided in the pem file. Please make sure that they are the same.\n")
+        else:
+            self.vmc_response["errors"].append("There's no embedded SVG Logotype Image as defined in svg logotype RFC 3709. \n")
+
+
     # Check VMC extension
     def is_vmc_extension(self):
         if self.is_file:
@@ -130,11 +161,16 @@ class CheckVmc:
                 if not self.vmc_file:
                     self.vmc_response['status'] = False
                     return self.vmc_response
+            else:
+                self.pem_file_path = self.vmc_file
+
             if self.is_vmc_extension():
                 # Read stored file and validate with certvalidator
                 self.validate_vmc()
                 # Check certificate expiry
                 self.cert_validity()
+                # Compare SVG in BIMI and SVG in PEM cert
+                self.compare_pem_svg()
                 if len(self.vmc_response['errors']) > 0:
                     self.vmc_response['status'] = False
                 else:

@@ -15,6 +15,7 @@ class CheckSvg:
         self.STORAGE_SVG_DIR = Config.STORAGE_SVG_DIR
         self.svg_file = svg_file
         self.Utils = Utils()
+        self.svg_image_path = None
         self.svg_response = {"status": False, "errors":[], "svg_link":svg_file}
         self.is_file = is_file
         self.user_agent = user_agent
@@ -30,6 +31,7 @@ class CheckSvg:
             session.max_redirects = 3
             response = session.get(url, headers={'User-Agent': self.user_agent})
             if response:
+                self.svg_image_path = self.STORAGE_SVG_DIR+file_name_hash+".svg"
                 with open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb+') as out_file:
                     out_file.write(response.content)
                 print("Generated file: "+self.STORAGE_SVG_DIR+file_name_hash+".svg")
@@ -93,6 +95,7 @@ class CheckSvg:
                 if self.svg_file:
                     if self.is_svg_xml():
                         self.check_svg_schema()
+                        self.svg_image_path = self.svg_file
                         if len(self.svg_response['errors']) > 0:
                             self.svg_response['status'] = False
                         else:
