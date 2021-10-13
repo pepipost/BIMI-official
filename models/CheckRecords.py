@@ -97,7 +97,6 @@ class CheckRecords:
 		except Exception as e:
 			return ''
 			
-
 	def fetchDmarc(self):
 		result = OrderedDict([("record", None),
 			("valid", True),
@@ -147,28 +146,27 @@ class CheckRecords:
 	
 	def get_spf(self, spf, chk=None):
 		# SPF CHECK
-		spfRecord = {"status": "", "records": [], "warnings":[], "errors":[], "domain":self.domain, "precheck":chk}
-
+		spfRecord = {"status": "", "records": [], "warnings":[], "errors":[], "domain":self.domain, "precheck":chk, "note": False}
 		if  spf['record'] in (None, ''):
 			spfRecord['status'] = False
 		else:
 			spfRecord['status'] = spf['valid']
 			spfRecord['record'] = spf['record']
+			if self.Utils.detect_spf_macros(spf_record = spf['record']):
+				spfRecord['note'] = "The SPF checks might not be completely reliable since there are some dynamic records in your SPF record."
 		spfRecord['errors'] += [spf['error']] if 'error' in spf else []
-		spfRecord['warnings'] += spf['warnings'] if 'warnings' in spf else [] 
+		spfRecord['warnings'] += spf['warnings'] if 'warnings' in spf else []
 		return spfRecord
 
 	def get_dmarc(self, dmarc, chk=None, setrecord=True):
 		# DMARC CHECK
 		dmarcRecord = {"status": "", "record": "","warnings":[], "errors":[], "domain":self.domain, "precheck":chk}
-
 		subdomainPolicy = None
 		policy = None
 		pct = 100
 		if dmarc['record'] in (None, ''):
 			if chk != None:
 				dmarcRecord['errors'] += ["DMARC policy needs to be set for your root domain for BIMI to work."]
-
 			dmarcRecord['status'] = False
 		else:
 			dmarcRecord['status'] = dmarc['valid']
@@ -176,15 +174,13 @@ class CheckRecords:
 			# Set Policy
 			if "p" in dmarc["record_a"]:
 				policy = dmarc["record_a"]["p"]
-				print("policy",policy)
 			# Set SubdomainPolicy
 			if "sp" in dmarc["record_a"]:
 				subdomainPolicy = dmarc["record_a"]["sp"]
-				print("sub policy",subdomainPolicy)
 			# Set mail percentage
 			if "pct" in dmarc["record_a"]:
 				pct = int(dmarc["record_a"]["pct"].strip())
-				print("pct",pct)    
+
 			# BIMI strict policy checks
 			if policy == "quarantine":
 				if pct != 100:
@@ -197,6 +193,10 @@ class CheckRecords:
 			else:
 				dmarcRecord['status'] = False
 				dmarcRecord['errors'] += ["dmarc policy should be set to p=quarantine or p=reject for BIMI to work"]
+
+			if subdomainPolicy and subdomainPolicy == "none":
+				dmarcRecord['status'] = False
+				dmarcRecord['errors'] += ["dmarc sub domain policy sp should be set to either reject or quarantine for BIMI to work"]
 
 		if setrecord==True:
 			dmarcRecord['record'] = dmarc['record']
@@ -239,30 +239,24 @@ class CheckRecords:
 			else:
 				if (re.search(regex_cert, bimiRecord['record'].lower()) or re.search(regex_without_cert, bimiRecord['record'].lower())):
 					records = self.Utils.record_str_to_dict(bimi_data['record'])
-					if (records['v'] == 'BIMI1'):
-						if 'l' in records:
-							bimiRecord['svg'] = records['l']
-						if 'a' in records:
-							bimiRecord['vmc'] = records['a']
+					if 'l' in records:
+						bimiRecord['svg'] = records['l']
+					if 'a' in records:
+						bimiRecord['vmc'] = records['a']
 
-						if (not bimiRecord['svg']):
-							bimiRecord['errors'].append("BIMI record should have a mandatory l= record containing your brand svg logo url")
-							bimiRecord['status'] = False
-						elif (not bimiRecord['svg'].lower().split('?')[0].endswith('.svg')):
-							bimiRecord['errors'].append("BIMI logo should be strictly a SVG file, check your bimi record's \"l=\" parameter.")
-							bimiRecord['svg'] = ""
-							bimiRecord['status'] = False
-
-						if (bimiRecord['vmc']!=""):
-							if (not bimiRecord['vmc'].lower().split('?')[0].endswith('.pem')):
-								bimiRecord['errors'].append("BIMI vmc certificate should be strictly a PEM file, check your bimi record's \"a=\" parameter.")
-								bimiRecord['vmc'] = ""
-								bimiRecord['status'] = False
-					else:
-						bimiRecord['errors'].append("BIMI record should have a strict bimi version identifier v=BIMI1 at the beginning of the record")
+					if (not bimiRecord['svg']):
+						bimiRecord['errors'].append("BIMI record should have a mandatory l= record containing your brand svg logo url")
 						bimiRecord['status'] = False
+					elif (not bimiRecord['svg'].lower().split('?')[0].endswith('.svg')):
+						bimiRecord['errors'].append("BIMI logo should be strictly a SVG file, check your bimi record's \"l=\" parameter.")
 						bimiRecord['svg'] = ""
-						bimiRecord['vmc'] = ""
+						bimiRecord['status'] = False
+
+					if (bimiRecord['vmc']!=""):
+						if (not bimiRecord['vmc'].lower().split('?')[0].endswith('.pem')):
+							bimiRecord['errors'].append("BIMI vmc certificate should be strictly a PEM file, check your bimi record's \"a=\" parameter.")
+							bimiRecord['vmc'] = ""
+							bimiRecord['status'] = False
 				else:
 					bimiRecord['errors'].append("BIMI has an invalid format: Correct format : v=BIMI1; l=https://"+self.domain+"/svg-file-path/logo-image.svg; a=https://"+self.domain+"/vmc-certificate-path/file.pem. \n Vmc certificate currently being optional.")
 					bimiRecord['status'] = False

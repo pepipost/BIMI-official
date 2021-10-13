@@ -20,6 +20,10 @@ class Utils:
         response_str = response_str.replace("\n", "")
         return response_str
 
+    def detect_spf_macros(self, spf_record):
+        MACRO_REGEX = r"(%{)(.*)(})"
+        return re.search(MACRO_REGEX, spf_record)
+
     def get_abs_path(self, directory):
         return str(Path(directory).parent.absolute())
 
