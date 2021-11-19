@@ -185,18 +185,18 @@ class CheckRecords:
 			if policy == "quarantine":
 				if pct != 100:
 					dmarcRecord['status'] = False
-					dmarcRecord['errors'] += ["dmarc policy when set to p=quarantine, it is recommended to set pct=100 for BIMI to work"]
+					dmarcRecord['errors'] += ["DMARC policy when set to p=quarantine, it is recommended to set pct=100 for BIMI to work"]
 			elif policy == "reject":
 				if pct == 0:
 					dmarcRecord['status'] = False
-					dmarcRecord['errors'] += ["dmarc policy when set to p=reject, it is recommended to set pct should be atleast > 0 for BIMI to work"]
+					dmarcRecord['errors'] += ["DMARC policy when set to p=reject, it is recommended to set pct should be atleast > 0 for BIMI to work"]
 			else:
 				dmarcRecord['status'] = False
-				dmarcRecord['errors'] += ["dmarc policy should be set to p=quarantine or p=reject for BIMI to work"]
+				dmarcRecord['errors'] += ["DMARC policy should be set to p=quarantine or p=reject for BIMI to work"]
 
 			if subdomainPolicy and subdomainPolicy == "none":
 				dmarcRecord['status'] = False
-				dmarcRecord['errors'] += ["dmarc sub domain policy sp should be set to either reject or quarantine for BIMI to work"]
+				dmarcRecord['errors'] += ["The DMARC subdomain policy “sp=” should be set to either “reject” or “quarantine” for BIMI to work."]
 
 		if setrecord==True:
 			dmarcRecord['record'] = dmarc['record']

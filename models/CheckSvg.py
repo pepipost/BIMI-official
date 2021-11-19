@@ -52,7 +52,7 @@ class CheckSvg:
 
         except Exception as e:
             print(e)
-            self.svg_response["errors"].append({"short_error":"Something went wrong while downloading the SVG Image","error_details":"Either you have a really bad SVG link or Your SVG cannot be downloaded for processing."})
+            self.svg_response["errors"].append({"short_error":"Something went wrong while downloading the SVG Image","error_details":"The SVG file referenced by the URL in the BIMI record is unreachable by this validator."})
             return False
             
     # CHECK SVG Extension
