@@ -633,9 +633,9 @@
               bimi_check_details: null,
               bimi_check_button_loader: false,
               apiurls: {
-                checkBimiRecord: window.location+"/check-bimi",
-                generateBimiRecord: window.location+"/generate-bimi",
-                fixBimiRecord: window.location+"/fix-bimi"
+                checkBimiRecord: window.location + "/check-bimi",
+                generateBimiRecord: window.location + "/generate-bimi",
+                fixBimiRecord: window.location + "/fix-bimi"
               },
               processed_domain: "",
               searchStatus: false,
@@ -670,258 +670,269 @@
             }
           },
           methods: {
-            checkBimi(){
-              if(this.bimi_check_button_loader!=true){
-                this.generated = false
-                this.domain = this.domain.toLowerCase();
-                if(this.validate_domain(this.domain)){
-                  this.bimi_check_button_loader = true
-                  this.modifyBimi = false
-                  this.generated_note_svg = null
+            checkBimi() {
+              if (!this.bimi_check_button_loader) {
+                this.generated = false;
+                this.domain = this.domain ? this.domain.toLowerCase() : undefined;
+                if (this.validate_domain(this.domain)) {
+                  this.bimi_check_button_loader = true;
+                  this.modifyBimi = false;
+                  this.generated_note_svg = null;
                   axios.post(this.apiurls.checkBimiRecord, {
                     domain: this.domain        
                   })
                   .then((response) => {
                     console.log(response.data);
-                    this.bimi_check_details = response.data
-                    this.bimi_check_button_loader = false
-                    this.processed_domain = this.domain
-                    this.img_logo = response.data.svg_validation.svg_link ? response.data.svg_validation.svg_link : this.svg_not_found
-                    this.generate_bimi.domain = this.domain
-                    this.svg_display_link = response.data.svg_validation.svg_link
-                    this.vmc_display_link = response.data.vmc_validation.vmc_link
-                    if(this.bimi_check_details.bimi.status == false){
-                      this.bimi_generate_text = "Generate BIMI Record?"
+                    this.bimi_check_details = response.data;
+                    this.bimi_check_button_loader = false;
+                    this.processed_domain = this.domain;
+                    this.img_logo = response.data.svg_validation.svg_link ? response.data.svg_validation.svg_link : this.svg_not_found;
+                    this.generate_bimi.domain = this.domain;
+                    this.svg_display_link = response.data.svg_validation.svg_link;
+                    this.vmc_display_link = response.data.vmc_validation.vmc_link;
+                    if (!this.bimi_check_details.bimi.status) {
+                      this.bimi_generate_text = "Generate BIMI Record?";
                     } else {
-                      this.bimi_generate_text = "Modify BIMI Record?"
+                      this.bimi_generate_text = "Modify BIMI Record?";
                     }
                   })
                   .catch((error) => {
                     console.log(error);
-                    this.bimi_check_button_loader = false
+                    this.bimi_check_button_loader = false;
                   });
                 } else {
-                  this.bimi_check_error = true
+                  this.bimi_check_error = true;
                 }
               }
             },
-            setSvg(e){
-              this.generate_bimi.svg_file = this.$refs.svgFile.files
-              this.toggleEnableInput(e)
-              this.set_file_name(this.$refs.svgFile.files,"svg")
+            setSvg(e) {
+              this.generate_bimi.svg_file = this.$refs.svgFile.files;
+              this.toggleEnableInput(e);
+              this.set_file_name(this.$refs.svgFile.files, "svg");
             },
-            setVmc(e){
-              this.generate_bimi.vmc_file = this.$refs.vmcFile.files
-              this.toggleEnableInput(e)
-              this.set_file_name(this.$refs.vmcFile.files,"vmc")
+            setVmc(e) {
+              this.generate_bimi.vmc_file = this.$refs.vmcFile.files;
+              this.toggleEnableInput(e);
+              this.set_file_name(this.$refs.vmcFile.files, "vmc");
             },
             set_file_name(file, set_to){
-              if(set_to == "svg"){
-                this.svg_selected_filename = file[0].name
-                console.log(file[0].name)
+              if (set_to === "svg") {
+                this.svg_selected_filename = file[0].name;
+                console.log(file[0].name);
               } else {
-                this.vmc_selected_filename = file[0].name
-                console.log(file[0].name)
+                this.vmc_selected_filename = file[0].name;
+                console.log(file[0].name);
               }
             },
-            toggleEnableInput(e){
-              let element = e.target
-              if (element.getAttribute('type') == 'text'){
-                if(element.value !=""){
-                  element.parentElement.querySelector('input[type="file"]').setAttribute("disabled","true")
-                  element.parentElement.querySelector('.col-md-3 span .btn.btn-purple').classList.add("disabled")
+            toggleEnableInput(e) {
+              let element = e.target;
+              if (element.getAttribute('type') === 'text') {
+                if (element.value) {
+                  element.parentElement.querySelector('input[type="file"]').setAttribute("disabled", "true");
+                  element.parentElement.querySelector('.col-md-3 span .btn.btn-purple').classList.add("disabled");
                 } else {
-                  element.parentElement.querySelector('input[type="file"]').removeAttribute("disabled")
-                  element.parentElement.querySelector('.col-md-3 span .btn.btn-purple').classList.remove("disabled")
+                  element.parentElement.querySelector('input[type="file"]').removeAttribute("disabled");
+                  element.parentElement.querySelector('.col-md-3 span .btn.btn-purple').classList.remove("disabled");
                 }
-              } else if(element.getAttribute('type') == 'file'){
-                if(element.value && element.files.length != 0){
-                  element.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="text"]').setAttribute("disabled","true")
-                  element.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="text"]').classList.add("disabled")
+              } else if (element.getAttribute('type') === 'file') {
+                if(element.value && element.files.length !== 0){
+                  element.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="text"]').setAttribute("disabled", "true");
+                  element.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="text"]').classList.add("disabled");
                 } else {
-                  element.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="text"]').removeAttribute("disabled")
-                  element.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="text"]').classList.remove("disabled")
+                  element.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="text"]').removeAttribute("disabled");
+                  element.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="text"]').classList.remove("disabled");
                 }
               }
             },
             validate_domain(domain){
-              // const REGEXT_DOMAIN = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/gm
-              const REGEXT_DOMAIN = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/gm
-              if (domain==null || domain == ""){
-                this.domain_validation_error = "Please enter a domain"
-                return false
-              } else if (REGEXT_DOMAIN.exec(domain.trim())){
-                this.domain_validation_error = ""
-                return true
+              // const REGEX_DOMAIN = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/gm
+              const REGEX_DOMAIN = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/gm;
+              if (!domain) {
+                this.domain_validation_error = "Please enter a domain";
+                return false;
+              } else if (REGEX_DOMAIN.exec(domain.trim())) {
+                this.domain_validation_error = "";
+                return true;
               } else {
-                this.domain_validation_error = "Invalid domain name"
-                return false
+                this.domain_validation_error = "Invalid domain name";
+                return false;
               }
             },
-            toggle_sign(element){
-              let span_text = element
-              // console.log(span_text)
-              if(span_text.innerHTML === "[+]") 
-                span_text.innerHTML = "[-]" 
-              else 
-                span_text.innerHTML = "[+]"
-            },
-            expand_error(e){
-              let span_element = e.target
-              this.toggle_sign(span_element)
-              if(span_element.parentElement.nextElementSibling.classList.contains(this.active_class_name)){
-                span_element.parentElement.nextElementSibling.classList.remove(this.active_class_name)
+            toggle_sign(element) {
+              let span_text = element;
+              // console.log(span_text);
+              if(span_text.innerHTML === "[+]") {
+                span_text.innerHTML = "[-]";
               } else {
-                span_element.parentElement.nextElementSibling.classList.add(this.active_class_name)
+                span_text.innerHTML = "[+]";
               }
             },
-            modifyBimi_scroll(){
-              // this.modifyBimi = !this.modifyBimi
-              this.modifyBimi = true
+            expand_error(e) {
+              let span_element = e.target;
+              this.toggle_sign(span_element);
+              if (span_element.parentElement.nextElementSibling.classList.contains(this.active_class_name)) {
+                span_element.parentElement.nextElementSibling.classList.remove(this.active_class_name);
+              } else {
+                span_element.parentElement.nextElementSibling.classList.add(this.active_class_name);
+              }
+            },
+            modifyBimi_scroll() {
+              // this.modifyBimi = !this.modifyBimi;
+              this.modifyBimi = true;
               this.$nextTick(function () {
-                let top_element = document.getElementById("search_section")
-                top_element.scrollIntoView(true,{behavior: "smooth"})
-              })
+                let top_element = document.getElementById("search_section");
+                top_element.scrollIntoView({block: "start", behavior: "smooth"});
+              });
               // top_element.scrollTo(0, 0);
             },
-            generateNoteSvg(checkstring){
-              if(checkstring.includes('public-path-to-')){
-                this.generated_note_svg = "This is an example url for your uploaded SVG Image url, as of what it might look like.\n You can use the uploaded file to setup a link to the file and set-up your bimi record.\n Check the example in the genrated BIMI record. \n Click on the image path to check the SVG Image."
+            generateNoteSvg(checkstring) {
+              if (checkstring.includes('public-path-to-')) {
+                this.generated_note_svg = "This is an example url for your uploaded SVG Image url, as of what it might look like.\n You can use the uploaded file to setup a link to the file and set-up your BIMI record.\n Check the example in the generated BIMI record. \n Click on the image path to check the SVG Image.";
               } else {
-                this.generated_note_svg = ""
+                this.generated_note_svg = "";
               }
-              return checkstring
+              return checkstring;
             },
-            generateNoteVmc(checkstring){
-              if(checkstring.includes('public-path-to-')){
-                this.generated_note_vmc = "This is an example url for your uploaded Vmc certificate file, as of what it might look like.\n You can use the uploaded file to setup a link to the file and set-up your bimi record.\n Check the example in the genrated BIMI record. \n Click on the certificate path to check the Certficate file."
+            generateNoteVmc(checkstring) {
+              if (checkstring.includes('public-path-to-')) {
+                this.generated_note_vmc = "This is an example url for your uploaded Vmc certificate file, as of what it might look like.\n You can use the uploaded file to setup a link to the file and set-up your BIMI record.\n Check the example in the generated BIMI record. \n Click on the certificate path to check the Certificate file.";
               } else {
-                this.generated_note_vmc = ""
+                this.generated_note_vmc = "";
               }
-              return checkstring
+              return checkstring;
             },
-            toggle_svg_errors(){
-              this.svg_errors_toggle = !this.svg_errors_toggle
+            toggle_svg_errors() {
+              this.svg_errors_toggle = !this.svg_errors_toggle;
             },
             copyToClipboard(element) {
-              let elementStr = element.target.parentElement.nextElementSibling.firstChild.innerHTML
-              console.log(elementStr)
-              const el = document.createElement('textarea')
-              el.value = document
-              el.setAttribute('readonly', '')
-              el.style.position = 'absolute'
-              el.style.left = '-9999px'
-              document.body.appendChild(el)
-              el.value = elementStr
-              // el.focus()
-              el.select()
-              document.execCommand('copy')
-              document.body.removeChild(el)
+              let elementStr = element.target.parentElement.nextElementSibling.firstChild.innerHTML;
+              console.log(elementStr);
+              if (navigator && navigator.clipboard) {
+                try {
+                   navigator.clipboard.writeText(elementStr);
+                   return;
+                }
+                catch (e) {
+                  console.warn("Copy to clipboard using navigator failed", e);
+                 }
+              }
+              console.info("Navigator API seems not supported, using deprecated fallback");
+
+              const el = document.createElement('textarea');
+              el.setAttribute('readonly', '');
+              el.style.position = 'absolute';
+              el.style.left = '-9999px';
+              document.body.appendChild(el);
+              el.value = elementStr;
+              el.select();
+              document.execCommand('copy');
+              setTimeout(() => document.body.removeChild(el), 1000);
             },
-            generateRecord(){
-              this.generate_bimi_loader = true
-              const svg_regex = /((https:)[\\|\/\/].*?\.svg$)/gm
-              const vmc_regex = /((https:)[\\|\/\/].*?\.pem$)/gm
-              let error = 0
-              let error_message = null
-              this.generated_note_svg = null
-              this.domain = this.domain.toLowerCase();
-              if(!this.validate_domain(this.generate_bimi.domain)){
-                error = 1
-                error_message = "Invalid domain"
+            generateRecord() {
+              this.generate_bimi_loader = true;
+              const svg_regex = /((https:)[\\|\/\/].*?\.svg$)/gm;
+              const vmc_regex = /((https:)[\\|\/\/].*?\.pem$)/gm;
+              let error = 0;
+              let error_message = null;
+              this.generated_note_svg = null;
+              this.generate_bimi.domain = this.generate_bimi.domain ? this.generate_bimi.domain.toLowerCase() : undefined;
+              if (!this.validate_domain(this.generate_bimi.domain)) {
+                error = 1;
+                error_message = "Invalid domain";
               }
 
-              if (this.generate_bimi.svg_link!="" && this.generate_bimi.svg_link!=undefined){
-                if (!svg_regex.exec(this.generate_bimi.svg_link)){
-                  error = 1
-                  error_message = "Invalid svg link provided. Please enter url in format https://domain.com/path/file.svg"
+              if (this.generate_bimi.svg_link) {
+                if (!svg_regex.exec(this.generate_bimi.svg_link)) {
+                  error = 1;
+                  error_message = "Invalid svg link provided. Please enter url in format https://domain.com/path/file.svg";
                 }
               } else {
-                if((Object.keys(this.generate_bimi.svg_file).length === 0 && this.generate_bimi.svg_file.constructor === Object)){
-                  error = 1
-                  error_message = "Please enter an valid svg link or Upload SVG file"
+                if (Object.keys(this.generate_bimi.svg_file).length === 0 && this.generate_bimi.svg_file.constructor === Object) {
+                  error = 1;
+                  error_message = "Please enter an valid svg link or Upload SVG file";
                 }
-                if((Object.keys(this.generate_bimi.svg_file).length !== 0 && !this.generate_bimi.svg_file[0].name.endsWith(".svg"))){
-                  error = 1
-                  error_message = "Please select an svg file"
+                if (Object.keys(this.generate_bimi.svg_file).length !== 0 && !this.generate_bimi.svg_file[0].name.endsWith(".svg")) {
+                  error = 1;
+                  error_message = "Please select an svg file";
                 }
               }
 
-              if (this.generate_bimi.vmc_link!="" && this.generate_bimi.vmc_link!=undefined){
-                if(!vmc_regex.exec(this.generate_bimi.vmc_link)){
-                  error = 1
-                  error_message = "Invalid pem link provided. Please enter url in format https://domain.com/path/file.pem"
+              if (this.generate_bimi.vmc_link) {
+                if (!vmc_regex.exec(this.generate_bimi.vmc_link)) {
+                  error = 1;
+                  error_message = "Invalid pem link provided. Please enter url in format https://domain.com/path/file.pem";
                 }
               } else {
-                if(Object.keys(this.generate_bimi.vmc_file).length !== 0 && !this.generate_bimi.vmc_file[0].name.endsWith(".pem")){
-                  error = 1
-                  error_message = "Please enter an valid vmc link or Upload a .pem file"
+                if (Object.keys(this.generate_bimi.vmc_file).length !== 0 && !this.generate_bimi.vmc_file[0].name.endsWith(".pem")) {
+                  error = 1;
+                  error_message = "Please enter an valid vmc link or Upload a .pem file";
                 }
               }
 
-              if(error == 1){
-                alert(error_message)
-                this.generate_bimi_loader = false
+              if (error === 1) {
+                alert(error_message);
+                this.generate_bimi_loader = false;
               }
               else {
-                let formData = new FormData()
-                formData.append("domain", this.generate_bimi.domain)
-                formData.append("svg_link", this.generate_bimi.svg_link)
-                formData.append("vmc_link", this.generate_bimi.vmc_link)
-                formData.append("svg_file", this.generate_bimi.svg_file[0])
-                formData.append("vmc_file", this.generate_bimi.vmc_file[0])
+                const formData = new FormData();
+                formData.append("domain", this.generate_bimi.domain);
+                formData.append("svg_link", this.generate_bimi.svg_link);
+                formData.append("vmc_link", this.generate_bimi.vmc_link);
+                formData.append("svg_file", this.generate_bimi.svg_file[0]);
+                formData.append("vmc_file", this.generate_bimi.vmc_file[0]);
                 axios.post(this.apiurls.generateBimiRecord, formData, {
                             headers: {
                               'Content-Type': 'multipart/form-data'
                             }
                           })
                   .then((response) => {
-                    // console.log(response)
-                    this.generated_bimi_response = response.data.bimi_generation
-                    this.bimi_check_details = {bimi: response.data.bimi, dmarc: response.data.dmarc, mx: response.data.mx, spf: response.data.spf, svg_validation: response.data.svg_validation, vmc_validation: response.data.vmc_validation}
-                    this.img_logo = response.data.svg_validation.svg_link ? response.data.svg_validation.svg_link : this.svg_not_found
-                    this.generated = true
-                    this.generate_bimi_loader = false
-                    this.processed_domain = this.generate_bimi.domain
-                    this.svg_display_link = response.data.bimi_generation.svg_link ? response.data.bimi_generation.svg_link : ""
-                    this.vmc_display_link = response.data.bimi_generation.vmc_link ? response.data.bimi_generation.vmc_link : ""
-                    this.generateNoteSvg(this.svg_display_link)
-                    this.generateNoteVmc(this.vmc_display_link)
+                    // console.log(response);
+                    this.generated_bimi_response = response.data.bimi_generation;
+                    this.bimi_check_details = {bimi: response.data.bimi, dmarc: response.data.dmarc, mx: response.data.mx, spf: response.data.spf, svg_validation: response.data.svg_validation, vmc_validation: response.data.vmc_validation};
+                    this.img_logo = response.data.svg_validation.svg_link ? response.data.svg_validation.svg_link : this.svg_not_found;
+                    this.generated = true;
+                    this.generate_bimi_loader = false;
+                    this.processed_domain = this.generate_bimi.domain;
+                    this.svg_display_link = response.data.bimi_generation.svg_link ? response.data.bimi_generation.svg_link : "";
+                    this.vmc_display_link = response.data.bimi_generation.vmc_link ? response.data.bimi_generation.vmc_link : "";
+                    this.generateNoteSvg(this.svg_display_link);
+                    this.generateNoteVmc(this.vmc_display_link);
                   })
                   .catch((error) => {
                     console.log(error);
-                    this.generate_bimi_loader = false
+                    this.generate_bimi_loader = false;
                   });
               } 
             },
-            fixSvg(){
-              this.fix_svg_loader = true
-              let file = false
-              if (this.generated){
-                file = true
+            fixSvg() {
+              this.fix_svg_loader = true;
+              let file = false;
+              if (this.generated) {
+                file = true;
               }
               axios.post(this.apiurls.fixBimiRecord, {
                 domain: this.processed_domain, svg_path: this.img_logo, file: file    
               })
               .then((response) => {
                 console.log(response.data.status);
-                if (response.data.status){
-                  this.fix_svg_details = response.data
-                  this.fix_svg_loader = false
+                if (response.data.status) {
+                  this.fix_svg_details = response.data;
+                  this.fix_svg_loader = false;
                 } else {
-                  this.fix_svg_details.push({error:"Error connecting to the endpoint"})
-                  this.fix_svg_loader = false
+                  this.fix_svg_details.push({error:"Error connecting to the endpoint"});
+                  this.fix_svg_loader = false;
                 }
               })
               .catch((error) => {
                 console.log(error);
-                this.fix_svg_loader = false
+                this.fix_svg_loader = false;
               });
             }
           },
        })
   </script>
 </body>
+<!--
 <style scoped>
 	.release {
     color: #646464;
@@ -930,4 +941,5 @@
     font-size: 12px;
   }
 </style>
+-->
 {% endblock %}
