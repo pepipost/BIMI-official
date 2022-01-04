@@ -10,7 +10,7 @@ import json
 
 application = Flask(__name__, static_folder = Config.STATIC_FOLDER, template_folder = Config.TEMPLATE_FOLDER)
 api = Api(application)
-cors = CORS(application)
+cors = CORS(application, origins=Config.CORS_WHITELIST)
 
 @application.route('/')
 def index():
