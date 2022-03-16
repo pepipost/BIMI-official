@@ -220,13 +220,14 @@
                                 record not found for [[result.domain]].
                               </span>
                               <span v-if="result.status">and is BIMI compliant
-                                <span v-if="result.warnings.length > 0 && result.warnings[0]!=''">, but with few warnings
-                                </span>.
+                                <span v-if="result.warnings.length > 0 && result.warnings[0]!=''">, but with few warnings.
+                                </span> <span v-if="result.note && result.status"> While it may work for BIMI, please see the warnings below for more information.</span>
                               </span>
                               <span v-else> <span v-if='result.record'>However, it is not as per the required BIMI specifications. Please check the warnings below for suggestions.</span>
                               </span>
                             </p>
                         </h6>
+
                         <div class="issues" v-if="result.warnings.length > 0 || result.errors.length > 0">
                           <h6><strong>Warnings in <span class="record_name">[[index]]</span> record for [[result.domain]]</strong></h6>
                           <ul class="warnings" v-if="result.warnings.length > 0">
@@ -236,6 +237,7 @@
                             <li v-for="(error, error_index) in result.errors" v-bind:key="error_index" v-if="error">Warning: [[error]]</li>
                           </ul>
                         </div>
+
                         <div class="issues" v-if="result.precheck && ('warnings' in result.precheck || 'errors' in result.precheck)">
                           <h6><strong>Warnings in <span class="record_name">[[index]]</span> record for [[result.precheck.domain]]</strong></h6>
                           <ul class="warnings">
@@ -245,6 +247,14 @@
                             <li v-for="(perror, p_error_index) in result.precheck.errors" v-bind:key="p_error_index" v-if="perror">Warning: [[perror]]</li>
                           </ul>
                         </div>
+
+                        <div class="alert alert-dark d-flex align-items-center" role="alert" v-if="result.note">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2 mr-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+                          <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                        </svg>
+                            <div> [[result.note]]</div>
+                        </div>
+
                       </div>
                     </div>
                     <div class="svg-image">
@@ -389,6 +399,14 @@
                           </li>
                         </ul>
                         <!-- <button class="btn btn-sm btn-outline-purple">Fix SVG Issues</button> -->
+                      </div>
+                    </div>
+                    <div v-else>
+                      <div class="alert alert-dark d-flex align-items-center" role="alert">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2 mr-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+                          <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                        </svg>
+                          <div>Note: While your BIMI record is compliant, it doesn't include a Verified Mark Certificate that may be required by some mailbox providers.</div>
                       </div>
                     </div>
                   </div>

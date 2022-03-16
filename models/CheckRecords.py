@@ -74,7 +74,7 @@ class CheckRecords:
 			result["parsed"] = parsed_spf["parsed"]
 			result["warnings"] += parsed_spf["warnings"]
 		except checkdmarc.SPFError as error:
-			# Incase of exception records are blank, so fetching it again
+			# In case of exception records are blank, so fetching it again
 			"""
 			if not result["record"]:
 				records = []
@@ -153,7 +153,7 @@ class CheckRecords:
 			spfRecord['status'] = spf['valid']
 			spfRecord['record'] = spf['record']
 			if self.Utils.detect_spf_macros(spf_record = spf['record']):
-				spfRecord['note'] = "The SPF checks might not be completely reliable since there are some dynamic records in your SPF record."
+				spfRecord['note'] = "SPF macros cannot be evaluated by this inspector."
 		spfRecord['errors'] += [spf['error']] if 'error' in spf else []
 		spfRecord['warnings'] += spf['warnings'] if 'warnings' in spf else []
 		return spfRecord

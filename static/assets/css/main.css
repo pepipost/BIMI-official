@@ -225,26 +225,26 @@ a.format-anchor:hover{
 }
 
 .generated .copy-btn {
-	display: block;
-	background-color: transparent;
-	color: blueviolet;
-	text-align: center;
-	position: absolute;
-	top: 0;
-	right: 0;
-    border: none;
-    outline: 0;
+   display: block;
+   background-color: transparent;
+   color: blueviolet;
+   text-align: center;
+   position: absolute;
+   top: 0;
+   right: 0;
+   border: none;
+   outline: 0;
 }
 
 .btn-sm.copy-btn:hover {
-	border: 1px solid;
-	padding: 0px 5px;
+   border: 1px solid;
+   padding: 0px 5px;
 }
 
 .copy-button-wrapper {
-    position: relative;
-    width: 650px;
-    margin: auto;
+position: relative;
+width: 650px;
+margin: auto;
 }
 
 .browse_file_name {
@@ -261,8 +261,8 @@ a.format-anchor:hover{
 /*Mobile section*/
 
 /*Iphone x mobile starts*/
-  /* Test Iphone */
-  .iphone-x {
+/* Test Iphone */
+.iphone-x {
 	position: relative;
 	margin: 40px auto;
 	width: 250px;
@@ -379,12 +379,12 @@ a.format-anchor:hover{
 }
 
 .iphone-x .esp-brand-strip .Label {
-/* font-size: 16px; */
-font-weight: bold;
+    /* font-size: 16px; */
+    font-weight: bold;
 }
 
 .iphone-x .esp-brand-strip .search svg {
-color: #000;
+    color: #000;
 }
 
 .iphone-x .grid .text-section .brandname {
@@ -427,15 +427,15 @@ font-weight: 600;
 }
 
 .iphone-x .grid .text-section-bar .brandname hr {
-border-top: 10px solid;
-width: 45%;
-margin: 5px 0;
+    border-top: 10px solid;
+    width: 45%;
+    margin: 5px 0;
 }
 
 .iphone-x .grid .text-section-bar .brand_subject hr {
-border-top: 10px solid;
-width: 85%;
-margin: 5px 0;
+    border-top: 10px solid;
+    width: 85%;
+    margin: 5px 0;
 }
 
 .svg-image{
@@ -443,9 +443,9 @@ margin: 5px 0;
 }
 
 .iphone-x .grid .text-section-bar .brand_message hr{
-border-top: 10px solid;
-width: 85%;
-margin: 5px 0;
+    border-top: 10px solid;
+    width: 85%;
+    margin: 5px 0;
 }
 
 .record_name{
@@ -508,56 +508,56 @@ margin: 5px 0;
 
 [v-cloak] .v-cloak--block {
     display: block;
-  }
-  [v-cloak] .v-cloak--inline {
+}
+[v-cloak] .v-cloak--inline {
     display: inline;
-  }
-  [v-cloak] .v-cloak--inlineBlock {
+}
+[v-cloak] .v-cloak--inlineBlock {
     display: inline-block;
-  }
-  [v-cloak] .v-cloak--hidden {
+}
+[v-cloak] .v-cloak--hidden {
     display: none;
-  }
-  [v-cloak] .v-cloak--invisible {
+}
+[v-cloak] .v-cloak--invisible {
     visibility: hidden;
-  }
-  .v-cloak--block,
-  .v-cloak--inline,
-  .v-cloak--inlineBlock {
+}
+.v-cloak--block,
+.v-cloak--inline,
+.v-cloak--inlineBlock {
     display: none;
-  }
+}
 
 /*Spinner*/
 .spinner {
     width: 40px;
     height: 40px;
     background-color: #563d7c !important;
-  
+
     margin: 400px auto;
     -webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
     animation: sk-rotateplane 1.2s infinite ease-in-out;
-  }
-  
-  @-webkit-keyframes sk-rotateplane {
+}
+
+@-webkit-keyframes sk-rotateplane {
     0% { -webkit-transform: perspective(120px) }
     50% { -webkit-transform: perspective(120px) rotateY(180deg) }
     100% { -webkit-transform: perspective(120px) rotateY(180deg)  rotateX(180deg) }
-  }
-  
-  @keyframes sk-rotateplane {
+}
+
+@keyframes sk-rotateplane {
     0% {
-      transform: perspective(120px) rotateX(0deg) rotateY(0deg);
-      -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg)
+    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg)
     } 50% {
-      transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
-      -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg)
+    transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg)
     } 100% {
       transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
       -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
     }
-  }
+}
 
-.generate-heading-wrapper {
+  .generate-heading-wrapper {
     margin-top: 15px;
 }
 
@@ -574,17 +574,26 @@ margin: 5px 0;
 }
 
 .btn-outline-danger:hover {
-	color: #fff !important;
-	background-color: #dc3545 !important;
-	border-color: #dc3545 !important;
+   color: #fff !important;
+   background-color: #dc3545 !important;
+   border-color: #dc3545 !important;
 }
 
 .bimi-record {
-	border-bottom: 1px solid #e2e3e5;
-	margin-bottom: 20px;
+   border-bottom: 1px solid #e2e3e5;
+   margin-bottom: 20px;
 }
 
 .vmc-certificate {
-	border-top: 1px solid #e2e3e5;
-	padding-top: 15px;
+   border-top: 1px solid #e2e3e5;
+   padding-top: 15px;
+}
+
+/*Mobile responsive*/
+
+@media only screen and (max-width: 600px) {
+    .iphone-x .time.col-3 p {
+        font-size: 12px;
+        padding: 0px 16px;
+    }
 }
