@@ -223,7 +223,7 @@
                                 <span v-if="result.warnings.length > 0 && result.warnings[0]!=''">, but with few warnings.
                                 </span> <span v-if="result.note && result.status"> While it may work for BIMI, please see the warnings below for more information.</span>
                               </span>
-                              <span v-else> <span v-if='result.record'>However, it is not as per the required BIMI specifications. Please check the warnings below for suggestions.</span>
+                              <span v-else> <span v-if='result.record'>while it may work for BIMI, please see the warnings below for more information.</span>
                               </span>
                             </p>
                         </h6>
@@ -274,7 +274,7 @@
                       <h6 class="status">
                         <span v-if="bimi_check_details.svg_validation.svg_link">We found the following SVG image in your BIMI record. 
                           <span v-if="bimi_check_details.svg_validation.status">Your SVG image is as per BIMI compliance. </span>               
-                            <span v-else> The SVG Image needs an Update, check the errors below for more details.</span></span>
+                            <span v-else> The SVG Image needs an update, check the errors below for more details.</span></span>
                         <span v-else> We didn't find any valid SVG link in the BIMI record.</span>
                         <!-- <span v-if="!bimi_check_details.svg_validation.status">
                           Found few problems
@@ -369,7 +369,7 @@
                       <h6 class="stautus">
                         <span v-if="bimi_check_details.vmc_validation.vmc_link">We found the following vmc certificate in your BIMI record. 
                           <span v-if="bimi_check_details.vmc_validation.status">Your vmc certificate is as per the BIMI compliance. </span>               
-                            <span v-else> The vmc certificate needs an Update, check the errors below for more details.</span></span>
+                            <span v-else> The vmc certificate needs an update, check the errors below for more details.</span></span>
                         <span v-else> We didn't find any valid .pem file link in the BIMI record.</span>
 
                         <!-- <span v-if="!bimi_check_details.vmc_validation.status">
