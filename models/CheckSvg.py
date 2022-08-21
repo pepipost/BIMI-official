@@ -29,7 +29,7 @@ class CheckSvg:
 
             session = requests.Session()
             session.max_redirects = 3
-            response = session.get(url, headers={'User-Agent': self.user_agent})
+            response = session.get(url, headers={'User-Agent': self.user_agent}, timeout=4)
             if response:
                 self.svg_image_path = self.STORAGE_SVG_DIR+file_name_hash+".svg"
                 with open(self.STORAGE_SVG_DIR+file_name_hash+".svg", 'wb+') as out_file:
