@@ -7,7 +7,7 @@ chardet==3.0.4
 charset-normalizer==2.0.3
 checkdmarc==4.3.1
 click==7.1.2
-cryptography==3.4.7
+cryptography==39.0.1
 dnspython==2.0.0
 expiringdict==1.2.1
 filelock==3.0.12
