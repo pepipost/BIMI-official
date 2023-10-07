@@ -1,4 +1,3 @@
-from lxml import etree
 import xml.etree.cElementTree as et
 import subprocess
 from utils.Utils import Utils

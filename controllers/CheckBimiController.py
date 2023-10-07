@@ -1,5 +1,4 @@
 from flask_restful import Resource,request
-import json
 from models.CheckRecords import CheckRecords 
 from models.CheckSvg import CheckSvg
 from models.CheckVmc import CheckVmc

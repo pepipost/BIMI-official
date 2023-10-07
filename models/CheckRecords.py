@@ -1,4 +1,3 @@
-import json
 # import subprocess
 # import dns.resolver
 import checkdmarc

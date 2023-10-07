@@ -1,4 +1,4 @@
-from flask_restful import Resource,request
+from flask_restful import Resource
 from models.DbLog import DbLog
 import json
 

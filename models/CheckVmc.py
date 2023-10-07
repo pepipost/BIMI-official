@@ -1,6 +1,5 @@
 from Config import Config
 import requests
-import sys,os
 from asn1crypto import pem
 from certvalidator import CertificateValidator, errors
 from cryptography import x509
